@@ -1,0 +1,12 @@
+[package]
+name = "wag"
+version = "0.1.0"
+edition = "2021"
+description = "Windows Artefact Generator"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+winapi = {version = "0.3.9", features = ["winbase","winnt","namedpipeapi","fileapi","winbase"]}
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
