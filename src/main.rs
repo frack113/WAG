@@ -2,6 +2,8 @@
 // Windows Artefact Generator POC
 //
 
+mod generator;
+
 // Cli option 
 use clap::Parser;
 
@@ -9,17 +11,6 @@ use clap::Parser;
 extern crate serde;
 use serde::{Deserialize, Serialize};
 
-
-// Windows API
-use winapi::um::winbase::CreateNamedPipeA;
-use winapi::um::winbase::{PIPE_ACCESS_DUPLEX,PIPE_TYPE_MESSAGE};
-use winapi::um::handleapi::CloseHandle;
-use winapi::um::winnt::{HANDLE,LPCSTR};
-//use std::option::SpecOptionPartialEq;
-use std::ptr::null_mut;
-
-// Some others
-use std::{thread, time};
 
 const JSON_FOLDER: &'static str ="data";
 
@@ -142,19 +133,11 @@ fn main() {
     // Build the name pipe form regex 
     //
     if malware.namepipe.len() >0 {
-        let name_iter = malware.namepipe.iter();
         println!("Find {} name pipe",malware.namepipe.len());
-        for val in name_iter {
-            println!("Try name pipe : {}", val);
-            let full_malware_pipe = format!("\\\\.\\pipe\\{}\0",val);
-            //
-            // Create the Name Pipe
-            //
-            let pipe_name : LPCSTR = full_malware_pipe.as_ptr() as *const i8;
-            let server_pipe : HANDLE = unsafe {CreateNamedPipeA(pipe_name,PIPE_ACCESS_DUPLEX,PIPE_TYPE_MESSAGE,1,2048,2048,0,null_mut())};
-            let sleep_duration = time::Duration::from_millis(2000);
-            thread::sleep(sleep_duration);
-            let _res_server_pipe = unsafe { CloseHandle(server_pipe) };
+        for payload in  malware.namepipe.iter() {
+            let full_payload = generator::regex_to_string(payload);
+            println!("Try name pipe : {}", full_payload);
+            generator::create_name_pipe(&full_payload,2000);
         }
     }
 
