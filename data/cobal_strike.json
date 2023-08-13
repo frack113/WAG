@@ -1,0 +1,25 @@
+{
+    "name": "Cobal_strike",
+    "namepipe": [
+        "\\DserNamePipe",
+        "\\f4c3",
+        "\\f53f",
+        "\\fullduplex_",
+        "\\mojo.5688.8052.183894939787088877",
+        "\\mojo.5688.8052.35780273329370473",
+        "\\MsFteWds",
+        "\\msrpc_",
+        "\\mypipe-f",
+        "\\mypipe-h",
+        "\\ntsvcs",
+        "\\PGMessagePipe",
+        "\\rpc_",
+        "\\scerpc",
+        "\\SearchTextHarvester",
+        "\\spoolss",
+        "\\win_svc",
+        "\\win\\msrpc_",
+        "\\windows.update.manager",
+        "\\wkssvc"
+    ]
+  }

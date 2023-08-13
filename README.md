@@ -16,3 +16,11 @@ Thanks to https://github.com/trickster0/OffensiveRust
 wag name_of_the_test
 
 next ->  -n lauch the namepipe generation
+
+# TODO LIST
+
+- [ ] cli list of the tests
+- [ ] Regex to string
+- [ ] Doc and help
+- [ ] Data class ?
+- [ ] Artefact::load do not check if it is a json or a file

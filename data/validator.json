@@ -1,3 +1,4 @@
 {
-    "namepipe": "wap_validator_pipe"
+    "name": "validator",
+    "namepipe": ["wap_validator_pipe"]
 }
