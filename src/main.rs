@@ -17,12 +17,19 @@ const JSON_FOLDER: &'static str ="data";
 #[derive(Parser)]
 #[command(author="Me", version, about, long_about = None)]
 struct CliArg {
-    // name of the test
+    // type of the artefact
+    #[arg(short, long,help = "Name of type of artefact to genrerate", default_value = "namepipe")]
+    artefact: String,
+
+    // name of the data malware
     #[arg(short, long,help = "Name of the malware artefact")]
     name: Option<String>,
 
     #[arg(short, long,help = "List all the malware Name")]
     list: bool,
+
+    #[arg(short, long,help = "Number of the place in the list")]
+    place: Option<usize>,
 }
 
 
@@ -32,11 +39,11 @@ struct TestData {
     namepipe: Vec<String>,
 }
 
-impl TestData{
-    fn new() -> Self{
-        Self { name: String::new(), namepipe: Vec::new() }
-    }
-}
+//impl TestData{
+//    fn new() -> Self{
+//        Self { name: String::new(), namepipe: Vec::new() }
+//    }
+//}
 
 
 struct Artefact{
@@ -88,12 +95,24 @@ impl Artefact {
 
 }
 
+fn launch_option_namepipe(malware:&TestData,number:Option<usize>){
+    let mut index_payload = number.unwrap_or(0);
 
+    //Don't trust humain
+    if index_payload > malware.namepipe.len().try_into().unwrap(){
+        index_payload = 0;
+    }
+
+    let payload = malware.namepipe.get(index_payload).unwrap();
+    let full_payload = generator::regex_to_string(payload);
+    println!("Create the name pipe : {}", full_payload);
+    generator::create_name_pipe(&full_payload,2000);
+}
 
 fn main() {
     // Get some global variable    
     let mut test_name:String = String::new();
-    let mut malware= &TestData::new();
+    
 
     //We need to load the database at startup
     let mut artefact_data = Artefact::new();
@@ -104,7 +123,7 @@ fn main() {
 
     // want the list only
     if cli.list{
-        println!("Welcome you can use the test name :");
+        println!("Welcome to WAG , the list is:");
      
         for name in artefact_data.list_test{
             println!(" - {}",name);
@@ -117,28 +136,26 @@ fn main() {
     if cli.name.is_some(){
         test_name = cli.name.unwrap();
 
-        if artefact_data.name_exist(&test_name){
-            
-            malware = artefact_data.get_data_by_name(&test_name);
-
-        } else {
-            println!("Please check the name of the test you want to run");
+        if artefact_data.name_exist(&test_name) == false{
+            println!("Please check the name of the data you want to run");
             println!("Use the list option -l");
-            std::process::exit(0)
+            std::process::exit(1)
         }
+
+        //let mut malware= &TestData::new();
+        let malware = artefact_data.get_data_by_name(&test_name);
+
+
         
+        if cli.artefact == "namepipe".to_string() { 
+            launch_option_namepipe(malware,cli.place);
+        }
+
     }
 
     //
     // Build the name pipe form regex 
     //
-    if malware.namepipe.len() >0 {
-        println!("Find {} name pipe",malware.namepipe.len());
-        for payload in  malware.namepipe.iter() {
-            let full_payload = generator::regex_to_string(payload);
-            println!("Try name pipe : {}", full_payload);
-            generator::create_name_pipe(&full_payload,2000);
-        }
-    }
+
 
 }
