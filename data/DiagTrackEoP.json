@@ -1,4 +1,4 @@
 {
     "name": "DiagTrackEoP",
-    "namepipe": ["thisispipe"]
+    "namepipe": ["\\\\thisispipe"]
 }
