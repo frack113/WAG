@@ -14,8 +14,12 @@ but why ?
 - load a vunerable driver ?
 - registry key ?
  
-# Structure
+# Data Structure
 The artefact information are stored in a json file
+Warnning,as we have regex in json need 2 escape level for `\`
+
+## Name Pipe
+
  ```json
  {
     "name": "Name of the malware family/test",
@@ -26,24 +30,36 @@ The artefact information are stored in a json file
   }
   ```
 
-  As we have regex in json need 2 escape level for `\`
 
  # Commandline
 
  The current commandline is for the POC can and will change.
 
-```
-Windows Artefact Generator
+```bash
+WAG is a CLI Application to genereate Windows Artefacts
 
-Usage: wag.exe [OPTIONS]
+Usage: wag.exe <COMMAND>
+
+Commands:
+  name-pipe  Generates Name Pipe Artefact
+  list       List all the Value
+  help       Print this message or the help of the given subcommand(s)
 
 Options:
-  -a, --artefact <ARTEFACT>  Name of type of artefact to genrerate [default: namepipe]
-  -n, --name <NAME>          Name of the malware artefact
-  -l, --list                 List all the malware Name
-  -p, --place <PLACE>        Number of the place in the list
-  -h, --help                 Print help
-  -V, --version              Print version
+  -h, --help     Print help
+  -V, --version  Print version
+```
+
+```bash
+Generates Name Pipe Artefact
+
+Usage: wag.exe name-pipe [OPTIONS] --name <NAME>
+
+Options:
+  -n, --name <NAME>      Name of the malware to mimic
+  -t, --number <NUMBER>  [default: 0]
+  -l, --list             Get all the possible number
+  -h, --help             Print help
 ```
 
 # Exist Code
@@ -55,10 +71,11 @@ Can be usefull
 
 # TODO LIST
 
+- [ ] Rewritte all the jsom
+
 - [ ] cli list of the artefact only namepipe now :)
 - [ ] cli list of the tests for a malware name
 - [X] Regex to string
 - [ ] Doc and help
-- [ ] Data class ?
 - [ ] Bug
 - [ ] make a better code

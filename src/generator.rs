@@ -13,12 +13,10 @@ use std::ptr::null_mut;
 use std::{thread, time};
 
 // For regex to string
-//extern crate regex_generate;
-//extern crate rand;
 use regex_generate::{DEFAULT_MAX_REPEAT, Generator};
 
 pub fn create_name_pipe(name:&String,wait:u64) {
-    let full_malware_pipe = format!("\\\\.\\pipe{}\0",name);
+    let full_malware_pipe = format!("\\\\.\\pipe\\{}\0",name);
     let pipe_name : LPCSTR = full_malware_pipe.as_ptr() as *const i8;
     let server_pipe : HANDLE = unsafe {CreateNamedPipeA(pipe_name,PIPE_ACCESS_DUPLEX,PIPE_TYPE_MESSAGE,1,2048,2048,0,null_mut())};
     let sleep_duration = time::Duration::from_millis(wait);

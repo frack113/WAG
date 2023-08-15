@@ -1,4 +1,0 @@
-{
-    "name": "validator",
-    "namepipe": ["\\\\wap_namepipe_validator[0-9]{4}"]
-}

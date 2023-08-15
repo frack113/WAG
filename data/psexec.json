@@ -1,9 +1,0 @@
-{
-    "name": "psexec",
-    "namepipe": [
-        "\\\\psexec",
-        "\\\\PAExec",
-        "\\\\remcom",
-        "\\\\csexec"
-    ]
-}
