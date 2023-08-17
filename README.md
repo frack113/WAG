@@ -42,7 +42,7 @@ Usage: wag.exe <COMMAND>
 
 Commands:
   name-pipe  Generates Name Pipe Artefact
-  list       List all the Value
+  byovd      Bring Your Own Vulnerable Driver
   help       Print this message or the help of the given subcommand(s)
 
 Options:
@@ -62,11 +62,24 @@ Options:
   -h, --help             Print help
 ```
 
+```bash
+Bring Your Own Vulnerable Driver
+
+Usage: wag.exe byovd --name <NAME> --details <DETAILS> --path <PATH>
+
+Options:
+  -n, --name <NAME>        Internal Name of the service
+  -d, --details <DETAILS>  Displayed Name of the service
+  -p, --path <PATH>        Full path to the driver eg: c:\temp...
+  -h, --help               Print help
+```
+
 # Exist Code
 Can be usefull 
 
 - 0 All is good
 - 1 The name of the malware did not exist
+- 2 the test failed for one reason or another
 
 
 # TODO LIST
