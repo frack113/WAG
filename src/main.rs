@@ -13,7 +13,7 @@ mod cli;
 extern crate serde;
 use serde::{Deserialize, Serialize};
 
-fn main() {
+fn main() -> ! {
 
     let my_cli = cli::WagCli::parse();
 
@@ -31,7 +31,7 @@ fn main() {
 
             } else {
 
-                if list {
+                if list == true {
                     println!("Name Pipe number for \"{}\" :",name);
                     println!("----------------");
                     let list_name_pipe = test.get_all_pipename(&name);
@@ -40,22 +40,35 @@ fn main() {
                     }
                     println!("----------------");
                     println!("bye");
-                }
-                else{
-
+                    std::process::exit(0)
+                } else {
                     //let malware = artefact_data.get_data_by_name(name);
                     let payload= &test.get_pipename_by_index(&name, number);
                     let full_payload = generator::regex_to_string(payload);
                     println!("Create the namepipe : {}",full_payload);
                     generator::create_name_pipe(&full_payload, 2000);
-
+                    std::process::exit(0)
                 }
-            }
+
+            }// else 
 
         }, //Namepipe option
 
-        cli::Clioptions::List { module, details  } => println!("{}  {}",module,details),
+        cli::Clioptions::BYOVD { name, details, path } => {
+            println!("Bring Your Own Vulnerable Driver");
+            // no check you need to be admin :)
+            // no check path is valid :)
+            let result = generator::create_driver_service(name, details, path);
+            if result {
+                println!("All is good");
+                std::process::exit(0)
+            } else{
+                println!("Nothing is good");
+                std::process::exit(2)
+            }
+            
+        },
+
     }
-
-
+    
 }
