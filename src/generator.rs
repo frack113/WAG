@@ -14,11 +14,7 @@ use winapi::um::errhandlingapi::GetLastError;
 use winapi::shared::minwindef::DWORD;
 use widestring::U16CString;
 
-
-
-
 use winapi::um::winsvc::*;
-
 
 
 // Some others
@@ -109,4 +105,28 @@ pub fn create_driver_service(name:String,details:String,path:String) -> bool {
         return true
     }
 
+}
+
+// File Creation
+pub fn hex_to_bytes(s: &str) -> Option<Vec<u8>> {
+    if s.len() % 2 == 0 {
+        (0..s.len())
+            .step_by(2)
+            .map(|i| s.get(i..i + 2)
+                      .and_then(|sub| u8::from_str_radix(sub, 16).ok()))
+            .collect()
+    } else {
+        None
+    }
+}
+
+pub fn create_file(fullpath:String,hex_data:Vec<u8>){
+    println!("Try to create : {}",fullpath);
+    let file_path= std::path::Path::new(&fullpath);
+    if !file_path.exists() {
+        let folder = file_path.clone().parent().unwrap();
+
+        let _ret = std::fs::create_dir_all(folder).expect("Can not create folder");
+        let _ret = std::fs::write(file_path, hex_data).unwrap();
+    }
 }

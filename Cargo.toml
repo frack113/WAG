@@ -20,10 +20,10 @@ rpath = false
 
 
 [dependencies]
-winapi = {version = "0.3.9", features = ["winbase","winnt","namedpipeapi","fileapi","winbase","handleapi","winsvc","errhandlingapi"]}
+winapi = {version = "0", features = ["winbase","winnt","namedpipeapi","fileapi","winbase","handleapi","winsvc","errhandlingapi"]}
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-clap = { version = "4.3.22", features = ["derive"] }
-rand = "0.8.5"
-regex_generate = "0.2"
-widestring = "1.0.2"
+clap = { version = "4", features = ["derive"] }
+rand = "0"
+regex_generate = "0"
+widestring = "1"

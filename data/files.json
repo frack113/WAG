@@ -1,0 +1,36 @@
+{
+    "magicbytes": [
+        {
+            "name":"Exe",
+            "magicbyte":"4D5A"
+        },
+        {
+            "name":"Zip",
+            "magicbyte":"504B0304"
+        },
+        {
+            "name":"Vmdk",
+            "magicbyte":"4B444D"
+        },
+        {
+            "name":"Iso",
+            "magicbyte":"4344303031"
+        }
+    ],
+    "payloads":[
+        {
+            "name":"NPPSpy",
+            "file_type":"Exe",
+            "fullpath":"C:/Windows/System32/NPPSpy\\.dll",
+            "cmd_var":"",
+            "cmd_path":""
+        },
+        {
+            "name":"SafetyKatz",
+            "file_type":"Zip",
+            "fullpath":"",
+            "cmd_var":"SystemRoot",
+            "cmd_path":"Temp/debug\\.bin"
+        }
+    ]
+}

@@ -2,16 +2,18 @@
 // Windows Artefact Generator POC
 //
 
-mod generator;
-mod namepipe;
 
 // Cli option 
-use clap::{Parser, Subcommand};
+use clap::Parser;
 mod cli;
 
-// Json
-extern crate serde;
-use serde::{Deserialize, Serialize};
+
+mod generator;
+mod namepipe;
+mod filedrop;
+
+
+use std::collections::HashMap;
 
 fn main() -> ! {
 
@@ -19,38 +21,46 @@ fn main() -> ! {
 
     match my_cli.command {
 
-        cli::Clioptions::NamePipe { name,number,list } => {
-            let test= namepipe::NamePipeArtefacts::init();
-            let all_name = test.get_all_name();
+        cli::Clioptions::NamePipe { name,number,pipe , mimic} => {
+            let mut artefact= namepipe::NamePipeArtefact::new(HashMap::new());
+            artefact.load("data/namepipe.json");
 
-            if all_name.contains(&name)== false{
+            if mimic == true {
+                let all_name = artefact.namepipe_list();
+                println!("Name for the mimic Name Pipe :");
+                println!("----------------");
+                for mimic_name in all_name{
+                    println!(" - {}", mimic_name);
+                }
+                println!("----------------");
+                println!("bye");
+                std::process::exit(0)
+            }
 
+           
+            if artefact.namepipe_exist(&name) == false{
                 println!("Did not find \"{}\" name for namepipe",name);
                 println!("You can use the help option --help");
                 std::process::exit(1)
+            } 
 
-            } else {
-
-                if list == true {
-                    println!("Name Pipe number for \"{}\" :",name);
-                    println!("----------------");
-                    let list_name_pipe = test.get_all_pipename(&name);
-                    for i in 0..list_name_pipe.len(){
-                        println!(" {} - {}",i,list_name_pipe[i])
-                    }
-                    println!("----------------");
-                    println!("bye");
-                    std::process::exit(0)
-                } else {
-                    //let malware = artefact_data.get_data_by_name(name);
-                    let payload= &test.get_pipename_by_index(&name, number);
-                    let full_payload = generator::regex_to_string(payload);
-                    println!("Create the namepipe : {}",full_payload);
-                    generator::create_name_pipe(&full_payload, 2000);
-                    std::process::exit(0)
+            if pipe == true {
+                println!("Name Pipe number for \"{}\" :",name);
+                println!("----------------");
+                let list_name_pipe = artefact.namepipe_value_list(&name);
+                for i in 0..list_name_pipe.len(){
+                    println!(" {} - {}",i,list_name_pipe[i])
                 }
+                println!("----------------");
+                println!("bye");
+                std::process::exit(0)
+            }
 
-            }// else 
+            let payload= artefact.namepipe_get_value_at_index(&name, number);
+            let full_payload = generator::regex_to_string(&payload);
+            println!("Create the namepipe : {}",full_payload);
+            generator::create_name_pipe(&full_payload, 2000);
+            std::process::exit(0)
 
         }, //Namepipe option
 
@@ -69,6 +79,35 @@ fn main() -> ! {
             
         },
 
+        cli::Clioptions::Filecreate { name ,mimic}=>{
+            println!("Create a file on disk");
+            let mut artefact = filedrop::FileArtefac::new(HashMap::new(),HashMap::new());
+            artefact.load("data/files.json");
+
+            if mimic == true{
+                let all_name = artefact.file_payload_list();
+                println!("Name for the mimic File creation :");
+                println!("----------------");
+                for name in all_name {
+                    println!(" - {}",name);
+                }
+                println!("----------------");
+                println!("bye");
+                std::process::exit(0)
+            }
+
+            if artefact.file_payload_exist(&name) == false{
+                println!("Did not find \"{}\" name for filecreate",name);
+                println!("You can use the help option --help");
+                std::process::exit(1)
+            } 
+
+            let fullename = artefact.file_payload_getfilename(&name);
+            let payload_type = artefact.file_payload_getfiletype(&name);
+            let payload = artefact.file_magicbyte_get(&payload_type);
+            generator::create_file(fullename, payload);
+            std::process::exit(0)
+        }
     }
     
 }
