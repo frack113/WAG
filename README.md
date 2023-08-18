@@ -56,9 +56,10 @@ Generates Name Pipe Artefact
 Usage: wag.exe name-pipe [OPTIONS] --name <NAME>
 
 Options:
-  -n, --name <NAME>      Name of the malware to mimic
+  -n, --name <NAME>      Name of the malware to mimic [default: help]
   -t, --number <NUMBER>  [default: 0]
-  -l, --list             Get all the possible number
+  -p, --pipe             Get all the possible pipename for a mimic and quit
+  -m, --mimic            Get all the possible mimic name and quit
   -h, --help             Print help
 ```
 
