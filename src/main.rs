@@ -69,8 +69,13 @@ fn main() -> ! {
                 println!("Need to have Administrator right to create the file");
                 std::process::exit(EXIST_TEST_ERROR)
             }
-            tools_generator::create_file(fullename, payload);
-            std::process::exit(EXIST_ALL_GOOD)
+
+            let ret = tools_generator::create_file(fullename, payload);
+            if ret == true{
+                std::process::exit(EXIST_ALL_GOOD)
+            }else{
+                std::process::exit(EXIST_TEST_ERROR)
+            }
         },
 
         tools_cli::Clioptions::FileCreateManual {filename,magicbyte,list}=>{
@@ -99,8 +104,12 @@ fn main() -> ! {
                 println!("Get the regex : {}",filename);
                 let fullname = tools_generator::regex_to_string(&filename);
                 let payload = artefact.file_magicbyte_get(&magicbyte);
-                tools_generator::create_file(fullname, payload);
-                std::process::exit(EXIST_ALL_GOOD)
+                let ret = tools_generator::create_file(fullname, payload);
+                if ret == true{
+                    std::process::exit(EXIST_ALL_GOOD)
+                }else{
+                    std::process::exit(EXIST_TEST_ERROR)
+                }
             }
 
             std::process::exit(EXIST_CLI_ERROR)

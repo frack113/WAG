@@ -113,15 +113,36 @@ pub fn hex_to_bytes(s: &str) -> Option<Vec<u8>> {
     }
 }
 
-pub fn create_file(fullpath:String,hex_data:Vec<u8>){
+pub fn create_file(fullpath:String,hex_data:Vec<u8>) -> bool{
     println!("Try to create : {}",fullpath);
     let file_path= std::path::Path::new(&fullpath);
     if !file_path.exists() {
         let folder = file_path.clone().parent().unwrap();
 
-        let _ret = std::fs::create_dir_all(folder).expect("Can not create folder");
-        let _ret = std::fs::write(file_path, hex_data).unwrap();
+        let ret_folder = std::fs::create_dir_all(folder);
+        match ret_folder{
+            Ok(_) => println!("The folder is valid"),
+            Err(_) => return false,
+        }
+
+        let ret_file = std::fs::write(file_path, hex_data);
+        match ret_file{
+            Ok(_) => println!("The file is created"),
+            Err(_) => return false,
+        }
+
+        let sleep_duration = time::Duration::from_millis(2000);//2s
+        thread::sleep(sleep_duration);
+
+        let ret_remove = std::fs::remove_file(file_path);
+        match ret_remove{
+            Ok(_) => println!("The file is removed"),
+            Err(_) => return false,
+        }       
+
+        return true
     }
+    return false;
 }
 
 
