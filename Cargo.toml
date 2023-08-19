@@ -19,6 +19,10 @@ codegen-units = 16
 rpath = false
 
 
+[build-dependencies]
+winres = "0"
+winapi = {version = "0",  features = ["winnt"]}
+
 [dependencies]
 winapi = {version = "0", features = ["winbase","winnt","winbase","handleapi","winsvc","errhandlingapi","securitybaseapi"]}
 serde = { version = "1", features = ["derive"] }

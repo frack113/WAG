@@ -11,6 +11,13 @@ but why ?
 
 It is not designed to generate IOC like ip, hash ...
 
+# How Contribute
+
+- repport bug
+- update the json file
+- fix some code
+- add new artefact
+
 # Artefact
 - name pipe
 - load a vunerable driver
@@ -94,3 +101,4 @@ Options:
 
 done :
 - [X] Regex to string
+- [X] Remove file from test
