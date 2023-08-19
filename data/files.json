@@ -20,6 +20,7 @@
     "payloads":[
         {
             "name":"NPPSpy",
+            "needroot": true,
             "file_type":"Exe",
             "fullpath":"C:/Windows/System32/NPPSpy\\.dll",
             "cmd_var":"",
@@ -27,10 +28,11 @@
         },
         {
             "name":"SafetyKatz",
+            "needroot": false,
             "file_type":"Zip",
             "fullpath":"",
             "cmd_var":"SystemRoot",
-            "cmd_path":"Temp/debug\\.bin"
+            "cmd_path":"Temp\\\\debug\\.bin"
         }
     ]
 }

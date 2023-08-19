@@ -3,22 +3,23 @@
 //
 
 // Windows API
-use winapi::um::winbase::CreateNamedPipeA;
-use winapi::um::winbase::{PIPE_ACCESS_DUPLEX,PIPE_TYPE_MESSAGE};
-use winapi::um::handleapi::CloseHandle;
-use winapi::um::winnt::*;
-use std::ptr::null_mut;
-
-use winapi::um::winsvc::{ControlService, DeleteService, OpenSCManagerW, StartServiceW, CreateServiceW,SC_MANAGER_ALL_ACCESS,SERVICE_CONTROL_STOP};
-use winapi::um::errhandlingapi::GetLastError;
-use winapi::shared::minwindef::DWORD;
 use widestring::U16CString;
-
+use winapi::shared::minwindef::{DWORD,LPVOID};
+use winapi::um::errhandlingapi::GetLastError;
+use winapi::um::handleapi::CloseHandle;
+use winapi::um::processthreadsapi::{GetCurrentProcess,OpenProcessToken};
+use winapi::um::securitybaseapi::GetTokenInformation;
+use winapi::um::winbase::{PIPE_ACCESS_DUPLEX,PIPE_TYPE_MESSAGE};
+use winapi::um::winbase::CreateNamedPipeA;
+use winapi::um::winnt::*;
 use winapi::um::winsvc::*;
+//use winapi::um::winsvc::{ControlService, DeleteService, OpenSCManagerW, StartServiceW, CreateServiceW,SC_MANAGER_ALL_ACCESS,SERVICE_CONTROL_STOP};
+
 
 
 // Some others
-use std::{thread, time};
+use std::{mem,thread, time};
+use std::ptr::null_mut;
 
 // For regex to string
 use regex_generate::{DEFAULT_MAX_REPEAT, Generator};
@@ -32,14 +33,6 @@ pub fn create_name_pipe(name:&String,wait:u64) {
     let _res_server_pipe = unsafe { CloseHandle(server_pipe) };
 }
 
-pub fn regex_to_string(name:&String) -> String {
-    let mut gen = Generator::new(name, rand::thread_rng(), DEFAULT_MAX_REPEAT).unwrap();
-    let mut buffer = vec![];
-    gen.generate(&mut buffer).unwrap();
-    let output = String::from_utf8(buffer).unwrap();
-
-    return output;
-}
 
 fn open_sc_manager(desired_access: DWORD) -> Result<*mut SC_HANDLE__, DWORD> {
     let sc_manager_handle = unsafe { OpenSCManagerW(null_mut(), null_mut(), desired_access) };
@@ -129,4 +122,43 @@ pub fn create_file(fullpath:String,hex_data:Vec<u8>){
         let _ret = std::fs::create_dir_all(folder).expect("Can not create folder");
         let _ret = std::fs::write(file_path, hex_data).unwrap();
     }
+}
+
+
+/*
+Some usefull fn
+*/
+pub fn regex_to_string(name:&String) -> String {
+    let mut gen = Generator::new(name, rand::thread_rng(), DEFAULT_MAX_REPEAT).unwrap();
+    let mut buffer = vec![];
+    gen.generate(&mut buffer).unwrap();
+    let output = String::from_utf8(buffer).unwrap();
+
+    return output;
+}
+
+pub fn process_is_admin()-> bool {
+        // from  https://github.com/yandexx/is_elevated
+        unsafe {
+            let mut current_token_ptr: HANDLE = mem::zeroed();
+            let mut token_elevation: TOKEN_ELEVATION = mem::zeroed();
+            let token_elevation_type_ptr: *mut TOKEN_ELEVATION = &mut token_elevation;
+            let mut size: DWORD = 0;
+    
+            let result = OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &mut current_token_ptr);
+    
+            if result != 0 {
+                let result = GetTokenInformation(
+                    current_token_ptr,
+                    TokenElevation,
+                    token_elevation_type_ptr as LPVOID,
+                    mem::size_of::<winapi::um::winnt::TOKEN_ELEVATION_TYPE>() as u32,
+                    &mut size,
+                );
+                if result != 0 {
+                    return token_elevation.TokenIsElevated != 0;
+                }
+            }
+        }
+        false
 }
