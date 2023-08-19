@@ -9,9 +9,12 @@ but why ?
 - test your sysmon configuration
 - test your EDR
 
+It is not designed to generate IOC like ip, hash ...
+
 # Artefact
 - name pipe
-- load a vunerable driver ?
+- load a vunerable driver
+- create a file 
 - registry key ?
  
 # Data Structure
@@ -75,21 +78,19 @@ Options:
   -h, --help               Print help
 ```
 
-# Exist Code
-Can be usefull 
-
-- 0 All is good
-- 1 The name of the malware did not exist
-- 2 the test failed for one reason or another
 
 
 # TODO LIST
 
-- [ ] Rewritte all the jsom
-
-- [ ] cli list of the artefact only namepipe now :)
-- [ ] cli list of the tests for a malware name
-- [X] Regex to string
+- [ ] Make better cli 
+- [ ] Add reg artefact
+- [ ] Add process artefact
+- [ ] Add dll artefact ? 
 - [ ] Doc and help
 - [ ] Bug
 - [ ] make a better code
+- [ ] Add a fn pretty_print_hashset in main
+- [ ] update create_file to return bool
+
+done :
+- [X] Regex to string

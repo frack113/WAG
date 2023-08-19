@@ -1,11 +1,23 @@
-//
-// File creation Artefact
-//
-use crate::generator;
+/*
+        File creation Artefact
+
+the magic bytes are store a string HEX value.
+like 504B0304 or 4D5A.
+
+Path are regex in json so need `\\.` to get a `.`.
+
+if fullpath is empty , it build the path from
+env variable and the cmd_path.
+"SystemRoot" "Temp\\debug\\.bin" will give "c:\Windows\Temp\debug.bin"
+
+You can use `SET | more` or `Get-ChildItem Env:` to get the list
+
+*/
+
+use crate::tools_generator;
 
 use std::collections::{HashMap,HashSet};
 use serde::Deserialize;
-
 
 use std::env;
 
@@ -18,6 +30,7 @@ struct JsonHeaderInfo {
 #[derive(Deserialize)]
 struct JsonPayloadInfo {
     name: String,
+    needroot: bool,
     file_type:String,
     fullpath: String,
     cmd_var: String,
@@ -32,6 +45,7 @@ struct JsonGlobalInfo {
 }
 
 pub struct PayloadPathInfo{
+    needroot: bool,
     file_type:String,
     fullpath:String,
     cmd_var:String,
@@ -61,29 +75,28 @@ impl FileArtefac{
         }
 
         for data in json_data.payloads{
-            let tmp_data:PayloadPathInfo = {PayloadPathInfo{file_type:data.file_type,fullpath:data.fullpath, cmd_var:data.cmd_var, cmd_path:data.cmd_path}};
+            let tmp_data:PayloadPathInfo = {PayloadPathInfo{needroot:data.needroot,file_type:data.file_type,fullpath:data.fullpath, cmd_var:data.cmd_var, cmd_path:data.cmd_path}};
             self.payload.insert(data.name, tmp_data);
         }
     }
-/*
+
     pub fn file_magicbyte_list(&self)->HashSet<String>{
         self.magicbyte.keys().cloned().collect()
     }
-*/    
+   
     pub fn file_magicbyte_exist(&self,name:&str)->bool{
         self.magicbyte.contains_key(name)
     }
 
     pub fn file_magicbyte_get(self,name:&str)-> Vec<u8>{
+        let mut payload = "467261636b313133";
         if self.file_magicbyte_exist(name){
-            let payload = self.magicbyte.get(name).unwrap(); //Can not faild as the key exist
-            let header = generator::hex_to_bytes(payload); // User input 😅
-            match header{
-                Some(data) => data,
-                None => vec![0],
-            }
-        } else {
-            vec![0]
+            payload = self.magicbyte.get(name).clone().unwrap(); //Can not faild as the key exist
+        }
+        let header = tools_generator::hex_to_bytes(payload); // User input 😅
+        match header{
+            Some(data) => data,
+            None => vec![70,114,97,99,107,49,49,51],
         }
     }
 
@@ -95,14 +108,19 @@ impl FileArtefac{
         self.payload.contains_key(name)
     }
 
+    pub fn file_payload_needroot(&self,name:&str)->bool{
+        let data = self.payload.get(name).unwrap(); // exit fail if name is invalid 
+        data.needroot
+    }
+
     pub fn file_payload_getfilename(&self,name:&str)->String{
         if self.file_payload_exist(name){
             let data = self.payload.get(name).unwrap(); // name is a valid key
             
             if data.fullpath.len() >0 {
-                generator::regex_to_string(&data.fullpath)
+                tools_generator::regex_to_string(&data.fullpath)
             } else {
-                let filename = generator::regex_to_string(&data.cmd_path);
+                let filename = tools_generator::regex_to_string(&data.cmd_path);
                 let var_path= env::var_os(&data.cmd_var).unwrap();
                 let full_path = std::path::Path::new(&var_path).join(filename);
                 String::from(full_path.to_string_lossy())
@@ -119,7 +137,7 @@ impl FileArtefac{
             data.file_type.clone()
                         
         } else {
-            "Exe".to_string()
+            "Wag".to_string()
         }
     }
 }
