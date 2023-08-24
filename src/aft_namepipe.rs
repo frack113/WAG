@@ -27,9 +27,9 @@ pub struct NamePipeArtefact{
 
 impl NamePipeArtefact {
 
-    pub fn new(namepipe: HashMap<String, Vec<String>>) -> Self { 
+    pub fn new() -> Self { 
         Self { 
-            namepipe: namepipe,
+            namepipe: HashMap::new(),
         } 
     }
 
@@ -59,7 +59,7 @@ impl NamePipeArtefact {
         let mut index_payload = number;
         let namepipe_value_list = self.namepipe_value_list(name);
         //Don't trust humain
-        if index_payload > namepipe_value_list.len(){
+        if index_payload > namepipe_value_list.len()-1{
             index_payload = 0;
         }
         let barrow = &namepipe_value_list[index_payload];

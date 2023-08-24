@@ -1,6 +1,12 @@
-//
-// Windows Artefact Generator POC
-//
+/*
+ ____ ____ ____ ____ ____ ____ ____ _________ ____ ____ ____ ____ ____ ____ ____ ____ _________ ____ ____ ____ ____ ____ ____ ____ ____ ____ 
+||W |||i |||n |||d |||o |||w |||s |||       |||A |||r |||t |||e |||f |||a |||c |||t |||       |||G |||e |||n |||e |||r |||a |||t |||o |||r ||
+||__|||__|||__|||__|||__|||__|||__|||_______|||__|||__|||__|||__|||__|||__|||__|||__|||_______|||__|||__|||__|||__|||__|||__|||__|||__|||__||
+|/__\|/__\|/__\|/__\|/__\|/__\|/__\|/_______\|/__\|/__\|/__\|/__\|/__\|/__\|/__\|/__\|/_______\|/__\|/__\|/__\|/__\|/__\|/__\|/__\|/__\|/__\|
+
+Working date:  2023-08
+*/
+
 
 mod aft_filecreate;
 mod aft_namepipe;
@@ -8,7 +14,7 @@ mod tools_cli;
 mod tools_generator;
 
 use clap::Parser;
-use std::collections::HashMap;
+
 
 // std::process::exit need a i32 
 const EXIST_ALL_GOOD:i32= 0;
@@ -22,10 +28,57 @@ fn main() -> ! {
 
     match my_cli.command {
 
+        tools_cli::Clioptions::ADS { filename, adsname, list } =>{
+            println!("Alternate Data Stream");
+            let mut artefact = aft_filecreate::FileArtefac::new();
+            artefact.load("data/files.json");
+
+            if list == true {
+                let all_name = artefact.file_ads_list();
+                println!("Name for the ADS File data :");
+                println!("----------------");
+                for name in all_name {
+                    println!(" - {}",name);
+                }
+                println!("----------------");
+                std::process::exit(EXIST_ALL_GOOD)
+            }
+
+            if artefact.file_ads_exist(&adsname) == false{
+                println!("Did not find \"{}\" name for ads",adsname);
+                println!("You can use the help option --help");
+                std::process::exit(EXIST_CLI_ERROR)
+            }             
+
+            if filename.len() >0 {
+                println!("Get the regex : {}",filename);
+                let fullname = tools_generator::regex_to_string(&filename);
+                println!("Create the base file");
+                let blankdata = artefact.file_magicbyte_get("Exe");
+                let ret_file = std::fs::write(fullname.clone(), blankdata);
+                match ret_file{
+                    Ok(_) => println!("The file is created"),
+                    Err(_) => std::process::exit(EXIST_TEST_ERROR),
+                }
+
+                println!("Create the ADS");
+                let name_ads = artefact.file_ads_get_name(&adsname);
+                let payload = artefact.file_ads_get_data(&adsname);
+                let ret_ads = tools_generator::create_ads(fullname,name_ads,payload);
+                if ret_ads == true {
+                    std::process::exit(EXIST_ALL_GOOD)
+                }else{
+                    std::process::exit(EXIST_TEST_ERROR)
+                }
+
+            }
+            std::process::exit(EXIST_CLI_ERROR)
+        }
+
         tools_cli::Clioptions::BYOVD { name, details, path } => {
             println!("Bring Your Own Vulnerable Driver");
-            // no check you need to be admin :)
-            // no check path is valid :)
+            // Todo check be admin :)
+            // Todo check path is valid :)
             let result = tools_generator::create_driver_service(name, details, path);
             if result {
                 println!("Bye");
@@ -39,7 +92,7 @@ fn main() -> ! {
 
         tools_cli::Clioptions::FileCreateAuto { name ,mimic}=>{
             println!("Create a file on disk");
-            let mut artefact = aft_filecreate::FileArtefac::new(HashMap::new(),HashMap::new());
+            let mut artefact = aft_filecreate::FileArtefac::new();
             artefact.load("data/files.json");
 
             if mimic == true{
@@ -80,7 +133,7 @@ fn main() -> ! {
 
         tools_cli::Clioptions::FileCreateManual {filename,magicbyte,list}=>{
             println!("Create a file on disk");
-            let mut artefact = aft_filecreate::FileArtefac::new(HashMap::new(),HashMap::new());
+            let mut artefact = aft_filecreate::FileArtefac::new();
             artefact.load("data/files.json");
 
             if list == true {
@@ -116,7 +169,7 @@ fn main() -> ! {
         },
 
         tools_cli::Clioptions::NamePipeAuto { name,number,pipe , mimic} => {
-            let mut artefact= aft_namepipe::NamePipeArtefact::new(HashMap::new());
+            let mut artefact= aft_namepipe::NamePipeArtefact::new();
             artefact.load("data/namepipe.json");
 
             if mimic == true {

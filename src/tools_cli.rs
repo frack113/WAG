@@ -13,6 +13,17 @@ pub struct WagCli {
 
 #[derive(Subcommand)]
 pub enum Clioptions {
+    /// Alternate Data Stream
+    #[clap(arg_required_else_help = true)]
+    ADS {
+        #[clap(short = 'f', long, required = false,default_value ="", help="Full path filename (regex)")]
+        filename: String,
+        #[clap(short = 'a', long, required = false,default_value ="", help="ADS to use")]
+        adsname: String, 
+        #[clap(short = 'l', long, required = false, default_value_t = false,help="Get all the possible ADS name and quit")]
+        list: bool,
+    },
+
     /// Bring Your Own Vulnerable Driver
     #[clap(arg_required_else_help = true)]
     BYOVD {

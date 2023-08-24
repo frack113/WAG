@@ -140,11 +140,35 @@ pub fn create_file(fullpath:String,hex_data:Vec<u8>) -> bool{
             Err(_) => return false,
         }       
 
-        return true
+        return true;
     }
     return false;
 }
 
+pub fn create_ads(fullpath:String,adsname:String,hex_data:Vec<u8>) -> bool{
+    let file_path= std::path::Path::new(&fullpath);
+    if file_path.exists() {
+        let ads_file_name = format!("{}:{}", fullpath, adsname);
+        let ret_file = std::fs::write(ads_file_name, hex_data);
+        match ret_file{
+            Ok(_) => println!("The ADS is created"),
+            Err(_) => return false,
+        }
+
+        let sleep_duration = time::Duration::from_millis(2000);//2s
+        thread::sleep(sleep_duration);
+
+      /*   let ret_remove = std::fs::remove_file(file_path);
+        match ret_remove{
+            Ok(_) => println!("The base file is removed"),
+            Err(_) => return false,
+        }*/
+        
+        return true;
+    }
+
+    return false;
+}
 
 /*
 Some usefull fn
