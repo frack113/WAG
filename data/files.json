@@ -34,5 +34,17 @@
             "cmd_var":"SystemRoot",
             "cmd_path":"Temp\\\\debug\\.bin"
         }
+    ],
+    "ads":[
+        {
+            "name":"Simple_Internet",
+            "adsname":"Zone.Identifier",
+            "hexvalue":"5B5A6F6E655472616E736665725D0D0A5A6F6E6549643D33"
+        },
+        {
+            "name":"Sysmon",
+            "adsname":"sysmon",
+            "hexvalue":"4920616D20746865206265737420746F20686964652066726F6D207379736D6F6E"
+        }
     ]
 }

@@ -16,7 +16,7 @@ fn main() {
     res.set("LegalCopyright", "Fairplay");
     res.set("OriginalFilename", "wag.exe");
     res.set("ProductName", "WindowsArtefactGenerator");
-    res.set("ProductVersion", "1.0.0");
+    res.set("ProductVersion", "0.1.0");
 
 
     res.set_language(winapi::um::winnt::MAKELANGID(
