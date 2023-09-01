@@ -56,14 +56,6 @@ fn main() -> ! {
             if filename.len() >0 {
                 println!("Get the regex : {}",filename);
                 let fullname = tools_generator::regex_to_string(&filename);
-                println!("Create the base file");
-                let blankdata = artefact.file_magicbyte_get("Exe");
-                let ret_file = std::fs::write(fullname.clone(), blankdata);
-                match ret_file{
-                    Ok(_) => println!("The file is created"),
-                    Err(_) => std::process::exit(EXIST_TEST_ERROR),
-                }
-
                 println!("Create the ADS");
                 let name_ads = artefact.file_ads_get_name(&adsname);
                 let payload = artefact.file_ads_get_data(&adsname);

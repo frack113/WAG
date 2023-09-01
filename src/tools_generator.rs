@@ -4,17 +4,18 @@
 
 // Windows API
 use widestring::U16CString;
+use winapi::ctypes::c_void;
 use winapi::shared::minwindef::{DWORD,LPVOID};
 use winapi::um::errhandlingapi::GetLastError;
+use winapi::um::fileapi::{CreateFileA,WriteFile,CREATE_ALWAYS};
 use winapi::um::handleapi::CloseHandle;
 use winapi::um::processthreadsapi::{GetCurrentProcess,OpenProcessToken};
 use winapi::um::securitybaseapi::GetTokenInformation;
-use winapi::um::winbase::{PIPE_ACCESS_DUPLEX,PIPE_TYPE_MESSAGE};
-use winapi::um::winbase::CreateNamedPipeA;
+use winapi::um::winbase::{CreateNamedPipeA,PIPE_ACCESS_DUPLEX,PIPE_TYPE_MESSAGE};
 use winapi::um::winnt::*;
 use winapi::um::winsvc::*;
-//use winapi::um::winsvc::{ControlService, DeleteService, OpenSCManagerW, StartServiceW, CreateServiceW,SC_MANAGER_ALL_ACCESS,SERVICE_CONTROL_STOP};
-
+use winapi::um::minwinbase::*;
+use winapi::shared::ntdef::NULL;
 
 
 // Some others
@@ -146,28 +147,32 @@ pub fn create_file(fullpath:String,hex_data:Vec<u8>) -> bool{
 }
 
 pub fn create_ads(fullpath:String,adsname:String,hex_data:Vec<u8>) -> bool{
-    let file_path= std::path::Path::new(&fullpath);
-    if file_path.exists() {
-        let ads_file_name = format!("{}:{}", fullpath, adsname);
-        let ret_file = std::fs::write(ads_file_name, hex_data);
-        match ret_file{
-            Ok(_) => println!("The ADS is created"),
-            Err(_) => return false,
-        }
+    let file_path= format!("{}:{}\0", fullpath, adsname);
+    println!("ads: {}",file_path);
 
-        let sleep_duration = time::Duration::from_millis(2000);//2s
-        thread::sleep(sleep_duration);
+    let handle = unsafe { CreateFileA(
+        file_path.as_ptr() as *const i8,
+        GENERIC_WRITE,
+        FILE_SHARE_WRITE,
+        0 as *mut SECURITY_ATTRIBUTES,
+        CREATE_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL) };
 
-      /*   let ret_remove = std::fs::remove_file(file_path);
-        match ret_remove{
-            Ok(_) => println!("The base file is removed"),
-            Err(_) => return false,
-        }*/
-        
-        return true;
+    let mut written: u32 = 0;
+    let ret = unsafe { WriteFile(handle,
+        hex_data.as_ptr() as *const c_void,
+        hex_data.len() as u32,
+        &mut written,
+        0 as LPOVERLAPPED)};
+
+    unsafe { CloseHandle(handle) };
+    if ret == 1 {
+        return true
+    } else{
+        return false
     }
 
-    return false;
 }
 
 /*
