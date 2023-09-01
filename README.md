@@ -98,9 +98,9 @@ Options:
 - [ ] Doc and help
 - [ ] Bug
 - [ ] make a better code
-- [ ] Add a fn pretty_print_hashset in main
 - [ ] update create_file to return bool
 
 done :
 - [X] Regex to string
 - [X] Remove file from test
+- [X] Add a fn pretty_print_hashset in main

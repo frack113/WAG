@@ -60,6 +60,7 @@ struct JsonGlobalInfo {
 
     split ads struct into 2 Hashmap
 */
+#[derive(Clone)]
 pub struct PayloadPathInfo{
     needroot: bool,
     file_type:String,
@@ -68,7 +69,7 @@ pub struct PayloadPathInfo{
     cmd_path:String,
 }
 
-
+#[derive(Clone)]
 pub struct FileArtefac{
     magicbyte: HashMap<String, String>,
     payload: HashMap<String,PayloadPathInfo>,

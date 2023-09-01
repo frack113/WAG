@@ -14,13 +14,21 @@ mod tools_cli;
 mod tools_generator;
 
 use clap::Parser;
-
+use std::collections::HashSet;
 
 // std::process::exit need a i32 
 const EXIST_ALL_GOOD:i32= 0;
 const EXIST_CLI_ERROR:i32 = 10;
 const EXIST_TEST_ERROR:i32 = 11;
 
+fn pretty_print_hashset(title:String,data:HashSet<String>){
+    println!("{} :",title);
+    println!("----------------");
+    for name in data {
+        println!("👉 {}",name);
+    }
+    println!("----------------");
+}
 
 fn main() -> ! {
 
@@ -35,12 +43,7 @@ fn main() -> ! {
 
             if list == true {
                 let all_name = artefact.file_ads_list();
-                println!("Name for the ADS File data :");
-                println!("----------------");
-                for name in all_name {
-                    println!(" - {}",name);
-                }
-                println!("----------------");
+                pretty_print_hashset("Name for the ADS File data".to_string(),all_name);
                 std::process::exit(EXIST_ALL_GOOD)
             }
 
@@ -97,13 +100,7 @@ fn main() -> ! {
 
             if mimic == true{
                 let all_name = artefact.file_payload_list();
-                println!("Name for the mimic File creation :");
-                println!("----------------");
-                for name in all_name {
-                    println!(" - {}",name);
-                }
-                println!("----------------");
-                println!("bye");
+                pretty_print_hashset("Name for the mimic File creation".to_string(),all_name);
                 std::process::exit(EXIST_ALL_GOOD)
             }
 
@@ -113,8 +110,8 @@ fn main() -> ! {
                 std::process::exit(EXIST_CLI_ERROR)
             } 
 
-            let fullename = artefact.file_payload_getfilename(&name);
             let payload_type = artefact.file_payload_getfiletype(&name);
+            let fullename = artefact.file_payload_getfilename(&name);
             let admin = artefact.file_payload_needroot(&name);
             let payload = artefact.file_magicbyte_get(&payload_type);
 
@@ -138,12 +135,7 @@ fn main() -> ! {
 
             if list == true {
                 let all_name = artefact.file_magicbyte_list();
-                println!("Name for the mimic File creation :");
-                println!("----------------");
-                for name in all_name {
-                    println!(" - {}",name);
-                }
-                println!("----------------");
+                pretty_print_hashset("Name for the mimic File creation".to_string(),all_name);
                 std::process::exit(EXIST_ALL_GOOD)
             }
 
@@ -174,13 +166,7 @@ fn main() -> ! {
 
             if mimic == true {
                 let all_name = artefact.namepipe_list();
-                println!("Name for the mimic Name Pipe :");
-                println!("----------------");
-                for mimic_name in all_name{
-                    println!(" - {}", mimic_name);
-                }
-                println!("----------------");
-                println!("bye");
+                pretty_print_hashset("Name for the mimic Name Pipe".to_string(),all_name);
                 std::process::exit(EXIST_ALL_GOOD)
             }
 

@@ -21,6 +21,7 @@ struct JsonGlobalInfo {
 
 //Structure form the name pipe
 // Very simple struct 
+#[derive(Clone)]
 pub struct NamePipeArtefact{
     namepipe: HashMap<String,Vec<String>>,
 }
