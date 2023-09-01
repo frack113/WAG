@@ -37,9 +37,29 @@
     ],
     "ads":[
         {
-            "name":"Simple_Internet",
+            "name":"ZoneTransfer_0",
             "adsname":"Zone.Identifier",
-            "hexvalue":"5B5A6F6E655472616E736665725D0D0A5A6F6E6549643D33"
+            "hexvalue":"5b5a6f6e655472616e736665725d0d0a5a6f6e6549643d300d0a526566657272657255726c3d633a5c77696e646f77735c7761672e7a69700d0a"
+        },
+        {
+            "name":"ZoneTransfer_1",
+            "adsname":"Zone.Identifier",
+            "hexvalue":"5b5a6f6e655472616e736665725d0d0a5a6f6e6549643d310d0a526566657272657255726c3d2f2f7376725f41442f7761672e7a69700d0a"
+        },
+        {
+            "name":"ZoneTransfer_2",
+            "adsname":"Zone.Identifier",
+            "hexvalue":"5b5a6f6e655472616e736665725d0d0a5a6f6e6549643d320d0a526566657272657255726c3d687474703a2f2f6d79736974652e6f72672f7761672e7a69700d0a"
+        },
+        {
+            "name":"ZoneTransfer_3",
+            "adsname":"Zone.Identifier",
+            "hexvalue":"5b5a6f6e655472616e736665725d0d0a5a6f6e6549643d330d0a526566657272657255726c3d68747470733a2f2f736f6d65736974652e636f6d2f7761672e7a69700d0a"
+        },
+        {
+            "name":"ZoneTransfer_4",
+            "adsname":"Zone.Identifier",
+            "hexvalue":"5b5a6f6e655472616e736665725d0d0a5a6f6e6549643d340d0a526566657272657255726c3d687474703a2f2f6d616c776172652e6261642f7761672e7a69700d0a"
         },
         {
             "name":"Sysmon",
