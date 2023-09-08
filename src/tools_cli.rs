@@ -1,3 +1,14 @@
+/*
+ the cli option
+
+ Global
+ --help -h
+ --module -m
+ --get -g
+ --detail -d
+
+*/
+
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
@@ -25,118 +36,110 @@ pub enum Clioptions {
         )]
         filename: String,
         #[clap(
-            short = 'a',
+            short = 'm',
             long,
             required = false,
             default_value = "",
             help = "ADS to use"
         )]
-        adsname: String,
+        module: String,
         #[clap(
-            short = 'l',
+            short = 'g',
             long,
             required = false,
             default_value_t = false,
             help = "Get all the possible ADS name and quit"
         )]
-        list: bool,
+        get: bool,
     },
 
     /// Bring Your Own Vulnerable Driver
     #[clap(arg_required_else_help = true)]
     BYOVD {
         #[clap(short = 'n', long, help = "Internal Name of the service")]
-        name: String,
+        internal: String,
         #[clap(short = 'd', long, help = "Displayed Name of the service")]
-        details: String,
+        display: String,
         #[clap(short = 'p', long, help = "Full path to the driver eg: c:\\temp...")]
         path: String,
     },
 
     /// Create dummy file Artefact
     #[clap(arg_required_else_help = true)]
-    FileCreateAuto {
+    FileCreate {
         #[clap(
-            short = 'n',
+            short = 'm',
             long,
             required = false,
             default_value = "",
             help = "Name of the malware to mimic"
         )]
-        name: String,
+        module: String,
         #[clap(
-            short = 'm',
+            short = 'g',
             long,
             required = false,
             default_value_t = false,
             help = "Get all the possible mimic name and quit"
         )]
-        mimic: bool,
-    },
-    /// Create dummy file Artefact manualy
-    #[clap(arg_required_else_help = true)]
-    FileCreateManual {
+        get: bool,
         #[clap(
             short = 'f',
             long,
             required = false,
             default_value = "",
-            help = "Full path filename (regex)"
+            help = "Full path filename (regex) with module manual"
         )]
         filename: String,
         #[clap(
-            short = 'm',
+            short = 'b',
             long,
             required = false,
             default_value = "",
-            help = "MagicBytes name to use"
+            help = "MagicBytes name to use with module manual "
         )]
         magicbyte: String,
         #[clap(
-            short = 'l',
+            short = 'd',
             long,
             required = false,
             default_value_t = false,
-            help = "Get all the possible MagicBytes name and quit"
+            help = "Get all the possible MagicBytes name with module manual"
         )]
-        list: bool,
+        details: bool,
     },
 
     /// Generates Name Pipe Artefact
     #[clap(arg_required_else_help = true)]
-    NamePipeAuto {
+    NamePipe {
         #[clap(
-            short = 'n',
+            short = 'm',
             long,
             required = false,
             default_value = "",
             help = "Name of the malware to mimic"
         )]
-        name: String,
-        #[clap(short = 't', long, required = false, default_value_t = 0)]
+        module: String,
+        #[clap(short = 'n', long, required = false, default_value_t = 0)]
         number: usize,
         #[clap(
-            short = 'p',
+            short = 'g',
             long,
             required = false,
             default_value_t = false,
             help = "Get all the possible pipename for a mimic and quit"
         )]
-        pipe: bool,
+        get: bool,
         #[clap(
-            short = 'm',
+            short = 'd',
             long,
             required = false,
             default_value_t = false,
-            help = "Get all the possible mimic name and quit"
+            help = "Get all the possible mimic name"
         )]
-        mimic: bool,
-    },
-    /// Generates Name Pipe Artefact manualy
-    #[clap(arg_required_else_help = true)]
-    NamePipeManual {
+        details: bool,
         #[clap(
-            short = 'p',
+            short = 'N',
             long,
             required = true,
             default_value = "",
