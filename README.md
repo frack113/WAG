@@ -1,4 +1,27 @@
-# Windows_Artefact_Generator
+__          ___           _                   
+\ \        / (_)         | |                  
+ \ \  /\  / / _ _ __   __| | _____      _____ 
+  \ \/  \/ / | | '_ \ / _` |/ _ \ \ /\ / / __|
+   \  /\  /  | | | | | (_| | (_) \ V  V /\__ \
+    \/  \/   |_|_| |_|\__,_|\___/ \_/\_/ |___/
+                                              
+                                              
+                   _        __           _   
+        /\        | |      / _|         | |  
+       /  \   _ __| |_ ___| |_ __ _  ___| |_ 
+      / /\ \ | '__| __/ _ \  _/ _` |/ __| __|
+     / ____ \| |  | ||  __/ || (_| | (__| |_ 
+    /_/    \_\_|   \__\___|_| \__,_|\___|\__|
+                                         
+                                         
+          _____                           _             
+         / ____|                         | |            
+        | |  __  ___ _ __   ___ _ __ __ _| |_ ___  _ __ 
+        | | |_ |/ _ \ '_ \ / _ \ '__/ _` | __/ _ \| '__|
+        | |__| |  __/ | | |  __/ | | (_| | || (_) | |   
+         \_____|\___|_| |_|\___|_|  \__,_|\__\___/|_|   
+
+# Purpose
 Generating Windows malware Artefacts for detection testing
 
 Thanks to https://github.com/trickster0/OffensiveRust for the help.
@@ -11,6 +34,11 @@ but why ?
 
 It is not designed to generate IOC like ip, hash ...
 
+# Artefact
+
+See [Artefacts file](Artefacts.md)
+
+
 # How Contribute
 
 - repport bug
@@ -18,89 +46,72 @@ It is not designed to generate IOC like ip, hash ...
 - fix some code
 - add new artefact
 
-# Artefact
+# General Use
 
-- name pipe
-- load a vunerable driver
-- create a file 
-- Ntfs Alternate Data Stream creation
-- registry key ?
+## Command Line
+```bash
+Usage: wag.exe <COMMAND>
+```
+`<COMMAND>` is the artefact type to generate
+
+the same flags are used as much as possible to maintain consistency:
+
+- --help      : display the help
+- --module    : name of the "ttp" mimic 
+- --get       : list all the module
+- --detail    : list all the selection for a module (only some artefact)
+
  
-# Data Structure
+## Data Structure
 The artefact information are stored in a json file
 Warnning,as we have regex in json need 2 escape level for `\`
 
-## namepipe.json
+### namepipe.json
 
- ```json
- {
-    "name": "Name of the malware family/test",
-    "namepipe": [
-        "regex 1",
-        "regex x"
+```json
+{
+  "name": "Name of the malware family/test",
+  "namepipe": [
+      "regex 1",
+      "regex x"
+  ]
+}
+```
+
+### file.json
+```json
+{
+    "magicbytes": [
+        {
+            "name":"Name to use",
+            "magicbyte":"HEX to be written"
+        }
+    ],
+    "payloads":[
+        {
+            "name":"Name to use",
+            "needroot": boolean ,
+            "file_type":"Name of the magicbytes",
+            "fullpath":"regex path",
+            "cmd_var":"System variable",
+            "cmd_path":"regex path"
+        }
+    ],
+    "ads":[
+        {
+            "name":"regex path",
+            "adsname":"ADS Name to use",
+            "hexvalue":"HEX to be written"
+        }
     ]
-  }
-  ```
-
-
- # Commandline
-
- The current commandline is for the POC can and will change.
-
-```bash
-WAG is a CLI Application to genereate Windows Artefacts
-
-Usage: wag.exe <COMMAND>
-
-Commands:
-  name-pipe  Generates Name Pipe Artefact
-  byovd      Bring Your Own Vulnerable Driver
-  help       Print this message or the help of the given subcommand(s)
-
-Options:
-  -h, --help     Print help
-  -V, --version  Print version
+}
 ```
-
-```bash
-Generates Name Pipe Artefact
-
-Usage: wag.exe name-pipe [OPTIONS] --name <NAME>
-
-Options:
-  -n, --name <NAME>      Name of the malware to mimic [default: help]
-  -t, --number <NUMBER>  [default: 0]
-  -p, --pipe             Get all the possible pipename for a mimic and quit
-  -m, --mimic            Get all the possible mimic name and quit
-  -h, --help             Print help
-```
-
-```bash
-Bring Your Own Vulnerable Driver
-
-Usage: wag.exe byovd --name <NAME> --details <DETAILS> --path <PATH>
-
-Options:
-  -n, --name <NAME>        Internal Name of the service
-  -d, --details <DETAILS>  Displayed Name of the service
-  -p, --path <PATH>        Full path to the driver eg: c:\temp...
-  -h, --help               Print help
-```
-
-
 
 # TODO LIST
 
-- [ ] Make better cli 
-- [ ] Add reg artefact
 - [ ] Add process artefact
 - [ ] Add dll artefact ? 
 - [ ] Doc and help
 - [ ] Bug
 - [ ] make a better code
 - [ ] update create_file to return bool
-
-done :
-- [X] Regex to string
-- [X] Remove file from test
-- [X] Add a fn pretty_print_hashset in main
