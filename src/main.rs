@@ -152,7 +152,7 @@ fn run_createfile(
         payload = artefact.file_magicbyte_get(&payload_type);
 
         if admin && !tools_generator::process_is_admin() {
-            println!("Need to have Administrator right to  the file");
+            println!("Need to have Administrator right to create the file");
             return EXIST_TEST_ERROR;
         }
     }
