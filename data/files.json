@@ -15,7 +15,15 @@
         {
             "name":"Iso",
             "magicbyte":"4344303031"
-        }
+        },
+        {
+            "name":"Txt",
+            "magicbyte":"412073696d706c6520746578742066696c65"
+        },
+        {
+            "name":"Ps1",
+            "magicbyte":"77726974652d686f73742022574147207761732048657265220a"
+        }        
     ],
     "payloads":[
         {
@@ -33,6 +41,70 @@
             "fullpath":"",
             "cmd_var":"SystemRoot",
             "cmd_path":"Temp\\\\debug\\.bin"
+        },
+        {
+            "name":"SmallSieve_txt",
+            "needroot": false,
+            "file_type":"Txt",
+            "fullpath":"",
+            "cmd_var":"LocalAppData",
+            "cmd_path":"MicrosoftWindowsOutlookDataPlus\\.txt"
+        },
+        {
+            "name":"SmallSieve_exe",
+            "needroot": false,
+            "file_type":"Exe",
+            "fullpath":"",
+            "cmd_var":"AppData",
+            "cmd_path":"OutlookMicrosift\\\\index\\.exe"
+        },
+        {
+            "name":"SNAKE_jpsetup",
+            "needroot": false,
+            "file_type":"Exe",
+            "fullpath":"",
+            "cmd_var":"TEMP",
+            "cmd_path":"jpsetup\\.exe"
+        },
+        {
+            "name":"SNAKE_jpinst",
+            "needroot": false,
+            "file_type":"Exe",
+            "fullpath":"",
+            "cmd_var":"TEMP",
+            "cmd_path":"jpinst\\.exe"
+        },
+        {
+            "name":"SNAKE_Comadmin",
+            "needroot": true,
+            "file_type":"Exe",
+            "fullpath":"C:\\\\Windows\\\\System32\\\\Com\\\\Comadmin\\.dat",
+            "cmd_var":"",
+            "cmd_path":""
+        },
+        {
+            "name":"COLDSTEEL_exe",
+            "needroot": false,
+            "file_type":"Exe",
+            "fullpath":"C:\\\\users\\\\public\\\\Documents\\\\dllhost\\.exe",
+            "cmd_var":"",
+            "cmd_path":""
+        },
+        {
+            "name":"COLDSTEEL_dll",
+            "needroot": false,
+            "file_type":"Exe",
+            "fullpath":"",
+            "cmd_var":"APPDATA",
+            "cmd_path":"newdev\\.dll"
+        },
+        {
+            "name":"FIN7_tmp_ps1",
+            "needroot": false,
+            "file_type":"Ps1",
+            "fullpath":"",
+            "cmd_var":"SystemRoot",
+            "cmd_path":"temp\\\\[0-9a-f]{12}\\.ps1"
         }
     ],
     "ads":[
