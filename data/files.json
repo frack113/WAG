@@ -99,7 +99,7 @@
             "cmd_path":"newdev\\.dll"
         },
         {
-            "name":"FIN7_tmp_ps1",
+            "name":"temp_ps1_12",
             "needroot": false,
             "file_type":"Ps1",
             "fullpath":"",
