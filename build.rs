@@ -1,6 +1,5 @@
 // build.rs
 
-use winapi;
 use winres;
 
 fn main() {
@@ -22,10 +21,10 @@ fn main() {
         res.set("ProductVersion", "0.1.0");
         res.set("Comments", "Catch me if you can😁");
 
-        res.set_language(winapi::um::winnt::MAKELANGID(
-            winapi::um::winnt::LANG_NEUTRAL,
-            winapi::um::winnt::SUBLANG_NEUTRAL,
-        ));
+        const LANG_NEUTRAL: u16 = 0x00;
+        const SUBLANG_NEUTRAL: u16 = 0x00;
+
+        res.set_language((LANG_NEUTRAL << 10) | SUBLANG_NEUTRAL);
 
         res.set_icon("wag.ico");
 
