@@ -4,18 +4,13 @@
 
 // Windows API
 use widestring::U16CString;
-use winapi::ctypes::c_void;
-use winapi::shared::minwindef::{DWORD, LPVOID};
-use winapi::shared::ntdef::NULL;
-use winapi::um::errhandlingapi::GetLastError;
-use winapi::um::fileapi::{CreateFileA, WriteFile, CREATE_ALWAYS};
-use winapi::um::handleapi::CloseHandle;
-use winapi::um::minwinbase::*;
-use winapi::um::processthreadsapi::{GetCurrentProcess, OpenProcessToken};
-use winapi::um::securitybaseapi::GetTokenInformation;
-use winapi::um::winbase::{CreateNamedPipeA, PIPE_ACCESS_DUPLEX, PIPE_TYPE_MESSAGE};
-use winapi::um::winnt::*;
-use winapi::um::winsvc::*;
+use windows::core::imp::HANDLE;
+use windows::core::imp::SECURITY_ATTRIBUTES;
+use windows::core::Result;
+use windows::Win32::Foundation::CloseHandle;
+use windows::Win32::Storage::FileSystem::PIPE_ACCESS_DUPLEX;
+use windows::Win32::System::Pipes::CreateNamedPipeA;
+use windows::Win32::System::Pipes::PIPE_TYPE_MESSAGE;
 
 // Some others
 use std::ptr::null_mut;
@@ -26,8 +21,8 @@ use regex_generate::{Generator, DEFAULT_MAX_REPEAT};
 
 pub fn create_name_pipe(name: &String, wait: u64) {
     let full_malware_pipe = format!("\\\\.\\pipe\\{}\0", name);
-    let pipe_name: LPCSTR = full_malware_pipe.as_ptr() as *const i8;
-    let server_pipe: HANDLE = unsafe {
+    let pipe_name: *const u8 = full_malware_pipe.as_ptr() as *const u8;
+    let server_pipe: Result<HANDLE> = unsafe {
         CreateNamedPipeA(
             pipe_name,
             PIPE_ACCESS_DUPLEX,
