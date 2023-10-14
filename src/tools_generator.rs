@@ -5,11 +5,11 @@
 // Windows API
 use widestring::U16CString;
 use windows::core::imp::SECURITY_ATTRIBUTES;
-use windows::core::Result;
-use windows::core::PCSTR;
+use windows::core::{Result, PCSTR, PCWSTR};
 use windows::Win32::Foundation::{CloseHandle, HANDLE};
 use windows::Win32::Storage::FileSystem::PIPE_ACCESS_DUPLEX;
 use windows::Win32::System::Pipes::{CreateNamedPipeA, PIPE_TYPE_MESSAGE};
+use windows::Win32::System::Services::{OpenSCManagerW, SC_MANAGER_ALL_ACCESS};
 
 // Some others
 use std::ptr::null_mut;
@@ -38,18 +38,11 @@ pub fn create_name_pipe(name: &String, wait: u64) {
     let _res_server_pipe = unsafe { CloseHandle(server_pipe.unwrap()) };
 }
 
-fn open_sc_manager(desired_access: DWORD) -> Result<*mut SC_HANDLE__, DWORD> {
-    let sc_manager_handle = unsafe { OpenSCManagerW(null_mut(), null_mut(), desired_access) };
-    if sc_manager_handle.is_null() {
-        Err(unsafe { GetLastError() })
-    } else {
-        Ok(sc_manager_handle)
-    }
-}
-
 pub fn create_driver_service(name: String, details: String, path: String) -> bool {
     println!("Open the service manager");
-    let scmanager = open_sc_manager(SC_MANAGER_ALL_ACCESS).expect("Sc Manager open failure");
+    let scmanager =
+        unsafe { OpenSCManagerW(PCWSTR::null(), PCWSTR::null(), SC_MANAGER_ALL_ACCESS) }
+            .expect("Sc Manager open failure");
 
     let service_name = U16CString::from_str(name).unwrap();
     let service_display = U16CString::from_str(details).unwrap();
