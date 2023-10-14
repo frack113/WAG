@@ -21,10 +21,10 @@ rpath = false
 
 [build-dependencies]
 winres = "0"
-winapi = {version = "0",  features = ["winnt"]}
+windows = "0.51"
 
 [dependencies]
-winapi = {version = "0", features = ["winbase","winnt","winbase","handleapi","winsvc","errhandlingapi","securitybaseapi"]}
+windows = "0.51"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 clap = { version = "4", features = ["derive"] }
