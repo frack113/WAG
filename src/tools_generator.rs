@@ -4,13 +4,12 @@
 
 // Windows API
 use widestring::U16CString;
-use windows::core::imp::HANDLE;
 use windows::core::imp::SECURITY_ATTRIBUTES;
 use windows::core::Result;
-use windows::Win32::Foundation::CloseHandle;
+use windows::core::PCSTR;
+use windows::Win32::Foundation::{CloseHandle, HANDLE};
 use windows::Win32::Storage::FileSystem::PIPE_ACCESS_DUPLEX;
-use windows::Win32::System::Pipes::CreateNamedPipeA;
-use windows::Win32::System::Pipes::PIPE_TYPE_MESSAGE;
+use windows::Win32::System::Pipes::{CreateNamedPipeA, PIPE_TYPE_MESSAGE};
 
 // Some others
 use std::ptr::null_mut;
@@ -21,7 +20,7 @@ use regex_generate::{Generator, DEFAULT_MAX_REPEAT};
 
 pub fn create_name_pipe(name: &String, wait: u64) {
     let full_malware_pipe = format!("\\\\.\\pipe\\{}\0", name);
-    let pipe_name: *const u8 = full_malware_pipe.as_ptr() as *const u8;
+    let pipe_name: PCSTR = PCSTR::from_raw(full_malware_pipe.as_ptr());
     let server_pipe: Result<HANDLE> = unsafe {
         CreateNamedPipeA(
             pipe_name,
@@ -31,12 +30,12 @@ pub fn create_name_pipe(name: &String, wait: u64) {
             2048,
             2048,
             0,
-            null_mut(),
+            None,
         )
     };
     let sleep_duration = time::Duration::from_millis(wait);
     thread::sleep(sleep_duration);
-    let _res_server_pipe = unsafe { CloseHandle(server_pipe) };
+    let _res_server_pipe = unsafe { CloseHandle(server_pipe.unwrap()) };
 }
 
 fn open_sc_manager(desired_access: DWORD) -> Result<*mut SC_HANDLE__, DWORD> {
