@@ -15,7 +15,7 @@ fn main() {
             "Generate Some Windows Artefact to 👊 your EDR",
         );
         res.set("LegalCopyright", "Frack113");
-        res.set("LegalTrademark","Frack113");
+        res.set("LegalTrademark", "Frack113");
         res.set("OriginalFilename", "wag.exe");
         res.set("ProductName", "WindowsArtefactGenerator");
         res.set("ProductVersion", "0.1.0");
