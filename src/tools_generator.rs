@@ -3,13 +3,17 @@
 //
 
 // Windows API
-use widestring::U16CString;
 use windows::core::imp::SECURITY_ATTRIBUTES;
 use windows::core::{Result, PCSTR, PCWSTR};
-use windows::Win32::Foundation::{CloseHandle, HANDLE};
+use windows::Win32::Foundation::{CloseHandle, GetLastError, HANDLE};
+use windows::Win32::Security::SC_HANDLE;
 use windows::Win32::Storage::FileSystem::PIPE_ACCESS_DUPLEX;
 use windows::Win32::System::Pipes::{CreateNamedPipeA, PIPE_TYPE_MESSAGE};
-use windows::Win32::System::Services::{OpenSCManagerW, SC_MANAGER_ALL_ACCESS};
+use windows::Win32::System::Services::{
+    ControlService, CreateServiceW, DeleteService, OpenSCManagerW, StartServiceW,
+    ENUM_SERVICE_TYPE, SC_MANAGER_ALL_ACCESS, SERVICE_CONTROL_STOP, SERVICE_ERROR,
+    SERVICE_START_TYPE,
+};
 
 // Some others
 use std::ptr::null_mut;
@@ -44,58 +48,67 @@ pub fn create_driver_service(name: String, details: String, path: String) -> boo
         unsafe { OpenSCManagerW(PCWSTR::null(), PCWSTR::null(), SC_MANAGER_ALL_ACCESS) }
             .expect("Sc Manager open failure");
 
-    let service_name = U16CString::from_str(name).unwrap();
-    let service_display = U16CString::from_str(details).unwrap();
-    let service_path = U16CString::from_str(path).unwrap();
+    let mut service_name: Vec<u16> = name.encode_utf16().collect();
+    service_name.push(0);
+    let mut service_display: Vec<u16> = details.encode_utf16().collect();
+    service_display.push(0);
+    let mut service_path: Vec<u16> = path.encode_utf16().collect();
+    service_path.push(0);
 
     println!("Create the service manager");
-    let service_handle = unsafe {
+
+    let service_handle: SC_HANDLE = match unsafe {
         CreateServiceW(
             scmanager,
-            service_name.as_ptr(),
-            service_display.as_ptr(),
+            PCWSTR::from_raw(service_name.as_ptr()),
+            PCWSTR::from_raw(service_display.as_ptr()),
             0xF003F,
-            1,
-            2,
-            0,
-            service_path.as_ptr(),
-            std::ptr::null(),
-            std::ptr::null_mut(),
-            std::ptr::null(),
-            std::ptr::null(),
-            std::ptr::null(),
+            ENUM_SERVICE_TYPE(1),
+            SERVICE_START_TYPE(2),
+            SERVICE_ERROR(0),
+            PCWSTR::from_raw(service_path.as_ptr()),
+            PCWSTR::null(),
+            None,
+            PCWSTR::null(),
+            PCWSTR::null(),
+            PCWSTR::null(),
         )
+    } {
+        Ok(value) => value,
+        Err(value) => {
+            println!("Service creation failure");
+            return false;
+        }
     };
 
-    if service_handle.is_null() {
-        println!("Service creation failure");
-        return false;
-    }
-
     println!("Start Service ");
-    let result = unsafe { StartServiceW(service_handle, 0, null_mut()) };
-    if result == 0 {
-        let error_code = unsafe { GetLastError() };
-        println!("Service Start failure with code : {:#06x}", error_code);
-    } else {
-        println!("Wait a little");
-        let sleep_duration = time::Duration::from_millis(2000);
-        thread::sleep(sleep_duration);
-        let mut service_status = unsafe { std::mem::zeroed() };
-        println!("Stop Service");
-        let _result_stop =
-            unsafe { ControlService(service_handle, SERVICE_CONTROL_STOP, &mut service_status) };
-    }
 
-    let result_delete = unsafe { DeleteService(service_handle) };
+    match unsafe { StartServiceW(service_handle, None) } {
+        Ok(value) => {
+            println!("Wait a little");
+            let sleep_duration = time::Duration::from_millis(2000);
+            thread::sleep(sleep_duration);
+            let mut service_status = unsafe { std::mem::zeroed() };
+            println!("Stop Service");
+            let _result_stop = unsafe {
+                ControlService(service_handle, SERVICE_CONTROL_STOP, &mut service_status)
+            };
+        }
+        Err(value) => {
+            // let error_code = unsafe { GetLastError() };
+            println!("Service Start failure with code : {:#06x}", value.code().0);
+        }
+    };
 
-    if result_delete == 0 {
-        let error_code = unsafe { GetLastError() };
-        println!("Service remove failure with code : {:#06x}", error_code);
-        return false;
-    } else {
-        println!("Service remove succeed");
-        return true;
+    match unsafe { DeleteService(service_handle) } {
+        Ok(value) => {
+            println!("Service remove succeed");
+            return true;
+        }
+        Err(value) => {
+            println!("Service remove failure with code : {:#06x}", value.code().0);
+            return false;
+        }
     }
 }
 
