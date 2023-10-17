@@ -5,7 +5,7 @@
 // Windows API
 use windows::core::imp::SECURITY_ATTRIBUTES;
 use windows::core::{Result, PCSTR, PCWSTR};
-use windows::Win32::Foundation::{CloseHandle, GetLastError, HANDLE};
+use windows::Win32::Foundation::{CloseHandle, HANDLE};
 use windows::Win32::Security::SC_HANDLE;
 use windows::Win32::Storage::FileSystem::PIPE_ACCESS_DUPLEX;
 use windows::Win32::System::Pipes::{CreateNamedPipeA, PIPE_TYPE_MESSAGE};
@@ -16,7 +16,6 @@ use windows::Win32::System::Services::{
 };
 
 // Some others
-use std::ptr::null_mut;
 use std::{mem, thread, time};
 
 // For regex to string
