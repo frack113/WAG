@@ -77,7 +77,7 @@ pub fn create_driver_service(name: String, details: String, path: String) -> boo
         )
     } {
         Ok(value) => value,
-        Err(value) => {
+        Err(_) => {
             println!("Service creation failure");
             return false;
         }
@@ -86,7 +86,7 @@ pub fn create_driver_service(name: String, details: String, path: String) -> boo
     println!("Start Service ");
 
     match unsafe { StartServiceW(service_handle, None) } {
-        Ok(value) => {
+        Ok(_) => {
             println!("Wait a little");
             let sleep_duration = time::Duration::from_millis(2000);
             thread::sleep(sleep_duration);
@@ -103,7 +103,7 @@ pub fn create_driver_service(name: String, details: String, path: String) -> boo
     };
 
     match unsafe { DeleteService(service_handle) } {
-        Ok(value) => {
+        Ok(_) => {
             println!("Service remove succeed");
             return true;
         }
@@ -133,7 +133,7 @@ pub fn create_file(fullpath: String, hex_data: Vec<u8>) -> bool {
     println!("Try to create : {}", fullpath);
     let file_path = std::path::Path::new(&fullpath);
     if !file_path.exists() {
-        let folder = file_path.clone().parent().unwrap();
+        let folder = file_path.parent().unwrap();
 
         let ret_folder = std::fs::create_dir_all(folder);
         match ret_folder {
