@@ -3,11 +3,13 @@
 //
 
 // Windows API
-use windows::core::imp::SECURITY_ATTRIBUTES;
 use windows::core::{Result, PCSTR, PCWSTR};
-use windows::Win32::Foundation::{CloseHandle, HANDLE};
+use windows::Win32::Foundation::{CloseHandle, GENERIC_WRITE, HANDLE};
 use windows::Win32::Security::SC_HANDLE;
-use windows::Win32::Storage::FileSystem::PIPE_ACCESS_DUPLEX;
+use windows::Win32::Storage::FileSystem::{
+    CreateFileA, WriteFile, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_WRITE,
+    PIPE_ACCESS_DUPLEX,
+};
 use windows::Win32::System::Pipes::{CreateNamedPipeA, PIPE_TYPE_MESSAGE};
 use windows::Win32::System::Services::{
     ControlService, CreateServiceW, DeleteService, OpenSCManagerW, StartServiceW,
@@ -17,7 +19,7 @@ use windows::Win32::System::Services::{
 use windows::Win32::UI::Shell::IsUserAnAdmin;
 
 // Some others
-use std::{mem, thread, time};
+use std::{thread, time};
 
 // For regex to string
 use regex_generate::{Generator, DEFAULT_MAX_REPEAT};
@@ -165,32 +167,35 @@ pub fn create_ads(fullpath: String, adsname: String, hex_data: Vec<u8>) -> bool 
 
     let handle = unsafe {
         CreateFileA(
-            file_path.as_ptr() as *const i8,
-            GENERIC_WRITE,
+            PCSTR::from_raw(file_path.as_ptr()),
+            GENERIC_WRITE.0,
             FILE_SHARE_WRITE,
-            0 as *mut SECURITY_ATTRIBUTES,
+            None,
             CREATE_ALWAYS,
             FILE_ATTRIBUTE_NORMAL,
-            NULL,
+            HANDLE::default(),
         )
-    };
+    }
+    .unwrap();
 
-    let mut written: u32 = 0;
-    let ret = unsafe {
+    let result = unsafe {
         WriteFile(
             handle,
-            hex_data.as_ptr() as *const c_void,
-            hex_data.len() as u32,
-            &mut written,
-            0 as LPOVERLAPPED,
+            Some(hex_data.as_slice()),
+            Some(hex_data.len() as *mut u32),
+            None,
         )
     };
 
-    unsafe { CloseHandle(handle) };
-    if ret == 1 {
-        return true;
-    } else {
-        return false;
+    let _ = unsafe { CloseHandle(handle) };
+
+    match result {
+        Ok(_) => {
+            return true;
+        }
+        Err(_) => {
+            return false;
+        }
     }
 }
 
