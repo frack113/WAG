@@ -14,6 +14,7 @@ use windows::Win32::System::Services::{
     ENUM_SERVICE_TYPE, SC_MANAGER_ALL_ACCESS, SERVICE_CONTROL_STOP, SERVICE_ERROR,
     SERVICE_START_TYPE,
 };
+use windows::Win32::UI::Shell::IsUserAnAdmin;
 
 // Some others
 use std::{mem, thread, time};
@@ -206,27 +207,5 @@ pub fn regex_to_string(name: &String) -> String {
 }
 
 pub fn process_is_admin() -> bool {
-    // from  https://github.com/yandexx/is_elevated
-    unsafe {
-        let mut current_token_ptr: HANDLE = mem::zeroed();
-        let mut token_elevation: TOKEN_ELEVATION = mem::zeroed();
-        let token_elevation_type_ptr: *mut TOKEN_ELEVATION = &mut token_elevation;
-        let mut size: DWORD = 0;
-
-        let result = OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &mut current_token_ptr);
-
-        if result != 0 {
-            let result = GetTokenInformation(
-                current_token_ptr,
-                TokenElevation,
-                token_elevation_type_ptr as LPVOID,
-                mem::size_of::<winapi::um::winnt::TOKEN_ELEVATION_TYPE>() as u32,
-                &mut size,
-            );
-            if result != 0 {
-                return token_elevation.TokenIsElevated != 0;
-            }
-        }
-    }
-    false
+    return unsafe { IsUserAnAdmin().into() };
 }
