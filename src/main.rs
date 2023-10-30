@@ -87,7 +87,7 @@ fn run_byovd(internal: String, display: String, path: String) -> i32 {
 
     // Todo check path is valid or not :)
 
-    let result = tools_generator::create_driver_service(internal, display, path);
+    let result: bool = tools_generator::create_driver_service(internal, display, path);
     if result {
         println!("All good ");
         return EXIST_ALL_GOOD;
@@ -157,7 +157,7 @@ fn run_createfile(
         }
     }
 
-    let ret = tools_generator::create_file(fullname, payload);
+    let ret: bool = tools_generator::create_file(fullname, payload);
 
     if ret == true {
         return EXIST_ALL_GOOD;
@@ -245,7 +245,7 @@ fn main() -> ! {
             magicbyte,
             details,
         } => {
-            let ret = run_createfile(module, get, filename, magicbyte, details);
+            let ret: i32 = run_createfile(module, get, filename, magicbyte, details);
             std::process::exit(ret);
         }
 
