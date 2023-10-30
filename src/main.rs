@@ -45,11 +45,11 @@ fn banner() {
 /* Version 20230908 */
 fn run_ads(module: String, get: bool, filename: String) -> i32 {
     println!("Alternate Data Stream");
-    let mut artefact = aft_filecreate::FileArtefac::new();
+    let mut artefact: aft_filecreate::FileArtefac = aft_filecreate::FileArtefac::new();
     artefact.load("data/files.json");
 
     if get == true {
-        let all_name = artefact.file_ads_list();
+        let all_name: HashSet<String> = artefact.file_ads_list();
         pretty_print_hashset("Name for the ADS File data".to_string(), all_name);
         return EXIST_ALL_GOOD;
     }
@@ -62,11 +62,11 @@ fn run_ads(module: String, get: bool, filename: String) -> i32 {
 
     if filename.len() > 0 {
         println!("Get the regex : {}", filename);
-        let fullname = tools_generator::regex_to_string(&filename);
+        let fullname: String = tools_generator::regex_to_string(&filename);
         println!("Create the ADS");
-        let name_ads = artefact.file_ads_get_name(&module);
-        let payload = artefact.file_ads_get_data(&module);
-        let ret_ads = tools_generator::create_ads(fullname, name_ads, payload);
+        let name_ads: String = artefact.file_ads_get_name(&module);
+        let payload: Vec<u8> = artefact.file_ads_get_data(&module);
+        let ret_ads: bool = tools_generator::create_ads(fullname, name_ads, payload);
         if ret_ads == true {
             return EXIST_ALL_GOOD;
         } else {
@@ -106,11 +106,11 @@ fn run_createfile(
     details: bool,
 ) -> i32 {
     println!("Create a file on disk");
-    let mut artefact = aft_filecreate::FileArtefac::new();
+    let mut artefact: aft_filecreate::FileArtefac = aft_filecreate::FileArtefac::new();
     artefact.load("data/files.json");
 
     if get == true {
-        let all_name = artefact.file_payload_list();
+        let all_name: HashSet<String> = artefact.file_payload_list();
         pretty_print_hashset("Name for the mimic File creation".to_string(), all_name);
         return EXIST_ALL_GOOD;
     }
@@ -120,7 +120,7 @@ fn run_createfile(
 
     if module == "manual" {
         if details == true {
-            let all_name = artefact.file_magicbyte_list();
+            let all_name: HashSet<String> = artefact.file_magicbyte_list();
             pretty_print_hashset("Name for the MagicByte File creation".to_string(), all_name);
             return EXIST_ALL_GOOD;
         }
@@ -145,8 +145,8 @@ fn run_createfile(
             return EXIST_CLI_ERROR;
         }
 
-        let payload_type = artefact.file_payload_getfiletype(&module);
-        let admin = artefact.file_payload_needroot(&module);
+        let payload_type: String = artefact.file_payload_getfiletype(&module);
+        let admin: bool = artefact.file_payload_needroot(&module);
 
         fullname = artefact.file_payload_getfilename(&module);
         payload = artefact.file_magicbyte_get(&payload_type);
@@ -175,7 +175,7 @@ fn run_pipecreate(module: String, number: usize, get: bool, details: bool,name:S
     let full_payload:String;
 
     if get == true {
-        let all_name = artefact.namepipe_list();
+        let all_name: HashSet<String> = artefact.namepipe_list();
         pretty_print_hashset("Name for the mimic Name Pipe".to_string(), all_name);
         return EXIST_ALL_GOOD;
     }
@@ -195,7 +195,7 @@ fn run_pipecreate(module: String, number: usize, get: bool, details: bool,name:S
         if details == true {
             println!("Name Pipe number for \"{}\" :", module);
             println!("----------------");
-            let list_name_pipe = artefact.namepipe_value_list(&module);
+            let list_name_pipe: Vec<String> = artefact.namepipe_value_list(&module);
             for i in 0..list_name_pipe.len() {
                 println!(" {} - {}", i, list_name_pipe[i])
             }
@@ -204,7 +204,7 @@ fn run_pipecreate(module: String, number: usize, get: bool, details: bool,name:S
             return EXIST_ALL_GOOD;
         }
 
-        let payload = artefact.namepipe_get_value_at_index(&module, number);
+        let payload: String = artefact.namepipe_get_value_at_index(&module, number);
         full_payload = tools_generator::regex_to_string(&payload);
 
     }
@@ -217,7 +217,7 @@ fn run_pipecreate(module: String, number: usize, get: bool, details: bool,name:S
 
 fn main() -> ! {
     banner();
-    let my_cli = tools_cli::WagCli::parse();
+    let my_cli: tools_cli::WagCli = tools_cli::WagCli::parse();
 
     match my_cli.command {
         tools_cli::Clioptions::ADS {
@@ -225,7 +225,7 @@ fn main() -> ! {
             get,
             filename,
         } => {
-            let ret = run_ads(module, get, filename);
+            let ret: i32 = run_ads(module, get, filename);
             std::process::exit(ret);
         }
 
@@ -234,7 +234,7 @@ fn main() -> ! {
             display,
             path,
         } => {
-            let ret = run_byovd(internal, display, path);
+            let ret: i32 = run_byovd(internal, display, path);
             std::process::exit(ret);
         }
 
@@ -256,7 +256,7 @@ fn main() -> ! {
             details,
             name,
         } => {
-            let ret= run_pipecreate(module, number, get, details,name);
+            let ret: i32= run_pipecreate(module, number, get, details,name);
             std::process::exit(ret);
         } 
 
