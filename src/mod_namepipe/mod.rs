@@ -1,11 +1,17 @@
 //
 // Name Pipe Artefact
 //
+// Windows API
+use windows::core::{Result, PCSTR};
+use windows::Win32::Foundation::{CloseHandle, HANDLE};
+use windows::Win32::Storage::FileSystem::PIPE_ACCESS_DUPLEX;
+use windows::Win32::System::Pipes::{CreateNamedPipeA, PIPE_TYPE_MESSAGE};
 
 use serde::Deserialize;
 use std::collections::{HashMap, HashSet};
-use std::path::PathBuf;
 use std::fs::File;
+use std::path::PathBuf;
+use std::{thread, time};
 
 //Structure for the Json
 #[derive(Deserialize)]
@@ -34,7 +40,7 @@ impl NamePipeArtefact {
     }
 
     pub fn load(&mut self, path: &str) {
-        let file_path:PathBuf = std::env::current_dir()
+        let file_path: PathBuf = std::env::current_dir()
             .expect("Failed to get current folder")
             .join(path);
         let json_open: File = File::open(file_path).expect("Unable to open json file");
@@ -68,4 +74,24 @@ impl NamePipeArtefact {
         let barrow: &String = &namepipe_value_list[index_payload];
         barrow.to_owned()
     }
+}
+
+pub fn create_name_pipe(name: &String, wait: u64) {
+    let full_malware_pipe: String = format!("\\\\.\\pipe\\{}\0", name);
+    let pipe_name: PCSTR = PCSTR::from_raw(full_malware_pipe.as_ptr());
+    let server_pipe: Result<HANDLE> = unsafe {
+        CreateNamedPipeA(
+            pipe_name,
+            PIPE_ACCESS_DUPLEX,
+            PIPE_TYPE_MESSAGE,
+            1,
+            2048,
+            2048,
+            0,
+            None,
+        )
+    };
+    let sleep_duration: time::Duration = time::Duration::from_millis(wait);
+    thread::sleep(sleep_duration);
+    let _res_server_pipe = unsafe { CloseHandle(server_pipe.unwrap()) };
 }

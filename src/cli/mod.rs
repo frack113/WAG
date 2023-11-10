@@ -141,7 +141,7 @@ pub enum Clioptions {
         #[clap(
             short = 'N',
             long,
-            required = true,
+            required = false,
             default_value = "",
             help = "Regex of the PipeName to Create"
         )]

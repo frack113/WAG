@@ -7,10 +7,12 @@
 Working date:  2023-08
 */
 
-mod aft_filecreate;
-mod aft_namepipe;
-mod tools_cli;
-mod tools_generator;
+use wag::mod_filecreate::{create_ads, create_file, FileArtefact};
+use wag::mod_namepipe::{create_name_pipe, NamePipeArtefact};
+use wag::mod_service::create_driver_service;
+
+use wag::cli;
+use wag::tools;
 
 use clap::Parser;
 use std::collections::HashSet;
@@ -45,7 +47,7 @@ fn banner() {
 /* Version 20230908 */
 fn run_ads(module: String, get: bool, filename: String) -> i32 {
     println!("Alternate Data Stream");
-    let mut artefact: aft_filecreate::FileArtefac = aft_filecreate::FileArtefac::new();
+    let mut artefact: FileArtefact = FileArtefact::new();
     artefact.load("data/files.json");
 
     if get == true {
@@ -62,11 +64,11 @@ fn run_ads(module: String, get: bool, filename: String) -> i32 {
 
     if filename.len() > 0 {
         println!("Get the regex : {}", filename);
-        let fullname: String = tools_generator::regex_to_string(&filename);
+        let fullname: String = tools::regex_to_string(&filename);
         println!("Create the ADS");
         let name_ads: String = artefact.file_ads_get_name(&module);
         let payload: Vec<u8> = artefact.file_ads_get_data(&module);
-        let ret_ads: bool = tools_generator::create_ads(fullname, name_ads, payload);
+        let ret_ads: bool = create_ads(fullname, name_ads, payload);
         if ret_ads == true {
             return EXIST_ALL_GOOD;
         } else {
@@ -81,13 +83,13 @@ fn run_ads(module: String, get: bool, filename: String) -> i32 {
 fn run_byovd(internal: String, display: String, path: String) -> i32 {
     println!("Bring Your Own Vulnerable Driver");
 
-    if tools_generator::process_is_admin() == false {
+    if tools::process_is_admin() == false {
         return EXIST_TEST_ERROR;
     }
 
     // Todo check path is valid or not :)
 
-    let result: bool = tools_generator::create_driver_service(internal, display, path);
+    let result: bool = create_driver_service(internal, display, path);
     if result {
         println!("All good ");
         return EXIST_ALL_GOOD;
@@ -106,7 +108,7 @@ fn run_createfile(
     details: bool,
 ) -> i32 {
     println!("Create a file on disk");
-    let mut artefact: aft_filecreate::FileArtefac = aft_filecreate::FileArtefac::new();
+    let mut artefact = FileArtefact::new();
     artefact.load("data/files.json");
 
     if get == true {
@@ -133,7 +135,7 @@ fn run_createfile(
 
         if filename.len() > 0 {
             println!("Get the regex : {}", filename);
-            fullname = tools_generator::regex_to_string(&filename);
+            fullname = tools::regex_to_string(&filename);
             payload = artefact.file_magicbyte_get(&magicbyte);
         } else {
             return EXIST_CLI_ERROR;
@@ -151,13 +153,13 @@ fn run_createfile(
         fullname = artefact.file_payload_getfilename(&module);
         payload = artefact.file_magicbyte_get(&payload_type);
 
-        if admin && !tools_generator::process_is_admin() {
+        if admin && !tools::process_is_admin() {
             println!("Need to have Administrator right to create the file");
             return EXIST_TEST_ERROR;
         }
     }
 
-    let ret: bool = tools_generator::create_file(fullname, payload);
+    let ret: bool = create_file(fullname, payload);
 
     if ret == true {
         return EXIST_ALL_GOOD;
@@ -167,12 +169,12 @@ fn run_createfile(
 }
 
 /* Version 20230908 */
-fn run_pipecreate(module: String, number: usize, get: bool, details: bool,name:String) -> i32 {
+fn run_pipecreate(module: String, number: usize, get: bool, details: bool, name: String) -> i32 {
     println!("Create NamePipe");
-    let mut artefact = aft_namepipe::NamePipeArtefact::new();
+    let mut artefact: NamePipeArtefact = NamePipeArtefact::new();
     artefact.load("data/namepipe.json");
 
-    let full_payload:String;
+    let full_payload: String;
 
     if get == true {
         let all_name: HashSet<String> = artefact.namepipe_list();
@@ -180,8 +182,8 @@ fn run_pipecreate(module: String, number: usize, get: bool, details: bool,name:S
         return EXIST_ALL_GOOD;
     }
     if module == "manual" {
-        if name.len() >0 {
-            full_payload = tools_generator::regex_to_string(&name);
+        if name.len() > 0 {
+            full_payload = tools::regex_to_string(&name);
         } else {
             return EXIST_CLI_ERROR;
         }
@@ -205,22 +207,20 @@ fn run_pipecreate(module: String, number: usize, get: bool, details: bool,name:S
         }
 
         let payload: String = artefact.namepipe_get_value_at_index(&module, number);
-        full_payload = tools_generator::regex_to_string(&payload);
-
+        full_payload = tools::regex_to_string(&payload);
     }
 
     println!("Create the namepipe : {}", full_payload);
-    tools_generator::create_name_pipe(&full_payload, 2000);
+    create_name_pipe(&full_payload, 2000);
     return EXIST_ALL_GOOD;
-
 }
 
 fn main() -> ! {
     banner();
-    let my_cli: tools_cli::WagCli = tools_cli::WagCli::parse();
+    let my_cli: cli::WagCli = cli::WagCli::parse();
 
     match my_cli.command {
-        tools_cli::Clioptions::ADS {
+        cli::Clioptions::ADS {
             module,
             get,
             filename,
@@ -229,7 +229,7 @@ fn main() -> ! {
             std::process::exit(ret);
         }
 
-        tools_cli::Clioptions::BYOVD {
+        cli::Clioptions::BYOVD {
             internal,
             display,
             path,
@@ -238,7 +238,7 @@ fn main() -> ! {
             std::process::exit(ret);
         }
 
-        tools_cli::Clioptions::FileCreate {
+        cli::Clioptions::FileCreate {
             module,
             get,
             filename,
@@ -249,16 +249,15 @@ fn main() -> ! {
             std::process::exit(ret);
         }
 
-        tools_cli::Clioptions::NamePipe{
+        cli::Clioptions::NamePipe {
             module,
             number,
             get,
             details,
             name,
         } => {
-            let ret: i32= run_pipecreate(module, number, get, details,name);
+            let ret: i32 = run_pipecreate(module, number, get, details, name);
             std::process::exit(ret);
-        } 
-
+        }
     }
 }
