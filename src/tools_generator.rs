@@ -14,18 +14,18 @@ use windows::Win32::System::Pipes::{CreateNamedPipeA, PIPE_TYPE_MESSAGE};
 use windows::Win32::System::Services::{
     ControlService, CreateServiceW, DeleteService, OpenSCManagerW, StartServiceW,
     ENUM_SERVICE_TYPE, SC_MANAGER_ALL_ACCESS, SERVICE_CONTROL_STOP, SERVICE_ERROR,
-    SERVICE_START_TYPE,
+    SERVICE_START_TYPE,SERVICE_STATUS,
 };
 use windows::Win32::UI::Shell::IsUserAnAdmin;
 
 // Some others
 use std::{thread, time};
-
+use std::path::Path;
 // For regex to string
 use regex_generate::{Generator, DEFAULT_MAX_REPEAT};
 
 pub fn create_name_pipe(name: &String, wait: u64) {
-    let full_malware_pipe = format!("\\\\.\\pipe\\{}\0", name);
+    let full_malware_pipe: String = format!("\\\\.\\pipe\\{}\0", name);
     let pipe_name: PCSTR = PCSTR::from_raw(full_malware_pipe.as_ptr());
     let server_pipe: Result<HANDLE> = unsafe {
         CreateNamedPipeA(
@@ -39,14 +39,14 @@ pub fn create_name_pipe(name: &String, wait: u64) {
             None,
         )
     };
-    let sleep_duration = time::Duration::from_millis(wait);
+    let sleep_duration: time::Duration = time::Duration::from_millis(wait);
     thread::sleep(sleep_duration);
     let _res_server_pipe = unsafe { CloseHandle(server_pipe.unwrap()) };
 }
 
 pub fn create_driver_service(name: String, details: String, path: String) -> bool {
     println!("Open the service manager");
-    let scmanager =
+    let scmanager: SC_HANDLE =
         unsafe { OpenSCManagerW(PCWSTR::null(), PCWSTR::null(), SC_MANAGER_ALL_ACCESS) }
             .expect("Sc Manager open failure");
 
@@ -88,9 +88,9 @@ pub fn create_driver_service(name: String, details: String, path: String) -> boo
     match unsafe { StartServiceW(service_handle, None) } {
         Ok(_) => {
             println!("Wait a little");
-            let sleep_duration = time::Duration::from_millis(2000);
+            let sleep_duration: time::Duration = time::Duration::from_millis(2000);
             thread::sleep(sleep_duration);
-            let mut service_status = unsafe { std::mem::zeroed() };
+            let mut service_status: SERVICE_STATUS = unsafe { std::mem::zeroed() };
             println!("Stop Service");
             let _result_stop = unsafe {
                 ControlService(service_handle, SERVICE_CONTROL_STOP, &mut service_status)
@@ -131,9 +131,9 @@ pub fn hex_to_bytes(s: &str) -> Option<Vec<u8>> {
 
 pub fn create_file(fullpath: String, hex_data: Vec<u8>) -> bool {
     println!("Try to create : {}", fullpath);
-    let file_path = std::path::Path::new(&fullpath);
+    let file_path: &Path = Path::new(&fullpath);
     if !file_path.exists() {
-        let folder = file_path.parent().unwrap();
+        let folder: &Path = file_path.parent().unwrap();
 
         let ret_folder = std::fs::create_dir_all(folder);
         match ret_folder {
@@ -162,10 +162,10 @@ pub fn create_file(fullpath: String, hex_data: Vec<u8>) -> bool {
 }
 
 pub fn create_ads(fullpath: String, adsname: String, hex_data: Vec<u8>) -> bool {
-    let file_path = format!("{}:{}\0", fullpath, adsname);
+    let file_path: String = format!("{}:{}\0", fullpath, adsname);
     println!("ads: {}", file_path);
 
-    let handle = unsafe {
+    let handle: HANDLE = unsafe {
         CreateFileA(
             PCSTR::from_raw(file_path.as_ptr()),
             GENERIC_WRITE.0,
@@ -203,10 +203,10 @@ pub fn create_ads(fullpath: String, adsname: String, hex_data: Vec<u8>) -> bool 
 Some usefull fn
 */
 pub fn regex_to_string(name: &String) -> String {
-    let mut gen = Generator::new(name, rand::thread_rng(), DEFAULT_MAX_REPEAT).unwrap();
-    let mut buffer = vec![];
+    let mut gen: Generator<rand::rngs::ThreadRng> = Generator::new(name, rand::thread_rng(), DEFAULT_MAX_REPEAT).unwrap();
+    let mut buffer: Vec<u8> = vec![];
     gen.generate(&mut buffer).unwrap();
-    let output = String::from_utf8(buffer).unwrap();
+    let output: String = String::from_utf8(buffer).unwrap();
 
     return output;
 }

@@ -17,9 +17,13 @@ You can use `SET | more` or `Get-ChildItem Env:` to get the list
 use crate::tools_generator;
 
 use serde::Deserialize;
-use std::collections::{HashMap, HashSet};
 
+use std::collections::{HashMap, HashSet};
 use std::env;
+use std::ffi::OsString;
+use std::fs::File;
+use std::path::{Path,PathBuf};
+
 
 /*
     Json Data structure
@@ -88,10 +92,10 @@ impl FileArtefac {
     }
 
     pub fn load(&mut self, path: &str) {
-        let file_path = std::env::current_dir()
+        let file_path: PathBuf = std::env::current_dir()
             .expect("Failed to get current folder")
             .join(path);
-        let json_open = std::fs::File::open(file_path).expect("Unable to open json file");
+        let json_open: File = File::open(file_path).expect("Unable to open json file");
         let json_data: JsonGlobalInfo =
             serde_json::from_reader(json_open).expect("error while reading or parsing the json");
 
@@ -127,11 +131,11 @@ impl FileArtefac {
     }
 
     pub fn file_magicbyte_get(&self, name: &str) -> Vec<u8> {
-        let mut payload = "467261636b313133";
+        let mut payload: &str = "467261636b313133";
         if self.file_magicbyte_exist(name) {
             payload = self.magicbyte.get(name).clone().unwrap(); //Can not faild as the key exist
         }
-        let header = tools_generator::hex_to_bytes(payload); // User input 😅
+        let header: Option<Vec<u8>> = tools_generator::hex_to_bytes(payload); // User input 😅
         match header {
             Some(data) => data,
             None => vec![70, 114, 97, 99, 107, 49, 49, 51],
@@ -147,20 +151,20 @@ impl FileArtefac {
     }
 
     pub fn file_payload_needroot(&self, name: &str) -> bool {
-        let data = self.payload.get(name).unwrap(); // exit fail if name is invalid
+        let data: &PayloadPathInfo = self.payload.get(name).unwrap(); // exit fail if name is invalid
         data.needroot
     }
 
     pub fn file_payload_getfilename(&self, name: &str) -> String {
         if self.file_payload_exist(name) {
-            let data = self.payload.get(name).unwrap(); // name is a valid key
+            let data: &PayloadPathInfo = self.payload.get(name).unwrap(); // name is a valid key
 
             if data.fullpath.len() > 0 {
                 tools_generator::regex_to_string(&data.fullpath)
             } else {
-                let filename = tools_generator::regex_to_string(&data.cmd_path);
-                let var_path = env::var_os(&data.cmd_var).unwrap();
-                let full_path = std::path::Path::new(&var_path).join(filename);
+                let filename: String = tools_generator::regex_to_string(&data.cmd_path);
+                let var_path: OsString = env::var_os(&data.cmd_var).unwrap();
+                let full_path: PathBuf = Path::new(&var_path).join(filename);
                 String::from(full_path.to_string_lossy())
             }
         } else {
@@ -170,7 +174,7 @@ impl FileArtefac {
 
     pub fn file_payload_getfiletype(&self, name: &str) -> String {
         if self.file_payload_exist(name) {
-            let data = self.payload.get(name).unwrap(); // name is a valid key
+            let data: &PayloadPathInfo = self.payload.get(name).unwrap(); // name is a valid key
             data.file_type.clone()
         } else {
             "Wag".to_string()
@@ -187,9 +191,9 @@ impl FileArtefac {
 
     pub fn file_ads_get_data(&self, name: &str) -> Vec<u8> {
         println!("Ask for {}", name);
-        let payload = self.ads_hexvalue.get(name).clone().unwrap(); //Can not faild as the key exist
+        let payload: &String = self.ads_hexvalue.get(name).clone().unwrap(); //Can not faild as the key exist
         println!("{}", payload);
-        let header = tools_generator::hex_to_bytes(payload); // User input 😅
+        let header: Option<Vec<u8>> = tools_generator::hex_to_bytes(payload); // User input 😅
         match header {
             Some(data) => data,
             None => vec![70, 114, 97, 99, 107, 49, 49, 51],
@@ -197,7 +201,7 @@ impl FileArtefac {
     }
 
     pub fn file_ads_get_name(&self, name: &str) -> String {
-        let data = self.ads_adsname.get(name).clone().unwrap(); //Can not faild as the key exist
+        let data: &String = self.ads_adsname.get(name).clone().unwrap(); //Can not faild as the key exist
         data.to_string()
     }
 }

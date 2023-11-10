@@ -4,6 +4,8 @@
 
 use serde::Deserialize;
 use std::collections::{HashMap, HashSet};
+use std::path::PathBuf;
+use std::fs::File;
 
 //Structure for the Json
 #[derive(Deserialize)]
@@ -32,10 +34,10 @@ impl NamePipeArtefact {
     }
 
     pub fn load(&mut self, path: &str) {
-        let file_path = std::env::current_dir()
+        let file_path:PathBuf = std::env::current_dir()
             .expect("Failed to get current folder")
             .join(path);
-        let json_open = std::fs::File::open(file_path).expect("Unable to open json file");
+        let json_open: File = File::open(file_path).expect("Unable to open json file");
         let json_data: JsonGlobalInfo =
             serde_json::from_reader(json_open).expect("error while reading or parsing the json");
 
@@ -57,13 +59,13 @@ impl NamePipeArtefact {
     }
 
     pub fn namepipe_get_value_at_index(&self, name: &str, number: usize) -> String {
-        let mut index_payload = number;
-        let namepipe_value_list = self.namepipe_value_list(name);
+        let mut index_payload: usize = number;
+        let namepipe_value_list: Vec<String> = self.namepipe_value_list(name);
         //Don't trust humain
         if index_payload > namepipe_value_list.len() - 1 {
             index_payload = 0;
         }
-        let barrow = &namepipe_value_list[index_payload];
+        let barrow: &String = &namepipe_value_list[index_payload];
         barrow.to_owned()
     }
 }
