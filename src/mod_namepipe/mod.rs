@@ -13,6 +13,8 @@ use std::fs::File;
 use std::path::PathBuf;
 use std::{thread, time};
 
+use super::tools::{regex_to_string,pretty_print_hashset,EXIST_ALL_GOOD,EXIST_CLI_ERROR};
+
 //Structure for the Json
 #[derive(Deserialize)]
 struct JsonNamepipeInfo {
@@ -28,18 +30,18 @@ struct JsonGlobalInfo {
 //Structure form the name pipe
 // Very simple struct
 #[derive(Clone)]
-pub struct NamePipeArtefact {
+struct NamePipeArtefact {
     namepipe: HashMap<String, Vec<String>>,
 }
 
 impl NamePipeArtefact {
-    pub fn new() -> Self {
+    fn new() -> Self {
         Self {
             namepipe: HashMap::new(),
         }
     }
 
-    pub fn load(&mut self, path: &str) {
+    fn load(&mut self, path: &str) {
         let file_path: PathBuf = std::env::current_dir()
             .expect("Failed to get current folder")
             .join(path);
@@ -52,19 +54,19 @@ impl NamePipeArtefact {
         }
     }
 
-    pub fn namepipe_list(&self) -> HashSet<String> {
+    fn namepipe_list(&self) -> HashSet<String> {
         self.namepipe.keys().cloned().collect()
     }
 
-    pub fn namepipe_value_list(&self, name: &str) -> Vec<String> {
+    fn namepipe_value_list(&self, name: &str) -> Vec<String> {
         self.namepipe.get(name).unwrap().to_vec()
     }
 
-    pub fn namepipe_exist(&self, name: &str) -> bool {
+    fn namepipe_exist(&self, name: &str) -> bool {
         self.namepipe.contains_key(name)
     }
 
-    pub fn namepipe_get_value_at_index(&self, name: &str, number: usize) -> String {
+    fn namepipe_get_value_at_index(&self, name: &str, number: usize) -> String {
         let mut index_payload: usize = number;
         let namepipe_value_list: Vec<String> = self.namepipe_value_list(name);
         //Don't trust humain
@@ -76,7 +78,7 @@ impl NamePipeArtefact {
     }
 }
 
-pub fn create_name_pipe(name: &String, wait: u64) {
+fn create_name_pipe(name: &String, wait: u64) {
     let full_malware_pipe: String = format!("\\\\.\\pipe\\{}\0", name);
     let pipe_name: PCSTR = PCSTR::from_raw(full_malware_pipe.as_ptr());
     let server_pipe: Result<HANDLE> = unsafe {
@@ -94,4 +96,51 @@ pub fn create_name_pipe(name: &String, wait: u64) {
     let sleep_duration: time::Duration = time::Duration::from_millis(wait);
     thread::sleep(sleep_duration);
     let _res_server_pipe = unsafe { CloseHandle(server_pipe.unwrap()) };
+}
+
+/* Version 20230908 */
+pub fn run_pipecreate(module: String, number: usize, get: bool, details: bool, name: String) -> i32 {
+    println!("Create NamePipe");
+    let mut artefact: NamePipeArtefact = NamePipeArtefact::new();
+    artefact.load("data/namepipe.json");
+
+    let full_payload: String;
+
+    if get == true {
+        let all_name: HashSet<String> = artefact.namepipe_list();
+        pretty_print_hashset("Name for the mimic Name Pipe".to_string(), all_name);
+        return EXIST_ALL_GOOD;
+    }
+    if module == "manual" {
+        if name.len() > 0 {
+            full_payload = regex_to_string(&name);
+        } else {
+            return EXIST_CLI_ERROR;
+        }
+    } else {
+        if artefact.namepipe_exist(&module) == false {
+            println!("Did not find \"{}\" name for namepipe", module);
+            println!("You can use the help option --help");
+            return EXIST_CLI_ERROR;
+        }
+
+        if details == true {
+            println!("Name Pipe number for \"{}\" :", module);
+            println!("----------------");
+            let list_name_pipe: Vec<String> = artefact.namepipe_value_list(&module);
+            for i in 0..list_name_pipe.len() {
+                println!(" {} - {}", i, list_name_pipe[i])
+            }
+            println!("----------------");
+            println!("bye");
+            return EXIST_ALL_GOOD;
+        }
+
+        let payload: String = artefact.namepipe_get_value_at_index(&module, number);
+        full_payload = regex_to_string(&payload);
+    }
+
+    println!("Create the namepipe : {}", full_payload);
+    create_name_pipe(&full_payload, 2000);
+    return EXIST_ALL_GOOD;
 }

@@ -1,6 +1,12 @@
 //
 // Tools box
 //
+// std::process::exit need a i32
+pub const EXIST_ALL_GOOD: i32 = 0;
+pub const EXIST_CLI_ERROR: i32 = 10;
+pub const EXIST_TEST_ERROR: i32 = 11;
+
+use std::collections::HashSet;
 
 use regex_generate::{Generator, DEFAULT_MAX_REPEAT};
 use windows::Win32::UI::Shell::IsUserAnAdmin;
@@ -35,4 +41,13 @@ pub fn regex_to_string(name: &String) -> String {
 
 pub fn process_is_admin() -> bool {
     return unsafe { IsUserAnAdmin().into() };
+}
+
+pub fn pretty_print_hashset(title: String, data: HashSet<String>) {
+    println!("{} :", title);
+    println!("----------------");
+    for name in data {
+        println!("👉 {}", name);
+    }
+    println!("----------------");
 }

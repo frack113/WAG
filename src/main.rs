@@ -7,29 +7,14 @@
 Working date:  2023-08
 */
 
-use wag::mod_filecreate::{create_ads, create_file, FileArtefact};
-use wag::mod_namepipe::{create_name_pipe, NamePipeArtefact};
-use wag::mod_service::create_driver_service;
+use wag::mod_filecreate::{run_ads, run_createfile};
+use wag::mod_namepipe::run_pipecreate;
+use wag::mod_service::run_byovd;
 
 use wag::cli;
-use wag::tools;
 
 use clap::Parser;
-use std::collections::HashSet;
 
-// std::process::exit need a i32
-const EXIST_ALL_GOOD: i32 = 0;
-const EXIST_CLI_ERROR: i32 = 10;
-const EXIST_TEST_ERROR: i32 = 11;
-
-fn pretty_print_hashset(title: String, data: HashSet<String>) {
-    println!("{} :", title);
-    println!("----------------");
-    for name in data {
-        println!("👉 {}", name);
-    }
-    println!("----------------");
-}
 
 fn banner() {
     let banner = "
@@ -44,176 +29,6 @@ fn banner() {
     println!("{}", banner);
 }
 
-/* Version 20230908 */
-fn run_ads(module: String, get: bool, filename: String) -> i32 {
-    println!("Alternate Data Stream");
-    let mut artefact: FileArtefact = FileArtefact::new();
-    artefact.load("data/files.json");
-
-    if get == true {
-        let all_name: HashSet<String> = artefact.file_ads_list();
-        pretty_print_hashset("Name for the ADS File data".to_string(), all_name);
-        return EXIST_ALL_GOOD;
-    }
-
-    if artefact.file_ads_exist(&module) == false {
-        println!("Did not find \"{}\" name for ads", module);
-        println!("You can use the help option --help");
-        return EXIST_CLI_ERROR;
-    }
-
-    if filename.len() > 0 {
-        println!("Get the regex : {}", filename);
-        let fullname: String = tools::regex_to_string(&filename);
-        println!("Create the ADS");
-        let name_ads: String = artefact.file_ads_get_name(&module);
-        let payload: Vec<u8> = artefact.file_ads_get_data(&module);
-        let ret_ads: bool = create_ads(fullname, name_ads, payload);
-        if ret_ads == true {
-            return EXIST_ALL_GOOD;
-        } else {
-            return EXIST_TEST_ERROR;
-        }
-    }
-
-    EXIST_CLI_ERROR
-}
-
-/* Version 20230908 */
-fn run_byovd(internal: String, display: String, path: String) -> i32 {
-    println!("Bring Your Own Vulnerable Driver");
-
-    if tools::process_is_admin() == false {
-        return EXIST_TEST_ERROR;
-    }
-
-    // Todo check path is valid or not :)
-
-    let result: bool = create_driver_service(internal, display, path);
-    if result {
-        println!("All good ");
-        return EXIST_ALL_GOOD;
-    } else {
-        println!("Sorry get a error");
-        return EXIST_TEST_ERROR;
-    }
-}
-
-/* Version 20230908 */
-fn run_createfile(
-    module: String,
-    get: bool,
-    filename: String,
-    magicbyte: String,
-    details: bool,
-) -> i32 {
-    println!("Create a file on disk");
-    let mut artefact = FileArtefact::new();
-    artefact.load("data/files.json");
-
-    if get == true {
-        let all_name: HashSet<String> = artefact.file_payload_list();
-        pretty_print_hashset("Name for the mimic File creation".to_string(), all_name);
-        return EXIST_ALL_GOOD;
-    }
-
-    let fullname: String;
-    let payload: Vec<u8>;
-
-    if module == "manual" {
-        if details == true {
-            let all_name: HashSet<String> = artefact.file_magicbyte_list();
-            pretty_print_hashset("Name for the MagicByte File creation".to_string(), all_name);
-            return EXIST_ALL_GOOD;
-        }
-
-        if artefact.file_magicbyte_exist(&magicbyte) == false {
-            println!("Did not find \"{}\" name for MagicBytes Option", magicbyte);
-            println!("You can use the help option --help");
-            return EXIST_CLI_ERROR;
-        }
-
-        if filename.len() > 0 {
-            println!("Get the regex : {}", filename);
-            fullname = tools::regex_to_string(&filename);
-            payload = artefact.file_magicbyte_get(&magicbyte);
-        } else {
-            return EXIST_CLI_ERROR;
-        }
-    } else {
-        if artefact.file_payload_exist(&module) == false {
-            println!("Did not find \"{}\" name for filecreate", module);
-            println!("You can use the help option --help");
-            return EXIST_CLI_ERROR;
-        }
-
-        let payload_type: String = artefact.file_payload_getfiletype(&module);
-        let admin: bool = artefact.file_payload_needroot(&module);
-
-        fullname = artefact.file_payload_getfilename(&module);
-        payload = artefact.file_magicbyte_get(&payload_type);
-
-        if admin && !tools::process_is_admin() {
-            println!("Need to have Administrator right to create the file");
-            return EXIST_TEST_ERROR;
-        }
-    }
-
-    let ret: bool = create_file(fullname, payload);
-
-    if ret == true {
-        return EXIST_ALL_GOOD;
-    } else {
-        return EXIST_TEST_ERROR;
-    }
-}
-
-/* Version 20230908 */
-fn run_pipecreate(module: String, number: usize, get: bool, details: bool, name: String) -> i32 {
-    println!("Create NamePipe");
-    let mut artefact: NamePipeArtefact = NamePipeArtefact::new();
-    artefact.load("data/namepipe.json");
-
-    let full_payload: String;
-
-    if get == true {
-        let all_name: HashSet<String> = artefact.namepipe_list();
-        pretty_print_hashset("Name for the mimic Name Pipe".to_string(), all_name);
-        return EXIST_ALL_GOOD;
-    }
-    if module == "manual" {
-        if name.len() > 0 {
-            full_payload = tools::regex_to_string(&name);
-        } else {
-            return EXIST_CLI_ERROR;
-        }
-    } else {
-        if artefact.namepipe_exist(&module) == false {
-            println!("Did not find \"{}\" name for namepipe", module);
-            println!("You can use the help option --help");
-            return EXIST_CLI_ERROR;
-        }
-
-        if details == true {
-            println!("Name Pipe number for \"{}\" :", module);
-            println!("----------------");
-            let list_name_pipe: Vec<String> = artefact.namepipe_value_list(&module);
-            for i in 0..list_name_pipe.len() {
-                println!(" {} - {}", i, list_name_pipe[i])
-            }
-            println!("----------------");
-            println!("bye");
-            return EXIST_ALL_GOOD;
-        }
-
-        let payload: String = artefact.namepipe_get_value_at_index(&module, number);
-        full_payload = tools::regex_to_string(&payload);
-    }
-
-    println!("Create the namepipe : {}", full_payload);
-    create_name_pipe(&full_payload, 2000);
-    return EXIST_ALL_GOOD;
-}
 
 fn main() -> ! {
     banner();

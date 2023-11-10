@@ -14,7 +14,10 @@ use windows::Win32::System::Services::{
 // Some others
 use std::{thread, time};
 
-pub fn create_driver_service(name: String, details: String, path: String) -> bool {
+use super::tools::{process_is_admin,EXIST_ALL_GOOD,EXIST_TEST_ERROR};
+
+
+fn create_driver_service(name: String, details: String, path: String) -> bool {
     println!("Open the service manager");
     let scmanager: SC_HANDLE =
         unsafe { OpenSCManagerW(PCWSTR::null(), PCWSTR::null(), SC_MANAGER_ALL_ACCESS) }
@@ -81,5 +84,26 @@ pub fn create_driver_service(name: String, details: String, path: String) -> boo
             println!("Service remove failure with code : {:#06x}", value.code().0);
             return false;
         }
+    }
+}
+
+
+/* Version 20230908 */
+pub fn run_byovd(internal: String, display: String, path: String) -> i32 {
+    println!("Bring Your Own Vulnerable Driver");
+
+    if process_is_admin() == false {
+        return EXIST_TEST_ERROR;
+    }
+
+    // Todo check path is valid or not :)
+
+    let result: bool = create_driver_service(internal, display, path);
+    if result {
+        println!("All good ");
+        return EXIST_ALL_GOOD;
+    } else {
+        println!("Sorry get a error");
+        return EXIST_TEST_ERROR;
     }
 }
