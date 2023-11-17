@@ -7,9 +7,9 @@
 Working date:  2023-08
 */
 
-use wag::mod_filecreate::{run_ads, run_createfile};
-use wag::mod_namepipe::run_pipecreate;
-use wag::mod_service::run_byovd;
+use wag::artefact::file::{run_ads, run_createfile};
+use wag::artefact::namepipe::run_pipecreate;
+use wag::artefact::service::run_byovd;
 
 use wag::cli;
 
