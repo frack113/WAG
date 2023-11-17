@@ -32,7 +32,10 @@ use std::ffi::OsString;
 use std::fs::File;
 use std::path::{Path, PathBuf};
 
-use super::tools::{hex_to_bytes,pretty_print_hashset,process_is_admin,regex_to_string,EXIST_ALL_GOOD,EXIST_CLI_ERROR,EXIST_TEST_ERROR};
+use super::tools::{
+    hex_to_bytes, pretty_print_hashset, process_is_admin, regex_to_string, EXIST_ALL_GOOD,
+    EXIST_CLI_ERROR, EXIST_TEST_ERROR,
+};
 
 /*
     Json Data structure

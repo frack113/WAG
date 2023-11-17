@@ -15,7 +15,6 @@ use wag::cli;
 
 use clap::Parser;
 
-
 fn banner() {
     let banner = "
 
@@ -28,7 +27,6 @@ fn banner() {
     ";
     println!("{}", banner);
 }
-
 
 fn main() -> ! {
     banner();

@@ -13,7 +13,7 @@ use std::fs::File;
 use std::path::PathBuf;
 use std::{thread, time};
 
-use super::tools::{regex_to_string,pretty_print_hashset,EXIST_ALL_GOOD,EXIST_CLI_ERROR};
+use super::tools::{pretty_print_hashset, regex_to_string, EXIST_ALL_GOOD, EXIST_CLI_ERROR};
 
 //Structure for the Json
 #[derive(Deserialize)]
@@ -99,7 +99,13 @@ fn create_name_pipe(name: &String, wait: u64) {
 }
 
 /* Version 20230908 */
-pub fn run_pipecreate(module: String, number: usize, get: bool, details: bool, name: String) -> i32 {
+pub fn run_pipecreate(
+    module: String,
+    number: usize,
+    get: bool,
+    details: bool,
+    name: String,
+) -> i32 {
     println!("Create NamePipe");
     let mut artefact: NamePipeArtefact = NamePipeArtefact::new();
     artefact.load("data/namepipe.json");

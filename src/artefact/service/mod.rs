@@ -14,8 +14,7 @@ use windows::Win32::System::Services::{
 // Some others
 use std::{thread, time};
 
-use super::tools::{process_is_admin,EXIST_ALL_GOOD,EXIST_TEST_ERROR};
-
+use super::tools::{process_is_admin, EXIST_ALL_GOOD, EXIST_TEST_ERROR};
 
 fn create_driver_service(name: String, details: String, path: String) -> bool {
     println!("Open the service manager");
@@ -86,7 +85,6 @@ fn create_driver_service(name: String, details: String, path: String) -> bool {
         }
     }
 }
-
 
 /* Version 20230908 */
 pub fn run_byovd(internal: String, display: String, path: String) -> i32 {
