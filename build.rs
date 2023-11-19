@@ -1,10 +1,10 @@
 // build.rs
 
-use winres;
+use winres::{self, WindowsResource};
 
 fn main() {
     if cfg!(target_os = "windows") {
-        let mut res = winres::WindowsResource::new();
+        let mut res: WindowsResource = winres::WindowsResource::new();
 
         //res.set_icon("rust.ico");
         res.set("FileVersion", "1.0.0");
