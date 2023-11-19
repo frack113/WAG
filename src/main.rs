@@ -16,7 +16,7 @@ use wag::cli;
 use clap::Parser;
 
 fn banner() {
-    let banner = "
+    let banner: &str = "
 
     ██     ██  █████   ██████  
     ██     ██ ██   ██ ██       
