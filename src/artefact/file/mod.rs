@@ -15,12 +15,15 @@ You can use `SET | more` or `Get-ChildItem Env:` to get the list
 */
 
 // Windows API
+use windows::core::Result as WindowsResult;
 use windows::core::PCSTR;
 use windows::Win32::Foundation::{CloseHandle, GENERIC_WRITE, HANDLE};
 use windows::Win32::Storage::FileSystem::{
     CreateFileA, WriteFile, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_WRITE,
 };
 
+use std::io::Result as IOResult;
+use std::time::Duration;
 // Some others
 use std::{thread, time};
 
@@ -224,22 +227,22 @@ fn create_file(fullpath: String, hex_data: Vec<u8>) -> bool {
     if !file_path.exists() {
         let folder: &Path = file_path.parent().unwrap();
 
-        let ret_folder = std::fs::create_dir_all(folder);
+        let ret_folder: IOResult<()> = std::fs::create_dir_all(folder);
         match ret_folder {
             Ok(_) => println!("The folder is valid"),
             Err(_) => return false,
         }
 
-        let ret_file = std::fs::write(file_path, hex_data);
+        let ret_file: IOResult<()> = std::fs::write(file_path, hex_data);
         match ret_file {
             Ok(_) => println!("The file is created"),
             Err(_) => return false,
         }
 
-        let sleep_duration = time::Duration::from_millis(2000);
+        let sleep_duration: Duration = time::Duration::from_millis(2000);
         thread::sleep(sleep_duration);
 
-        let ret_remove = std::fs::remove_file(file_path);
+        let ret_remove: IOResult<()> = std::fs::remove_file(file_path);
         match ret_remove {
             Ok(_) => println!("The file is removed"),
             Err(_) => return false,
@@ -267,7 +270,7 @@ fn create_ads(fullpath: String, adsname: String, hex_data: Vec<u8>) -> bool {
     }
     .unwrap();
 
-    let result = unsafe {
+    let result: WindowsResult<()> = unsafe {
         WriteFile(
             handle,
             Some(hex_data.as_slice()),
@@ -276,7 +279,7 @@ fn create_ads(fullpath: String, adsname: String, hex_data: Vec<u8>) -> bool {
         )
     };
 
-    let _ = unsafe { CloseHandle(handle) };
+    let _: WindowsResult<()> = unsafe { CloseHandle(handle) };
 
     match result {
         Ok(_) => {
@@ -297,7 +300,7 @@ pub fn run_createfile(
     details: bool,
 ) -> i32 {
     println!("Create a file on disk");
-    let mut artefact = FileArtefact::new();
+    let mut artefact: FileArtefact = FileArtefact::new();
     artefact.load("data/files.json");
 
     if get == true {

@@ -2,7 +2,7 @@
 // Name Pipe Artefact
 //
 // Windows API
-use windows::core::{Result, PCSTR};
+use windows::core::{Result as WindowsResult, PCSTR};
 use windows::Win32::Foundation::{CloseHandle, HANDLE};
 use windows::Win32::Storage::FileSystem::PIPE_ACCESS_DUPLEX;
 use windows::Win32::System::Pipes::{CreateNamedPipeA, PIPE_TYPE_MESSAGE};
@@ -81,7 +81,7 @@ impl NamePipeArtefact {
 fn create_name_pipe(name: &String, wait: u64) {
     let full_malware_pipe: String = format!("\\\\.\\pipe\\{}\0", name);
     let pipe_name: PCSTR = PCSTR::from_raw(full_malware_pipe.as_ptr());
-    let server_pipe: Result<HANDLE> = unsafe {
+    let server_pipe: WindowsResult<HANDLE> = unsafe {
         CreateNamedPipeA(
             pipe_name,
             PIPE_ACCESS_DUPLEX,
@@ -95,7 +95,7 @@ fn create_name_pipe(name: &String, wait: u64) {
     };
     let sleep_duration: time::Duration = time::Duration::from_millis(wait);
     thread::sleep(sleep_duration);
-    let _res_server_pipe = unsafe { CloseHandle(server_pipe.unwrap()) };
+    let _res_server_pipe: WindowsResult<()> = unsafe { CloseHandle(server_pipe.unwrap()) };
 }
 
 /* Version 20230908 */
