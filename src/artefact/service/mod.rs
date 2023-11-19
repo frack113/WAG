@@ -3,7 +3,7 @@
 //
 
 // Windows API
-use windows::core::PCWSTR;
+use windows::core::{Result as WindowsResult, PCWSTR};
 use windows::Win32::Security::SC_HANDLE;
 use windows::Win32::System::Services::{
     ControlService, CreateServiceW, DeleteService, OpenSCManagerW, StartServiceW,
@@ -64,7 +64,7 @@ fn create_driver_service(name: String, details: String, path: String) -> bool {
             thread::sleep(sleep_duration);
             let mut service_status: SERVICE_STATUS = unsafe { std::mem::zeroed() };
             println!("Stop Service");
-            let _result_stop = unsafe {
+            let _result_stop: WindowsResult<()> = unsafe {
                 ControlService(service_handle, SERVICE_CONTROL_STOP, &mut service_status)
             };
         }
