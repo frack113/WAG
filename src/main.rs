@@ -7,8 +7,6 @@
 Working date:  2023-08
 */
 
-use wag::artefact::file::FileCreate;
-use wag::artefact::namepipe::NamePipe;
 use wag::cli::Arguments;
 
 use clap::Parser;
