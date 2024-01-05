@@ -9,142 +9,44 @@
 
 */
 
-use clap::{Parser, Subcommand};
+use crate::artefact::file::FileCreate;
+use crate::artefact::file::ADS;
+use crate::artefact::namepipe::NamePipe;
+use crate::artefact::service::BYOVD;
+use clap::Parser;
 
 #[derive(Parser)]
-#[clap(
-    name = "WAG",
-    about = "WAG is a CLI Application to generate Windows Artefacts",
-    version = "0.0.1"
-)]
-pub struct WagCli {
+#[clap(author, version)]
+#[clap(disable_version_flag = true)]
+pub struct Arguments {
+    #[clap(short = 'v', long)]
+    version: bool,
     #[clap(subcommand)]
-    pub command: Clioptions,
+    command: Option<Commands>,
 }
 
-#[derive(Subcommand)]
-pub enum Clioptions {
-    /// Alternate Data Stream
-    #[clap(arg_required_else_help = true)]
-    ADS {
-        #[clap(
-            short = 'f',
-            long,
-            required = false,
-            default_value = "",
-            help = "Full path filename (regex)"
-        )]
-        filename: String,
-        #[clap(
-            short = 'm',
-            long,
-            required = false,
-            default_value = "",
-            help = "ADS to use"
-        )]
-        module: String,
-        #[clap(
-            short = 'g',
-            long,
-            required = false,
-            default_value_t = false,
-            help = "Get all the possible ADS name and quit"
-        )]
-        get: bool,
-    },
+impl Arguments {
+    pub fn run(self) -> i32 {
+        match self.command {
+            Some(Commands::FileCreate(file_create)) => file_create.run(),
+            Some(Commands::ADS(ads)) => ads.run(),
+            Some(Commands::NamePipe(name_pipe)) => name_pipe.run(),
+            Some(Commands::BYOVD(byovd)) => byovd.run(),
+            None => {
+                return 2;
+            }
+        }
+    }
+}
 
-    /// Bring Your Own Vulnerable Driver
+#[derive(Parser)]
+pub enum Commands {
     #[clap(arg_required_else_help = true)]
-    BYOVD {
-        #[clap(short = 'n', long, help = "Internal Name of the service")]
-        internal: String,
-        #[clap(short = 'd', long, help = "Displayed Name of the service")]
-        display: String,
-        #[clap(short = 'p', long, help = "Full path to the driver eg: c:\\temp...")]
-        path: String,
-    },
-
-    /// Create dummy file Artefact
+    FileCreate(FileCreate),
     #[clap(arg_required_else_help = true)]
-    FileCreate {
-        #[clap(
-            short = 'm',
-            long,
-            required = false,
-            default_value = "",
-            help = "Name of the malware to mimic"
-        )]
-        module: String,
-        #[clap(
-            short = 'g',
-            long,
-            required = false,
-            default_value_t = false,
-            help = "Get all the possible mimic name and quit"
-        )]
-        get: bool,
-        #[clap(
-            short = 'f',
-            long,
-            required = false,
-            default_value = "",
-            help = "Full path filename (regex) with module manual"
-        )]
-        filename: String,
-        #[clap(
-            short = 'b',
-            long,
-            required = false,
-            default_value = "",
-            help = "MagicBytes name to use with module manual "
-        )]
-        magicbyte: String,
-        #[clap(
-            short = 'd',
-            long,
-            required = false,
-            default_value_t = false,
-            help = "Get all the possible MagicBytes name with module manual"
-        )]
-        details: bool,
-    },
-
-    /// Generates Name Pipe Artefact
+    ADS(ADS),
     #[clap(arg_required_else_help = true)]
-    NamePipe {
-        #[clap(
-            short = 'm',
-            long,
-            required = false,
-            default_value = "",
-            help = "Name of the malware to mimic"
-        )]
-        module: String,
-        #[clap(short = 'n', long, required = false, default_value_t = 0)]
-        number: usize,
-        #[clap(
-            short = 'g',
-            long,
-            required = false,
-            default_value_t = false,
-            help = "Get all the possible pipename for a mimic and quit"
-        )]
-        get: bool,
-        #[clap(
-            short = 'd',
-            long,
-            required = false,
-            default_value_t = false,
-            help = "Get all the possible mimic name"
-        )]
-        details: bool,
-        #[clap(
-            short = 'N',
-            long,
-            required = false,
-            default_value = "",
-            help = "Regex of the PipeName to Create"
-        )]
-        name: String,
-    },
+    NamePipe(NamePipe),
+    #[clap(arg_required_else_help = true)]
+    BYOVD(BYOVD),
 }
