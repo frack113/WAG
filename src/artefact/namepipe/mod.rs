@@ -14,6 +14,45 @@ use std::path::PathBuf;
 use std::{thread, time};
 
 use super::tools::{pretty_print_hashset, regex_to_string, EXIST_ALL_GOOD, EXIST_CLI_ERROR};
+use clap::Parser;
+
+#[derive(Parser)]
+pub struct NamePipe {
+    #[clap(
+        short = 'm',
+        long,
+        required = false,
+        default_value = "",
+        help = "Name of the malware to mimic"
+    )]
+    module: String,
+    #[clap(short = 'n', long, required = false, default_value_t = 0)]
+    number: usize,
+    #[clap(
+        short = 'g',
+        long,
+        required = false,
+        default_value_t = false,
+        help = "Get all the possible pipename for a mimic and quit"
+    )]
+    get: bool,
+    #[clap(
+        short = 'd',
+        long,
+        required = false,
+        default_value_t = false,
+        help = "Get all the possible mimic name"
+    )]
+    details: bool,
+    #[clap(
+        short = 'N',
+        long,
+        required = false,
+        default_value = "",
+        help = "Regex of the PipeName to Create"
+    )]
+    name: String,
+}
 
 //Structure for the Json
 #[derive(Deserialize)]
@@ -99,54 +138,50 @@ fn create_name_pipe(name: &String, wait: u64) {
 }
 
 /* Version 20230908 */
-pub fn run_pipecreate(
-    module: String,
-    number: usize,
-    get: bool,
-    details: bool,
-    name: String,
-) -> i32 {
-    println!("Create NamePipe");
-    let mut artefact: NamePipeArtefact = NamePipeArtefact::new();
-    artefact.load("data/namepipe.json");
+impl NamePipe {
+    pub fn run(&self) -> i32 {
+        println!("Create NamePipe");
+        let mut artefact: NamePipeArtefact = NamePipeArtefact::new();
+        artefact.load("data/namepipe.json");
 
-    let full_payload: String;
+        let full_payload: String;
 
-    if get == true {
-        let all_name: HashSet<String> = artefact.namepipe_list();
-        pretty_print_hashset("Name for the mimic Name Pipe".to_string(), all_name);
-        return EXIST_ALL_GOOD;
-    }
-    if module == "manual" {
-        if name.len() > 0 {
-            full_payload = regex_to_string(&name);
-        } else {
-            return EXIST_CLI_ERROR;
-        }
-    } else {
-        if artefact.namepipe_exist(&module) == false {
-            println!("Did not find \"{}\" name for namepipe", module);
-            println!("You can use the help option --help");
-            return EXIST_CLI_ERROR;
-        }
-
-        if details == true {
-            println!("Name Pipe number for \"{}\" :", module);
-            println!("----------------");
-            let list_name_pipe: Vec<String> = artefact.namepipe_value_list(&module);
-            for i in 0..list_name_pipe.len() {
-                println!(" {} - {}", i, list_name_pipe[i])
-            }
-            println!("----------------");
-            println!("bye");
+        if self.get == true {
+            let all_name: HashSet<String> = artefact.namepipe_list();
+            pretty_print_hashset("Name for the mimic Name Pipe".to_string(), all_name);
             return EXIST_ALL_GOOD;
         }
+        if self.module == "manual" {
+            if self.name.len() > 0 {
+                full_payload = regex_to_string(&self.name);
+            } else {
+                return EXIST_CLI_ERROR;
+            }
+        } else {
+            if artefact.namepipe_exist(&self.module) == false {
+                println!("Did not find \"{}\" name for namepipe", self.module);
+                println!("You can use the help option --help");
+                return EXIST_CLI_ERROR;
+            }
 
-        let payload: String = artefact.namepipe_get_value_at_index(&module, number);
-        full_payload = regex_to_string(&payload);
+            if self.details == true {
+                println!("Name Pipe number for \"{}\" :", self.module);
+                println!("----------------");
+                let list_name_pipe: Vec<String> = artefact.namepipe_value_list(&self.module);
+                for i in 0..list_name_pipe.len() {
+                    println!(" {} - {}", i, list_name_pipe[i])
+                }
+                println!("----------------");
+                println!("bye");
+                return EXIST_ALL_GOOD;
+            }
+
+            let payload: String = artefact.namepipe_get_value_at_index(&self.module, self.number);
+            full_payload = regex_to_string(&payload);
+        }
+
+        println!("Create the namepipe : {}", full_payload);
+        create_name_pipe(&full_payload, 2000);
+        return EXIST_ALL_GOOD;
     }
-
-    println!("Create the namepipe : {}", full_payload);
-    create_name_pipe(&full_payload, 2000);
-    return EXIST_ALL_GOOD;
 }

@@ -12,11 +12,21 @@ use windows::Win32::System::Services::{
 };
 
 // Some others
+use super::tools::{process_is_admin, EXIST_ALL_GOOD, EXIST_TEST_ERROR};
+use clap::Parser;
 use std::{thread, time};
 
-use super::tools::{process_is_admin, EXIST_ALL_GOOD, EXIST_TEST_ERROR};
+#[derive(Parser)]
+pub struct BYOVD {
+    #[clap(short = 'n', long, help = "Internal Name of the service")]
+    internal: String,
+    #[clap(short = 'd', long, help = "Displayed Name of the service")]
+    display: String,
+    #[clap(short = 'p', long, help = "Full path to the driver eg: c:\\temp...")]
+    path: String,
+}
 
-fn create_driver_service(name: String, details: String, path: String) -> bool {
+fn create_driver_service(name: &String, details: &String, path: &String) -> bool {
     println!("Open the service manager");
     let scmanager: SC_HANDLE =
         unsafe { OpenSCManagerW(PCWSTR::null(), PCWSTR::null(), SC_MANAGER_ALL_ACCESS) }
@@ -86,22 +96,24 @@ fn create_driver_service(name: String, details: String, path: String) -> bool {
     }
 }
 
-/* Version 20230908 */
-pub fn run_byovd(internal: String, display: String, path: String) -> i32 {
-    println!("Bring Your Own Vulnerable Driver");
+impl BYOVD {
+    /* Version 20230908 */
+    pub fn run(&self) -> i32 {
+        println!("Bring Your Own Vulnerable Driver");
 
-    if process_is_admin() == false {
-        return EXIST_TEST_ERROR;
-    }
+        if process_is_admin() == false {
+            return EXIST_TEST_ERROR;
+        }
 
-    // Todo check path is valid or not :)
+        // Todo check path is valid or not :)
 
-    let result: bool = create_driver_service(internal, display, path);
-    if result {
-        println!("All good ");
-        return EXIST_ALL_GOOD;
-    } else {
-        println!("Sorry get a error");
-        return EXIST_TEST_ERROR;
+        let result: bool = create_driver_service(&self.internal, &self.display, &self.path);
+        if result {
+            println!("All good ");
+            return EXIST_ALL_GOOD;
+        } else {
+            println!("Sorry get a error");
+            return EXIST_TEST_ERROR;
+        }
     }
 }
