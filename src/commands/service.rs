@@ -12,7 +12,7 @@ use windows::Win32::System::Services::{
 };
 
 // Some others
-use crate::artefact::tools::{process_is_admin, EXIST_ALL_GOOD, EXIST_TEST_ERROR};
+use crate::commands::tools::{process_is_admin, EXIST_ALL_GOOD, EXIST_TEST_ERROR};
 use clap::Parser;
 use std::{thread, time};
 

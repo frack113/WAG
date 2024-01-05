@@ -14,7 +14,7 @@ You can use `SET | more` or `Get-ChildItem Env:` to get the list
 
 */
 
-use crate::artefact::tools::{
+use crate::commands::tools::{
     hex_to_bytes, pretty_print_hashset, process_is_admin, regex_to_string, EXIST_ALL_GOOD,
     EXIST_CLI_ERROR, EXIST_TEST_ERROR,
 };

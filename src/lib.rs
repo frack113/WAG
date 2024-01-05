@@ -1,2 +1,2 @@
-pub mod artefact;
 pub mod cli;
+pub mod commands;

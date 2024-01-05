@@ -9,10 +9,10 @@
 
 */
 
-use crate::artefact::file::FileCreate;
-use crate::artefact::file::ADS;
-use crate::artefact::namepipe::NamePipe;
-use crate::artefact::service::BYOVD;
+use crate::commands::file::FileCreate;
+use crate::commands::file::ADS;
+use crate::commands::namepipe::NamePipe;
+use crate::commands::service::BYOVD;
 use clap::Parser;
 
 #[derive(Parser)]
