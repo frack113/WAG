@@ -14,31 +14,64 @@ You can use `SET | more` or `Get-ChildItem Env:` to get the list
 
 */
 
-// Windows API
-use windows::core::Result as WindowsResult;
-use windows::core::PCSTR;
-use windows::Win32::Foundation::{CloseHandle, GENERIC_WRITE, HANDLE};
-use windows::Win32::Storage::FileSystem::{
-    CreateFileA, WriteFile, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_WRITE,
+use crate::commands::tools::{
+    hex_to_bytes, pretty_print_hashset, process_is_admin, regex_to_string, EXIST_ALL_GOOD,
+    EXIST_CLI_ERROR, EXIST_TEST_ERROR,
 };
-
-use std::io::Result as IOResult;
-use std::time::Duration;
-// Some others
-use std::{thread, time};
-
+use clap::Parser;
 use serde::Deserialize;
-
 use std::collections::{HashMap, HashSet};
 use std::env;
 use std::ffi::OsString;
 use std::fs::File;
+use std::io::Result as IOResult;
 use std::path::{Path, PathBuf};
+use std::time::Duration;
+use std::{thread, time};
 
-use super::tools::{
-    hex_to_bytes, pretty_print_hashset, process_is_admin, regex_to_string, EXIST_ALL_GOOD,
-    EXIST_CLI_ERROR, EXIST_TEST_ERROR,
-};
+#[derive(Parser)]
+pub struct FileCreate {
+    #[clap(
+        short = 'm',
+        long,
+        required = false,
+        default_value = "",
+        help = "Name of the malware to mimic"
+    )]
+    module: String,
+    #[clap(
+        short = 'g',
+        long,
+        required = false,
+        default_value_t = false,
+        help = "Get all the possible mimic name and quit"
+    )]
+    get: bool,
+    #[clap(
+        short = 'f',
+        long,
+        required = false,
+        default_value = "",
+        help = "Full path filename (regex) with module manual"
+    )]
+    filename: String,
+    #[clap(
+        short = 'b',
+        long,
+        required = false,
+        default_value = "",
+        help = "MagicBytes name to use with module manual "
+    )]
+    magicbyte: String,
+    #[clap(
+        short = 'd',
+        long,
+        required = false,
+        default_value_t = false,
+        help = "Get all the possible MagicBytes name with module manual"
+    )]
+    details: bool,
+}
 
 /*
     Json Data structure
@@ -89,7 +122,7 @@ struct PayloadPathInfo {
 }
 
 #[derive(Clone)]
-struct FileArtefact {
+pub struct FileArtefact {
     magicbyte: HashMap<String, String>,
     payload: HashMap<String, PayloadPathInfo>,
     ads_adsname: HashMap<String, String>,
@@ -97,7 +130,7 @@ struct FileArtefact {
 }
 
 impl FileArtefact {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             magicbyte: HashMap::new(),
             payload: HashMap::new(),
@@ -106,7 +139,7 @@ impl FileArtefact {
         }
     }
 
-    fn load(&mut self, path: &str) {
+    pub fn load(&mut self, path: &str) {
         let file_path: PathBuf = std::env::current_dir()
             .expect("Failed to get current folder")
             .join(path);
@@ -196,15 +229,15 @@ impl FileArtefact {
         }
     }
 
-    fn file_ads_list(&self) -> HashSet<String> {
+    pub fn file_ads_list(&self) -> HashSet<String> {
         self.ads_adsname.keys().cloned().collect()
     }
 
-    fn file_ads_exist(&self, name: &str) -> bool {
+    pub fn file_ads_exist(&self, name: &str) -> bool {
         self.ads_adsname.contains_key(name)
     }
 
-    fn file_ads_get_data(&self, name: &str) -> Vec<u8> {
+    pub fn file_ads_get_data(&self, name: &str) -> Vec<u8> {
         println!("Ask for {}", name);
         let payload: &String = self.ads_hexvalue.get(name).clone().unwrap(); //Can not faild as the key exist
         println!("{}", payload);
@@ -215,7 +248,7 @@ impl FileArtefact {
         }
     }
 
-    fn file_ads_get_name(&self, name: &str) -> String {
+    pub fn file_ads_get_name(&self, name: &str) -> String {
         let data: &String = self.ads_adsname.get(name).clone().unwrap(); //Can not faild as the key exist
         data.to_string()
     }
@@ -253,144 +286,70 @@ fn create_file(fullpath: String, hex_data: Vec<u8>) -> bool {
     return false;
 }
 
-fn create_ads(fullpath: String, adsname: String, hex_data: Vec<u8>) -> bool {
-    let file_path: String = format!("{}:{}\0", fullpath, adsname);
-    println!("ads: {}", file_path);
+impl FileCreate {
+    /* Version 20230908 */
+    pub fn run(&self) -> i32 {
+        println!("Create a file on disk");
+        let mut artefact: FileArtefact = FileArtefact::new();
+        artefact.load("data/files.json");
 
-    let handle: HANDLE = unsafe {
-        CreateFileA(
-            PCSTR::from_raw(file_path.as_ptr()),
-            GENERIC_WRITE.0,
-            FILE_SHARE_WRITE,
-            None,
-            CREATE_ALWAYS,
-            FILE_ATTRIBUTE_NORMAL,
-            HANDLE::default(),
-        )
-    }
-    .unwrap();
-
-    let result: WindowsResult<()> = unsafe {
-        WriteFile(
-            handle,
-            Some(hex_data.as_slice()),
-            Some(hex_data.len() as *mut u32),
-            None,
-        )
-    };
-
-    let _: WindowsResult<()> = unsafe { CloseHandle(handle) };
-
-    match result {
-        Ok(_) => {
-            return true;
-        }
-        Err(_) => {
-            return false;
-        }
-    }
-}
-
-/* Version 20230908 */
-pub fn run_createfile(
-    module: String,
-    get: bool,
-    filename: String,
-    magicbyte: String,
-    details: bool,
-) -> i32 {
-    println!("Create a file on disk");
-    let mut artefact: FileArtefact = FileArtefact::new();
-    artefact.load("data/files.json");
-
-    if get == true {
-        let all_name: HashSet<String> = artefact.file_payload_list();
-        pretty_print_hashset("Name for the mimic File creation".to_string(), all_name);
-        return EXIST_ALL_GOOD;
-    }
-
-    let fullname: String;
-    let payload: Vec<u8>;
-
-    if module == "manual" {
-        if details == true {
-            let all_name: HashSet<String> = artefact.file_magicbyte_list();
-            pretty_print_hashset("Name for the MagicByte File creation".to_string(), all_name);
+        if self.get == true {
+            let all_name: HashSet<String> = artefact.file_payload_list();
+            pretty_print_hashset("Name for the mimic File creation".to_string(), all_name);
             return EXIST_ALL_GOOD;
         }
 
-        if artefact.file_magicbyte_exist(&magicbyte) == false {
-            println!("Did not find \"{}\" name for MagicBytes Option", magicbyte);
-            println!("You can use the help option --help");
-            return EXIST_CLI_ERROR;
-        }
+        let fullname: String;
+        let payload: Vec<u8>;
 
-        if filename.len() > 0 {
-            println!("Get the regex : {}", filename);
-            fullname = regex_to_string(&filename);
-            payload = artefact.file_magicbyte_get(&magicbyte);
+        if self.module == "manual" {
+            if self.details == true {
+                let all_name: HashSet<String> = artefact.file_magicbyte_list();
+                pretty_print_hashset("Name for the MagicByte File creation".to_string(), all_name);
+                return EXIST_ALL_GOOD;
+            }
+
+            if artefact.file_magicbyte_exist(&self.magicbyte) == false {
+                println!(
+                    "Did not find \"{}\" name for MagicBytes Option",
+                    self.magicbyte
+                );
+                println!("You can use the help option --help");
+                return EXIST_CLI_ERROR;
+            }
+
+            if self.filename.len() > 0 {
+                println!("Get the regex : {}", self.filename);
+                fullname = regex_to_string(&self.filename);
+                payload = artefact.file_magicbyte_get(&self.magicbyte);
+            } else {
+                return EXIST_CLI_ERROR;
+            }
         } else {
-            return EXIST_CLI_ERROR;
+            if artefact.file_payload_exist(&self.module) == false {
+                println!("Did not find \"{}\" name for filecreate", self.module);
+                println!("You can use the help option --help");
+                return EXIST_CLI_ERROR;
+            }
+
+            let payload_type: String = artefact.file_payload_getfiletype(&self.module);
+            let admin: bool = artefact.file_payload_needroot(&self.module);
+
+            fullname = artefact.file_payload_getfilename(&self.module);
+            payload = artefact.file_magicbyte_get(&payload_type);
+
+            if admin && !process_is_admin() {
+                println!("Need to have Administrator right to create the file");
+                return EXIST_TEST_ERROR;
+            }
         }
-    } else {
-        if artefact.file_payload_exist(&module) == false {
-            println!("Did not find \"{}\" name for filecreate", module);
-            println!("You can use the help option --help");
-            return EXIST_CLI_ERROR;
-        }
 
-        let payload_type: String = artefact.file_payload_getfiletype(&module);
-        let admin: bool = artefact.file_payload_needroot(&module);
+        let ret: bool = create_file(fullname, payload);
 
-        fullname = artefact.file_payload_getfilename(&module);
-        payload = artefact.file_magicbyte_get(&payload_type);
-
-        if admin && !process_is_admin() {
-            println!("Need to have Administrator right to create the file");
-            return EXIST_TEST_ERROR;
-        }
-    }
-
-    let ret: bool = create_file(fullname, payload);
-
-    if ret == true {
-        return EXIST_ALL_GOOD;
-    } else {
-        return EXIST_TEST_ERROR;
-    }
-}
-
-/* Version 20230908 */
-pub fn run_ads(module: String, get: bool, filename: String) -> i32 {
-    println!("Alternate Data Stream");
-    let mut artefact: FileArtefact = FileArtefact::new();
-    artefact.load("data/files.json");
-
-    if get == true {
-        let all_name: HashSet<String> = artefact.file_ads_list();
-        pretty_print_hashset("Name for the ADS File data".to_string(), all_name);
-        return EXIST_ALL_GOOD;
-    }
-
-    if artefact.file_ads_exist(&module) == false {
-        println!("Did not find \"{}\" name for ads", module);
-        println!("You can use the help option --help");
-        return EXIST_CLI_ERROR;
-    }
-
-    if filename.len() > 0 {
-        println!("Get the regex : {}", filename);
-        let fullname: String = regex_to_string(&filename);
-        println!("Create the ADS");
-        let name_ads: String = artefact.file_ads_get_name(&module);
-        let payload: Vec<u8> = artefact.file_ads_get_data(&module);
-        let ret_ads: bool = create_ads(fullname, name_ads, payload);
-        if ret_ads == true {
+        if ret == true {
             return EXIST_ALL_GOOD;
         } else {
             return EXIST_TEST_ERROR;
         }
     }
-
-    EXIST_CLI_ERROR
 }
