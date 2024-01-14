@@ -17,10 +17,8 @@ use clap::Parser;
 
 #[derive(Parser)]
 #[clap(author, version)]
-#[clap(disable_version_flag = true)]
+#[clap(arg_required_else_help = true)]
 pub struct Arguments {
-    #[clap(short = 'v', long)]
-    version: bool,
     #[clap(subcommand)]
     command: Option<Commands>,
 }
