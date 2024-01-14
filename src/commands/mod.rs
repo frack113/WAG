@@ -1,3 +1,4 @@
+pub mod ads;
 pub mod file;
 pub mod namepipe;
 pub mod service;
