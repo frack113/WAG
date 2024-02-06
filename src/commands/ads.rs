@@ -2,14 +2,11 @@ use super::file::FileArtefact;
 use crate::commands::tools::{
     pretty_print_hashset, regex_to_string, EXIST_ALL_GOOD, EXIST_CLI_ERROR, EXIST_TEST_ERROR,
 };
+
 use clap::Parser;
 use std::collections::HashSet;
-use windows::core::Result as WindowsResult;
-use windows::core::PCSTR;
-use windows::Win32::Foundation::{CloseHandle, GENERIC_WRITE, HANDLE};
-use windows::Win32::Storage::FileSystem::{
-    CreateFileA, WriteFile, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_WRITE,
-};
+use std::path::Path;
+
 
 #[derive(Parser)]
 pub struct ADS {
@@ -40,40 +37,28 @@ pub struct ADS {
 }
 
 fn create_ads(fullpath: String, adsname: String, hex_data: Vec<u8>) -> bool {
-    let file_path: String = format!("{}:{}\0", fullpath, adsname);
-    println!("ads: {}", file_path);
+    let file_base: &Path = Path::new(&fullpath);
+    if !file_base.exists() {
+        println!("Missing base file for ADS, try to create it");
+        let folder: &Path = file_base.parent().unwrap();
 
-    let handle: HANDLE = unsafe {
-        CreateFileA(
-            PCSTR::from_raw(file_path.as_ptr()),
-            GENERIC_WRITE.0,
-            FILE_SHARE_WRITE,
-            None,
-            CREATE_ALWAYS,
-            FILE_ATTRIBUTE_NORMAL,
-            HANDLE::default(),
-        )
+        let ret_folder: Result<(), std::io::Error> = std::fs::create_dir_all(folder);
+        match ret_folder {
+            Ok(_) => println!("The folder is valid"),
+            Err(_) => return false,
+        }
+        let ret_file: Result<(), std::io::Error> = std::fs::write(file_base, vec![87,105,110,100,111,119,115,32,65,114,116,101,102,97,99,116,32,71,101,110,101,114,97,116,111,114]);
+        match ret_file {
+            Ok(_) => println!("The base file is created"),
+            Err(_) => return false,
+        }
     }
-    .unwrap();
-
-    let result: WindowsResult<()> = unsafe {
-        WriteFile(
-            handle,
-            Some(hex_data.as_slice()),
-            Some(hex_data.len() as *mut u32),
-            None,
-        )
-    };
-
-    let _: WindowsResult<()> = unsafe { CloseHandle(handle) };
-
-    match result {
-        Ok(_) => {
-            return true;
-        }
-        Err(_) => {
-            return false;
-        }
+    let full_ads_name:String = format!("{}:{}", fullpath, adsname);
+    let file_ads: &Path = Path::new(&full_ads_name);
+    let ret_file: Result<(), std::io::Error> = std::fs::write(file_ads, hex_data);
+    match ret_file {
+        Ok(_) => return true,
+        Err(_) => return false,
     }
 }
 
