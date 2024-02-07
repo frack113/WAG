@@ -23,7 +23,7 @@ rpath = false
 winres = "0"
 
 [dependencies]
-windows = { version = "0.51", features = [
+windows = { version = "0.52", features = [
   "Win32_System_Pipes",
   "Win32_Foundation",
   "Win32_Security",
