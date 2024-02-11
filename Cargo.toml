@@ -38,3 +38,4 @@ clap = { version = "4", features = ["derive"] }
 rand = "0"
 regex_generate = "0"
 widestring = "1"
+sysinfo = "0.30.5"

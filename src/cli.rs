@@ -12,6 +12,7 @@
 use crate::commands::ads::ADS;
 use crate::commands::file::FileCreate;
 use crate::commands::namepipe::NamePipe;
+use crate::commands::ppid::PPID;
 use crate::commands::service::BYOVD;
 use clap::Parser;
 
@@ -30,6 +31,7 @@ impl Arguments {
             Some(Commands::ADS(ads)) => ads.run(),
             Some(Commands::NamePipe(name_pipe)) => name_pipe.run(),
             Some(Commands::BYOVD(byovd)) => byovd.run(),
+            Some(Commands::PPID(ppid)) => ppid.run(),
             None => {
                 return 2;
             }
@@ -47,4 +49,6 @@ pub enum Commands {
     NamePipe(NamePipe),
     #[clap(arg_required_else_help = true)]
     BYOVD(BYOVD),
+    #[clap(arg_required_else_help = true)]
+    PPID(PPID),
 }

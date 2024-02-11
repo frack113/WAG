@@ -7,7 +7,6 @@ use clap::Parser;
 use std::collections::HashSet;
 use std::path::Path;
 
-
 #[derive(Parser)]
 pub struct ADS {
     #[clap(
@@ -47,13 +46,19 @@ fn create_ads(fullpath: String, adsname: String, hex_data: Vec<u8>) -> bool {
             Ok(_) => println!("The folder is valid"),
             Err(_) => return false,
         }
-        let ret_file: Result<(), std::io::Error> = std::fs::write(file_base, vec![87,105,110,100,111,119,115,32,65,114,116,101,102,97,99,116,32,71,101,110,101,114,97,116,111,114]);
+        let ret_file: Result<(), std::io::Error> = std::fs::write(
+            file_base,
+            vec![
+                87, 105, 110, 100, 111, 119, 115, 32, 65, 114, 116, 101, 102, 97, 99, 116, 32, 71,
+                101, 110, 101, 114, 97, 116, 111, 114,
+            ],
+        );
         match ret_file {
             Ok(_) => println!("The base file is created"),
             Err(_) => return false,
         }
     }
-    let full_ads_name:String = format!("{}:{}", fullpath, adsname);
+    let full_ads_name: String = format!("{}:{}", fullpath, adsname);
     let file_ads: &Path = Path::new(&full_ads_name);
     let ret_file: Result<(), std::io::Error> = std::fs::write(file_ads, hex_data);
     match ret_file {
