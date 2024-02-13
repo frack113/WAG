@@ -10,16 +10,18 @@ use sysinfo::System;
 
 use core::ffi::c_void;
 use std::mem::size_of;
-use windows::core::PCSTR;
 use windows::core::PSTR;
-use windows::Win32::Foundation::HANDLE;
+use windows::Win32::Foundation::{CloseHandle,HANDLE};
 use windows::Win32::System::Memory::{GetProcessHeap, HeapAlloc, HEAP_FLAGS};
 use windows::Win32::System::Threading::{
-    CreateProcessA, InitializeProcThreadAttributeList, OpenProcess, UpdateProcThreadAttribute,
+    CreateProcessA, InitializeProcThreadAttributeList, OpenProcess, UpdateProcThreadAttribute,TerminateProcess,WaitForSingleObject,
     LPPROC_THREAD_ATTRIBUTE_LIST, PROCESS_ACCESS_RIGHTS, PROCESS_CREATION_FLAGS,
     PROCESS_INFORMATION, PROC_THREAD_ATTRIBUTE_PARENT_PROCESS, STARTF_USESHOWWINDOW,
     STARTUPINFOEXA,
 };
+
+use std::thread;
+use std::time::Duration;
 
 #[derive(Parser)]
 pub struct PPID {
@@ -82,7 +84,7 @@ fn create_ppid(name: &String) -> bool {
 
         println!("CreateProcessA");
         let process_name = format!("{}\0", name);
-        let success = CreateProcessA(
+        let new_process = CreateProcessA(
             None,
             PSTR::from_raw(process_name.to_owned().as_mut_ptr()),
             None,
@@ -94,9 +96,20 @@ fn create_ppid(name: &String) -> bool {
             &mut sinfo.StartupInfo,
             &mut pi,
         );
+        match new_process{
+            Ok(_) => {
+                println!("New process is created with pid {:}",pi.dwProcessId);
+                let wait_duration: Duration = Duration::from_millis(2000);
+                thread::sleep(wait_duration);
+                let _ = TerminateProcess(pi.hProcess, 0);
+                let _ = WaitForSingleObject(pi.hProcess, 5000);
+                let _ = CloseHandle(pi.hProcess);
+                let _ = CloseHandle(pi.hThread);
+                return true;
+            },
+            Err(_) => return false,
+        }
     }
-
-    return true;
 }
 
 impl PPID {
