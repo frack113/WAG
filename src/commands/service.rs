@@ -1,6 +1,7 @@
 //
-// Artefact generator
+// Load Vulnerable Driver
 //
+// Last update 20240224
 
 // Windows API
 use windows::core::{Result as WindowsResult, PCWSTR};
