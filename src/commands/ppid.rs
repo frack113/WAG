@@ -11,13 +11,13 @@ use sysinfo::System;
 use core::ffi::c_void;
 use std::mem::size_of;
 use windows::core::PSTR;
-use windows::Win32::Foundation::{CloseHandle,HANDLE};
+use windows::Win32::Foundation::{CloseHandle, HANDLE};
 use windows::Win32::System::Memory::{GetProcessHeap, HeapAlloc, HEAP_FLAGS};
 use windows::Win32::System::Threading::{
-    CreateProcessA, InitializeProcThreadAttributeList, OpenProcess, UpdateProcThreadAttribute,TerminateProcess,WaitForSingleObject,
-    LPPROC_THREAD_ATTRIBUTE_LIST, PROCESS_ACCESS_RIGHTS, PROCESS_CREATION_FLAGS,
-    PROCESS_INFORMATION, PROC_THREAD_ATTRIBUTE_PARENT_PROCESS, STARTF_USESHOWWINDOW,
-    STARTUPINFOEXA,
+    CreateProcessA, InitializeProcThreadAttributeList, OpenProcess, TerminateProcess,
+    UpdateProcThreadAttribute, WaitForSingleObject, LPPROC_THREAD_ATTRIBUTE_LIST,
+    PROCESS_ACCESS_RIGHTS, PROCESS_CREATION_FLAGS, PROCESS_INFORMATION,
+    PROC_THREAD_ATTRIBUTE_PARENT_PROCESS, STARTF_USESHOWWINDOW, STARTUPINFOEXA,
 };
 
 use std::thread;
@@ -48,31 +48,34 @@ fn get_user_pid() -> u32 {
 fn create_ppid(name: &String) -> bool {
     let new_ppid: u32 = get_user_pid();
     println!("Use the PPID {}", new_ppid);
-    unsafe {
-        println!("Open the Parent Process");
-        let mut parent_process_handle: HANDLE =
-            OpenProcess(PROCESS_ACCESS_RIGHTS(0x02000000), false, new_ppid).unwrap();
+    println!("Open the Parent Process");
+    let mut parent_process_handle: HANDLE =
+        unsafe { OpenProcess(PROCESS_ACCESS_RIGHTS(0x02000000), false, new_ppid).unwrap() };
 
-        let mut pi: PROCESS_INFORMATION = PROCESS_INFORMATION::default();
-        let mut sinfo: STARTUPINFOEXA = STARTUPINFOEXA::default();
-        let mut cb_attribute_list_size: usize = size_of::<STARTUPINFOEXA>();
+    let mut pi: PROCESS_INFORMATION = PROCESS_INFORMATION::default();
+    let mut sinfo: STARTUPINFOEXA = STARTUPINFOEXA::default();
+    let mut cb_attribute_list_size: usize = size_of::<STARTUPINFOEXA>();
+    sinfo.StartupInfo.cb = cb_attribute_list_size as u32;
+    sinfo.StartupInfo.dwFlags = STARTF_USESHOWWINDOW;
 
-        sinfo.StartupInfo.cb = cb_attribute_list_size as u32;
-        sinfo.StartupInfo.dwFlags = STARTF_USESHOWWINDOW;
-
-        println!("allocate memory for PROC_THREAD_ATTRIBUTE_LIST");
-        sinfo.lpAttributeList = LPPROC_THREAD_ATTRIBUTE_LIST(HeapAlloc(
+    println!("allocate memory for PROC_THREAD_ATTRIBUTE_LIST");
+    sinfo.lpAttributeList = LPPROC_THREAD_ATTRIBUTE_LIST(unsafe {
+        HeapAlloc(
             GetProcessHeap().unwrap(),
             HEAP_FLAGS(0),
             cb_attribute_list_size,
-        ));
+        )
+    });
 
-        println!("InitializeProcThreadAttributeList");
+    println!("InitializeProcThreadAttributeList");
+    unsafe {
         InitializeProcThreadAttributeList(sinfo.lpAttributeList, 1, 0, &mut cb_attribute_list_size)
-            .unwrap();
+            .unwrap()
+    };
 
-        println!("UpdateProcThreadAttribute");
-        let _ = UpdateProcThreadAttribute(
+    println!("UpdateProcThreadAttribute");
+    let _ = unsafe {
+        UpdateProcThreadAttribute(
             sinfo.lpAttributeList,
             0,
             PROC_THREAD_ATTRIBUTE_PARENT_PROCESS as usize,
@@ -80,11 +83,13 @@ fn create_ppid(name: &String) -> bool {
             size_of::<HANDLE>(),
             None,
             None,
-        );
+        )
+    };
 
-        println!("CreateProcessA");
-        let process_name = format!("{}\0", name);
-        let new_process = CreateProcessA(
+    println!("CreateProcessA");
+    let process_name = format!("{}\0", name);
+    let new_process = unsafe {
+        CreateProcessA(
             None,
             PSTR::from_raw(process_name.to_owned().as_mut_ptr()),
             None,
@@ -95,20 +100,20 @@ fn create_ppid(name: &String) -> bool {
             None,
             &mut sinfo.StartupInfo,
             &mut pi,
-        );
-        match new_process{
-            Ok(_) => {
-                println!("New process is created with pid {:}",pi.dwProcessId);
-                let wait_duration: Duration = Duration::from_millis(2000);
-                thread::sleep(wait_duration);
-                let _ = TerminateProcess(pi.hProcess, 0);
-                let _ = WaitForSingleObject(pi.hProcess, 5000);
-                let _ = CloseHandle(pi.hProcess);
-                let _ = CloseHandle(pi.hThread);
-                return true;
-            },
-            Err(_) => return false,
+        )
+    };
+    match new_process {
+        Ok(_) => {
+            println!("New process is created with pid {:}", pi.dwProcessId);
+            let wait_duration: Duration = Duration::from_millis(2000);
+            thread::sleep(wait_duration);
+            let _ = unsafe { TerminateProcess(pi.hProcess, 0) };
+            let _ = unsafe { WaitForSingleObject(pi.hProcess, 5000) };
+            let _ = unsafe { CloseHandle(pi.hProcess) };
+            let _ = unsafe { CloseHandle(pi.hThread) };
+            return true;
         }
+        Err(_) => return false,
     }
 }
 
