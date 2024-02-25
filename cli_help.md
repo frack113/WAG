@@ -1,5 +1,7 @@
 # Ads
 
+`wag ads -f file_full_path -a ads -d data`
+
 | Type | ads | data |
 | --- | --- | --- |
 |ZoneTransfer 0|Zone.Identifier|5b5a6f6e655472616e736665725d0d0a5a6f6e6549643d300d0a526566657272657255726c3d633a5c77696e646f77735c7761672e7a69700d0a|
@@ -23,8 +25,8 @@
 
 ## well known File
 
-`wag file-create -f fullpath -m Magicbyte` 
-`wag file-create -v cmd_var -p cmd_path -m Magicbyte` 
+`wag file-create -f fullpath -m Magicbyte_Hex` 
+`wag file-create -v cmd_var -p cmd_path -m Magicbyte_Hex` 
 
 |name|Admin|Magicbyte|fullpath|cmd_var|cmd_path|
 |---|---|---|---|---|---|
