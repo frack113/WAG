@@ -47,37 +47,37 @@
 
 | name | regex |
 | --- | --- |
-| CSExec | `\\csexecsvc`
-| psexec | `\\psexec`
-| psexec | `\\PAExec`
-| psexec | `\\remcom`
-| psexec | `\\csexec`
-| psexec | `\\PSEXESVC`
-| Cobal_strike | `\\mojo\\.5688\\.8052\\.(?:183894939787088877|35780273329370473)[0-9a-f]{2}`
-| Cobal_strike | `\\wkssvc_?[0-9a-f]{2}`
-| Cobal_strike | `\\ntsvcs[0-9a-f]{2}`
-| Cobal_strike | `\\DserNamePipe[0-9a-f]{2}`
-| Cobal_strike | `\\SearchTextHarvester[0-9a-f]{2}`
-| Cobal_strike | `\\mypipe-(?:f|h)[0-9a-f]{2}`
-| Cobal_strike | `\\windows\\.update\\.manager[0-9a-f]{2,3}`
-| Cobal_strike | `\\ntsvcs_[0-9a-f]{2}`
-| Cobal_strike | `\\scerpc_?[0-9a-f]{2}`
-| Cobal_strike | `\\PGMessagePipe[0-9a-f]{2}`
-| Cobal_strike | `\\MsFteWds[0-9a-f]{2}`
-| Cobal_strike | `\\f4c3[0-9a-f]{2}`
-| Cobal_strike | `\\fullduplex_[0-9a-f]{2}`
-| Cobal_strike | `\\msrpc_[0-9a-f]{4}`
-| Cobal_strike | `\\win\\msrpc_[0-9a-f]{2}`
-| Cobal_strike | `\\f53f[0-9a-f]{2}`
-| Cobal_strike | `\\rpc_[0-9a-f]{2}`
-| Cobal_strike | `\\spoolss_[0-9a-f]{2}`
-| Cobal_strike | `\\Winsock2\\CatalogChangeListener-[0-9a-f]{3}-0,`
-| DiagTrackEoP | `thisispipe`
-| EfsPotato | `\\pipe\\srvsvc`
-| Credential_Dumping | `\\cachedump`
-| Credential_Dumping | `\\lsadump`
-| Credential_Dumping | `\\wceservicepipe`
-| Koh | `\\imposecost`
-| Koh | `\\imposingcost`
-| PowerShell | `\\PSHost`
-| ADFS | `\\MICROSOFT##WID\\tsql\\query`
+| CSExec | `\\csexecsvc` |
+| psexec | `\\psexec` |
+| psexec | `\\PAExec` |
+| psexec | `\\remcom` |
+| psexec | `\\csexec` |
+| psexec | `\\PSEXESVC` |
+| Cobal_strike | `\\mojo\\.5688\\.8052\\.(?:183894939787088877|35780273329370473)[0-9a-f]{2}` |
+| Cobal_strike | `\\wkssvc_?[0-9a-f]{2}` |
+| Cobal_strike | `\\ntsvcs[0-9a-f]{2}` |
+| Cobal_strike | `\\DserNamePipe[0-9a-f]{2}` |
+| Cobal_strike | `\\SearchTextHarvester[0-9a-f]{2}` |
+| Cobal_strike | `\\mypipe-(?:f|h)[0-9a-f]{2}` |
+| Cobal_strike | `\\windows\\.update\\.manager[0-9a-f]{2,3}` |
+| Cobal_strike | `\\ntsvcs_[0-9a-f]{2}` |
+| Cobal_strike | `\\scerpc_?[0-9a-f]{2}` |
+| Cobal_strike | `\\PGMessagePipe[0-9a-f]{2}` |
+| Cobal_strike | `\\MsFteWds[0-9a-f]{2}` |
+| Cobal_strike | `\\f4c3[0-9a-f]{2}` |
+| Cobal_strike | `\\fullduplex_[0-9a-f]{2}` |
+| Cobal_strike | `\\msrpc_[0-9a-f]{4}` |
+| Cobal_strike | `\\win\\msrpc_[0-9a-f]{2}` |
+| Cobal_strike | `\\f53f[0-9a-f]{2}` |
+| Cobal_strike | `\\rpc_[0-9a-f]{2}` |
+| Cobal_strike | `\\spoolss_[0-9a-f]{2}` |
+| Cobal_strike | `\\Winsock2\\CatalogChangeListener-[0-9a-f]{3}-0,` |
+| DiagTrackEoP | `thisispipe` |
+| EfsPotato | `\\pipe\\srvsvc` |
+| Credential_Dumping | `\\cachedump` |
+| Credential_Dumping | `\\lsadump` |
+| Credential_Dumping | `\\wceservicepipe` |
+| Koh | `\\imposecost` |
+| Koh | `\\imposingcost` |
+| PowerShell | `\\PSHost` |
+| ADFS | `\\MICROSOFT##WID\\tsql\\query` |
