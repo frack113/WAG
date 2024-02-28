@@ -26,8 +26,6 @@ __          ___           _
 # Purpose
 Generating Windows malware Artefacts for detection testing
 
-Thanks to https://github.com/trickster0/OffensiveRust for the help.
-
 Wag is not a TTP simulator like Redcanary, it is a simple artefact generator.
 but why ?
 
@@ -44,76 +42,14 @@ See [Artefacts file](Artefacts.md)
 # How Contribute
 
 - repport bug
-- update the json file
 - fix some code
 - add new artefact
+- add more example
 
 # General Use
 
-## Command Line
-```bash
-Usage: wag.exe <COMMAND>
-```
-`<COMMAND>` is the artefact type to generate
-
-the same flags are used as much as possible to maintain consistency:
-
-- --help      : display the help
-- --module    : name of the "ttp" mimic 
-- --get       : list all the module
-- --detail    : list all the selection for a module (only some artefact)
-
- 
-## Data Structure
-The artefact information are stored in a json file
-Warnning,as we have regex in json need 2 escape level for `\`
-
-### namepipe.json
-
-```json
-{
-  "name": "Name of the malware family/test",
-  "namepipe": [
-      "regex 1",
-      "regex x"
-  ]
-}
+```cmd
+wag.exe <COMMAND>
 ```
 
-### file.json
-```json
-{
-    "magicbytes": [
-        {
-            "name":"Name to use",
-            "magicbyte":"HEX to be written"
-        }
-    ],
-    "payloads":[
-        {
-            "name":"Name to use",
-            "needroot": boolean ,
-            "file_type":"Name of the magicbytes",
-            "fullpath":"regex path",
-            "cmd_var":"System variable",
-            "cmd_path":"regex path"
-        }
-    ],
-    "ads":[
-        {
-            "name":"regex path",
-            "adsname":"ADS Name to use",
-            "hexvalue":"HEX to be written"
-        }
-    ]
-}
-```
-
-# TODO LIST
-
-- [ ] Add process artefact
-- [ ] Add dll artefact ? 
-- [ ] Doc and help
-- [ ] Bug
-- [ ] make a better code
-- [ ] update create_file to return bool
+Example can be found here [cli_help](cli_help.md)

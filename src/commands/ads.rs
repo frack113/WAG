@@ -1,10 +1,13 @@
-use super::file::FileArtefact;
+//
+// Alternate Data Stream
+//
+// Last update 20240224
+
 use crate::commands::tools::{
-    pretty_print_hashset, regex_to_string, EXIST_ALL_GOOD, EXIST_CLI_ERROR, EXIST_TEST_ERROR,
+    hex_to_bytes, regex_to_string, EXIST_ALL_GOOD, EXIST_CLI_ERROR, EXIST_TEST_ERROR,
 };
 
 use clap::Parser;
-use std::collections::HashSet;
 use std::path::Path;
 
 #[derive(Parser)]
@@ -12,27 +15,27 @@ pub struct ADS {
     #[clap(
         short = 'f',
         long,
-        required = false,
+        required = true,
         default_value = "",
         help = "Full path filename (regex)"
     )]
     filename: String,
     #[clap(
-        short = 'm',
+        short = 'a',
         long,
-        required = false,
+        required = true,
         default_value = "",
         help = "ADS to use"
     )]
-    module: String,
+    ads: String,
     #[clap(
-        short = 'g',
+        short = 'd',
         long,
-        required = false,
-        default_value_t = false,
-        help = "Get all the possible ADS name and quit"
+        required = true,
+        default_value = "",
+        help = "Data to write in HEX"
     )]
-    get: bool,
+    data: String,
 }
 
 fn create_ads(fullpath: String, adsname: String, hex_data: Vec<u8>) -> bool {
@@ -71,28 +74,18 @@ impl ADS {
     /* Version 20230908 */
     pub fn run(&self) -> i32 {
         println!("Alternate Data Stream");
-        let mut artefact: FileArtefact = FileArtefact::new();
-        artefact.load("data/files.json");
-
-        if self.get == true {
-            let all_name: HashSet<String> = artefact.file_ads_list();
-            pretty_print_hashset("Name for the ADS File data".to_string(), all_name);
-            return EXIST_ALL_GOOD;
-        }
-
-        if artefact.file_ads_exist(&self.module) == false {
-            println!("Did not find \"{}\" name for ads", self.module);
-            println!("You can use the help option --help");
-            return EXIST_CLI_ERROR;
-        }
 
         if self.filename.len() > 0 {
-            println!("Get the regex : {}", self.filename);
             let fullname: String = regex_to_string(&self.filename);
-            println!("Create the ADS");
-            let name_ads: String = artefact.file_ads_get_name(&self.module);
-            let payload: Vec<u8> = artefact.file_ads_get_data(&self.module);
-            let ret_ads: bool = create_ads(fullname, name_ads, payload);
+
+            let header: Option<Vec<u8>> = hex_to_bytes(&self.data);
+            let payload: Vec<u8> = match header {
+                Some(data) => data,
+                None => vec![70, 114, 97, 99, 107, 49, 49, 51],
+            };
+
+            let barrow_ads: String = self.ads.to_string();
+            let ret_ads: bool = create_ads(fullname, barrow_ads, payload);
             if ret_ads == true {
                 return EXIST_ALL_GOOD;
             } else {

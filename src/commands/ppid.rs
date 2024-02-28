@@ -1,6 +1,7 @@
 //
-// PPID Artefact generator
+// PPID Spoofing
 //
+// Last update 20240224
 
 use crate::commands::tools::{EXIST_ALL_GOOD, EXIST_TEST_ERROR};
 use clap::Parser;
@@ -25,8 +26,12 @@ use std::time::Duration;
 
 #[derive(Parser)]
 pub struct PPID {
-    #[clap(short = 'p', long, help = "Full path to the driver eg: c:\\temp...")]
-    path: String,
+    #[clap(
+        short = 'e',
+        long,
+        help = "Full path to the executable eg: c:\\temp..."
+    )]
+    executable: String,
 }
 
 /* Use internal rust command */
@@ -121,7 +126,7 @@ impl PPID {
     /* Version 20240209 */
     pub fn run(&self) -> i32 {
         println!("PPID spoofing");
-        let result: bool = create_ppid(&self.path);
+        let result: bool = create_ppid(&self.executable);
         if result {
             println!("All good ");
             return EXIST_ALL_GOOD;
