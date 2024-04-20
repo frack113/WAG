@@ -81,3 +81,11 @@
 | Koh | `\\imposingcost` |
 | PowerShell | `\\PSHost` |
 | ADFS | `\\MICROSOFT##WID\\tsql\\query` |
+
+# Mutex
+
+`wag mutex -n "regex"`
+
+| name | regex |
+| --- | --- |
+|avoslocker | `Cheic0WaZie6zeiy` |
