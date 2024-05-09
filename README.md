@@ -36,7 +36,7 @@ It is not designed to generate IOC like ip, hash ...
 
 # Artefact
 
-See [Artefacts file](Artefacts.md)
+See [Artefacts file](./docs/Artefacts.md)
 
 
 # How Contribute
@@ -52,4 +52,4 @@ See [Artefacts file](Artefacts.md)
 wag.exe <COMMAND>
 ```
 
-Example can be found here [cli_help](cli_help.md)
+Example can be found here [cli_help](./docs/cli_help.md)
