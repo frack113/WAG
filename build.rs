@@ -26,7 +26,7 @@ fn main() {
 
         res.set_language((LANG_NEUTRAL << 10) | SUBLANG_NEUTRAL);
 
-        res.set_icon("wag.ico");
+        res.set_icon("./media/wag.ico");
 
         res.compile().unwrap();
     }
