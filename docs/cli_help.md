@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2023 The WAG team
+
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
 # Ads
 
 `wag ads -f file_full_path -a ads -d data`

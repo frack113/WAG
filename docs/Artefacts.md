@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2023 The WAG team
+
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
 # Artefact list <!-- omit in toc -->
 
 - [Sysmon V15 Artefact](#sysmon-v15-artefact)
