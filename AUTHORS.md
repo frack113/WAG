@@ -6,7 +6,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 # :pray: Credits
 
-## :clap: Project creator
+## :clap: Project creators
 
 - Frack113
 
