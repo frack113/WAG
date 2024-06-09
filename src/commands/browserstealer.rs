@@ -8,46 +8,62 @@
 // Last update 20240609
 
 use std::env;
-use std::fs;
+use std::fs::File;
+use std::io::Read;
 use walkdir::WalkDir;
 
 // Some others
 use crate::commands::tools::EXIST_ALL_GOOD;
-use clap::ArgAction;
 use clap::Parser;
 
 #[derive(Parser)]
 pub struct BrowserStealer {
-    #[clap(short = 'c', long, help = "Compress file into the default temp", action=ArgAction::SetFalse,required = false)]
-    compress: bool,
+    #[clap(short = 'b', long, help = "Browser to steal")]
+    browser: String,
 }
 
-fn steal_file(name: walkdir::DirEntry, temp: &str) {
+/// read the file like a stealer but do not process the data
+fn steal_file(name: walkdir::DirEntry) {
     let infile: String = name.path().display().to_string();
-    let outfile: String =
-        temp.to_owned() + &String::from('\\') + name.file_name().to_str().unwrap();
-    fs::copy(infile, outfile).unwrap();
+    let mut file: File = File::open(infile).unwrap();
+    let mut buffer: Vec<u8> = Vec::new();
+    file.read_to_end(&mut buffer).unwrap();
 }
 
 impl BrowserStealer {
-    /* Version 202406xx */
+    /* Version 20240609 */
     pub fn run(&self) -> i32 {
-        let sensitive_file = ["key4.db", "cookies.sqlite"];
+        let sensitive_files: Vec<&str> = match self.browser.as_str() {
+            "chrome" => vec!["Login Data", "Cookies", "History"],
+            "edge" => vec!["Login Data", "Cookies", "History"],
+            "firefox" => vec![
+                "key3.db",
+                "key4.db",
+                "logins.json",
+                "cert9.db",
+                "compatibility.ini",
+            ],
+            _ => vec!["password.txt"],
+        };
+
+        let brower_data = match self.browser.as_str() {
+            "chrome" => "\\AppData\\Local\\Google\\Chrome\\User Data",
+            "edge" => "\\AppData\\Local\\Microsoft\\Edge",
+            "firefox" => "\\AppData\\Roaming\\Mozilla\\Firefox",
+            _ => "\\AppData",
+        };
+
         println!("Mimic stealer file access ");
-        if self.compress {
-            println!("No compress for now :)");
-        }
 
-        let userprofile = env::var("USERPROFILE").unwrap();
-        println!("😈 looking in the folder {}", userprofile);
+        let userprofile: String = env::var("USERPROFILE").unwrap();
+        println!("😈 looking in the user folder : {}", userprofile);
 
-        let tempfolder = env::var("TEMP").unwrap();
-
-        for entry in WalkDir::new(userprofile).into_iter().filter_map(|e| e.ok()) {
+        let data_folder: String = userprofile + brower_data;
+        for entry in WalkDir::new(data_folder).into_iter().filter_map(|e| e.ok()) {
             let filename: &str = entry.file_name().to_str().unwrap();
-            if sensitive_file.contains(&&filename) {
-                println!("😈 stealing the file {}", filename);
-                steal_file(entry, &tempfolder);
+            if sensitive_files.contains(&&filename) {
+                println!("🥷 stealing the data from {}", entry.path().display());
+                steal_file(entry);
             }
         }
 
