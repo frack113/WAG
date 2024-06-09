@@ -14,6 +14,7 @@
 */
 
 use crate::commands::ads::ADS;
+use crate::commands::browserstealer::BrowserStealer;
 use crate::commands::file::FileCreate;
 use crate::commands::mutex::Mutex;
 use crate::commands::namepipe::NamePipe;
@@ -38,6 +39,7 @@ impl Arguments {
             Some(Commands::Mutex(mutex)) => mutex.run(),
             Some(Commands::BYOVD(byovd)) => byovd.run(),
             Some(Commands::PPID(ppid)) => ppid.run(),
+            Some(Commands::BrowserStealer(mystealer)) => mystealer.run(),
             None => {
                 return 2;
             }
@@ -59,4 +61,6 @@ pub enum Commands {
     BYOVD(BYOVD),
     #[clap(arg_required_else_help = true)]
     PPID(PPID),
+    #[clap(arg_required_else_help = false)]
+    BrowserStealer(BrowserStealer),
 }

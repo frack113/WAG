@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 pub mod ads;
+pub mod browserstealer;
 pub mod file;
 pub mod mutex;
 pub mod namepipe;

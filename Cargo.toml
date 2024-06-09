@@ -4,7 +4,7 @@
 
 [package]
 name = "wag"
-version = "1.0.0"
+version = "1.1.0"
 edition = "2021"
 description = "Windows Artefact Generator"
 
@@ -41,3 +41,4 @@ rand = "0"
 regex_generate = "0"
 widestring = "1"
 sysinfo = "0.30.5"
+walkdir = "2.5.0"
