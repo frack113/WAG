@@ -12,7 +12,7 @@ Working date:  2023-08
 */
 
 mod cli;
-mod commands;
+mod malware;
 
 use cli::Arguments;
 use clap::Parser;
