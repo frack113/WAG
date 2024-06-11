@@ -8,8 +8,6 @@ version = "1.0.0"
 edition = "2021"
 description = "Windows Artefact Generator"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [profile.release]
 opt-level = 3
 debug = false
