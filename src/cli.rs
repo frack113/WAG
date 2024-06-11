@@ -13,12 +13,12 @@
 
 */
 
-use crate::commands::ads::ADS;
-use crate::commands::file::FileCreate;
-use crate::commands::mutex::Mutex;
-use crate::commands::namepipe::NamePipe;
-use crate::commands::ppid::PPID;
-use crate::commands::service::BYOVD;
+use crate::malware::ads::ADS;
+use crate::malware::file::FileCreate;
+use crate::malware::mutex::Mutex;
+use crate::malware::namepipe::NamePipe;
+use crate::malware::ppid::PPID;
+use crate::malware::service::BYOVD;
 use clap::Parser;
 
 #[derive(Parser)]
@@ -46,7 +46,7 @@ impl Arguments {
 }
 
 #[derive(Parser)]
-pub enum Commands {
+enum Commands {
     #[clap(arg_required_else_help = true)]
     FileCreate(FileCreate),
     #[clap(arg_required_else_help = true)]
