@@ -46,7 +46,7 @@ impl Arguments {
 }
 
 #[derive(Parser)]
-pub enum Commands {
+enum Commands {
     #[clap(arg_required_else_help = true)]
     FileCreate(FileCreate),
     #[clap(arg_required_else_help = true)]
