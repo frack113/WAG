@@ -11,8 +11,10 @@
 Working date:  2023-08
 */
 
-use wag::cli::Arguments;
+mod cli;
+mod commands;
 
+use cli::Arguments;
 use clap::Parser;
 
 fn banner() {
