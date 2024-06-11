@@ -2,17 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-/*
- the cli option
-
- Global
- --help -h
- --module -m
- --get -g
- --detail -d
-
-*/
-
 use crate::malware::ads::ADS;
 use crate::malware::file::FileCreate;
 use crate::malware::mutex::Mutex;
