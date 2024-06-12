@@ -2,15 +2,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// build.rs
-
 use winres::{self, WindowsResource};
 
 fn main() {
     if cfg!(target_os = "windows") {
         let mut res: WindowsResource = winres::WindowsResource::new();
 
-        //res.set_icon("rust.ico");
         res.set("FileVersion", "1.0.0");
         res.set("InternalName", "🔓 your detection");
         res.set("CompanyName", "Frack113");
