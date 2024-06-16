@@ -5,8 +5,8 @@
 mod cli;
 mod malware;
 
-use cli::Arguments;
 use clap::Parser;
+use cli::Arguments;
 
 fn banner() {
     let banner: &str = "
