@@ -36,7 +36,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
       <img src="https://img.shields.io/badge/Rust-000?logo=rust&logoColor=fff&style=for-the-badge" alt="Rust badge" />
     </a>
     <a href="https://reuse.software/">
-      <img src="" alt="Reuse badge" />
+      <img src="https://img.shields.io/reuse/compliance/github.com%2Ffrack113%2FWAG?style=for-the-badge" alt="Reuse badge" />
     </a>
   </p>
 </div>
