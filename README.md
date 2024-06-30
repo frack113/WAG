@@ -48,9 +48,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
   - [:question: Why](#question-why)
 - [:rocket: Getting started](#rocket-getting-started)
   - [:gear: Prerequisites](#gear-prerequisites)
-  - [:hammer_and_wrench: Build](#hammerandwrench-build)
-- [:construction_worker: Contributing](#constructionworker-contributing)
-- [:raised_hands: Acknowledgments](#raisedhands-acknowledgments)
+  - [:hammer_and_wrench: Build](#hammer_and_wrench-build)
+- [:construction_worker: Contributing](#construction_worker-contributing)
+- [:raised_hands: Acknowledgments](#raised_hands-acknowledgments)
 - [:books: Licenses](#books-licenses)
 
 ## :eyes: About the project
