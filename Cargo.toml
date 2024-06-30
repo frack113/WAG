@@ -34,6 +34,7 @@ windows = { version = "0.52", features = [
   "Win32_UI_Shell",
   "Win32_System_IO",
   "Win32_System_Services",
+  "Win32_System_SystemServices",
 ] }
 clap = { version = "4", features = ["derive"] }
 rand = "0"

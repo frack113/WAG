@@ -4,6 +4,7 @@
 
 mod cli;
 mod malware;
+mod windows;
 
 use clap::Parser;
 use cli::Arguments;
