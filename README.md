@@ -59,3 +59,16 @@ wag.exe <COMMAND>
 ```
 
 Example can be found here [cli_help](./docs/cli_help.md)
+
+# Actions
+
+ - [X] Alternate data stream
+ - [X] BYOVD: load a driver
+ - [X] file drop from executable
+ - [X] mutex
+ - [X] named pipe
+ - [X] ppid spoofing
+ - [ ] Stealer browers information (only open file)
+ - [ ] Stealer cryto wallet (only open file)
+ - [ ] Stealer file of interrest
+ - [ ] WMI action
