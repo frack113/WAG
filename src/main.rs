@@ -4,9 +4,10 @@
 
 mod cli;
 mod malware;
+mod windows;
 
-use cli::Arguments;
 use clap::Parser;
+use cli::Arguments;
 
 fn banner() {
     let banner: &str = "
