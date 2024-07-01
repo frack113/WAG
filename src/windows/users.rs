@@ -13,7 +13,7 @@ use windows::{
     },
 };
 
-pub fn is_admin() -> Result<bool, WindowsError> {
+pub fn is_administrator() -> Result<bool, WindowsError> {
     let is_admin: *mut BOOL = &mut BOOL::from(false);
     let mut administrators_group: PSID = PSID::default();
 
