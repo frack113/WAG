@@ -59,6 +59,10 @@ Windows Artifacts Generator is a tool for creating malware's artifacts for detec
 
 ### :question: Why
 
+It's useful for testing configurations, rules or your Endpoint Detection and Response. \
+It's not intended to fully simulate the comportment of malware but reproduce steps that led to artifacts creation. \
+By avoiding full and complex simulations, Windows Artifacts Generator seek to be simple but nonetheless powerful.
+
 ## :rocket: Getting started
 
 This is an example of how you can build the project yourself.
