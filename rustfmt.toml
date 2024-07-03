@@ -1,1 +1,5 @@
+# SPDX-FileCopyrightText: 2023 The WAG development team
+#
+# SPDX-License-Identifier: CC0-1.0
+
 imports_granularity = "Crate"
