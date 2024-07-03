@@ -2,12 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-use crate::malware::ads::ADS;
-use crate::malware::file::FileCreate;
-use crate::malware::mutex::Mutex;
-use crate::malware::namepipe::NamePipe;
-use crate::malware::ppid::PPID;
-use crate::malware::service::BYOVD;
+use crate::malware::{
+    ads::ADS, file::FileCreate, mutex::Mutex, namepipe::NamePipe, ppid::PPID, service::BYOVD,
+};
 use clap::Parser;
 
 #[derive(Parser)]
