@@ -5,9 +5,9 @@
 use windows::{
     core::Error as WindowsError,
     Win32::{
-        Foundation::{BOOL, PSID},
+        Foundation::BOOL,
         Security::{
-            AllocateAndInitializeSid, CheckTokenMembership, FreeSid, SECURITY_NT_AUTHORITY,
+            AllocateAndInitializeSid, CheckTokenMembership, FreeSid, SECURITY_NT_AUTHORITY,PSID,
         },
         System::SystemServices::{DOMAIN_ALIAS_RID_ADMINS, SECURITY_BUILTIN_DOMAIN_RID},
     },
