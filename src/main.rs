@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+mod actions;
 mod cli;
-mod malware;
 mod windows;
 
 use clap::Parser;

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-use crate::malware::{
+use crate::actions::{
     ads::ADS, file::FileCreate, mutex::Mutex, namepipe::NamePipe, ppid::PPID, service::BYOVD,
 };
 use clap::Parser;
