@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::malware::{
-    ads::ADS, file::FileCreate, mutex::Mutex, namepipe::NamePipe, ppid::PPID, service::BYOVD,
+    ads::ADS, dropper::Dropper, mutex::Mutex, namepipe::NamePipe, ppid::PPID, service::BYOVD,
 };
 use clap::Parser;
 
@@ -18,7 +18,7 @@ pub struct Arguments {
 impl Arguments {
     pub fn run(self) -> i32 {
         match self.command {
-            Some(Commands::FileCreate(file_create)) => file_create.run(),
+            Some(Commands::Dropper(dropper)) => dropper.run(),
             Some(Commands::ADS(ads)) => ads.run(),
             Some(Commands::NamePipe(name_pipe)) => name_pipe.run(),
             Some(Commands::Mutex(mutex)) => mutex.run(),
@@ -34,7 +34,7 @@ impl Arguments {
 #[derive(Parser)]
 enum Commands {
     #[clap(arg_required_else_help = true)]
-    FileCreate(FileCreate),
+    Dropper(Dropper),
     #[clap(arg_required_else_help = true)]
     ADS(ADS),
     #[clap(arg_required_else_help = true)]
