@@ -25,7 +25,7 @@ use regex_generate::{Generator, DEFAULT_MAX_REPEAT};
 use std::{io::Result as IOResult, path::Path, thread, time, time::Duration};
 
 #[derive(Parser)]
-pub struct FileCreate {
+pub struct Create {
     #[clap(
         short = 'f',
         long,
@@ -83,7 +83,7 @@ fn create_file(fullpath: String, hex_data: Vec<u8>) -> bool {
     return false;
 }
 
-impl FileCreate {
+impl Create {
     pub fn run(&self) -> i32 {
         if self.admin
             && !match is_administrator() {

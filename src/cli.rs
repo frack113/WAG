@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::actions::{
-    ads::ADS, file::FileCreate, mutex::Mutex, namepipe::NamePipe, ppid::PPID, service::BYOVD,
+    ads::create::Create as ADSCreate, drivers::create::Create as DriversCreate,
+    files::create::Create as FileCreate, mutexes::create::Create as MutexCreate,
+    pipes::create::Create as PipesCreate, processes::spoofing::Spoofing as ProcessesSpoofing,
 };
 use clap::Parser;
 
@@ -36,13 +38,13 @@ enum Commands {
     #[clap(arg_required_else_help = true)]
     FileCreate(FileCreate),
     #[clap(arg_required_else_help = true)]
-    ADS(ADS),
+    ADS(ADSCreate),
     #[clap(arg_required_else_help = true)]
-    NamePipe(NamePipe),
+    NamePipe(PipesCreate),
     #[clap(arg_required_else_help = true)]
-    Mutex(Mutex),
+    Mutex(MutexCreate),
     #[clap(arg_required_else_help = true)]
-    BYOVD(BYOVD),
+    BYOVD(DriversCreate),
     #[clap(arg_required_else_help = true)]
-    PPID(PPID),
+    PPID(ProcessesSpoofing),
 }

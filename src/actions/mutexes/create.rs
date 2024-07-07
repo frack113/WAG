@@ -2,57 +2,44 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// Name Pipe
+// Mutex
 //
 // Last update 20240224
 
+use clap::Parser;
 use regex_generate::{Generator, DEFAULT_MAX_REPEAT};
+use std::{thread, time};
 use windows::{
     core::{Result as WindowsResult, PCSTR},
     Win32::{
         Foundation::{CloseHandle, HANDLE},
-        Storage::FileSystem::PIPE_ACCESS_DUPLEX,
-        System::Pipes::{CreateNamedPipeA, PIPE_TYPE_MESSAGE},
+        System::Threading::CreateMutexA,
     },
 };
 
-use clap::Parser;
-use std::{thread, time};
-
 #[derive(Parser)]
-pub struct NamePipe {
+pub struct Create {
     #[clap(
         short = 'n',
         long,
         required = true,
-        help = "Regex of the PipeName to Create"
+        help = "Regex of the Mutex to Create"
     )]
     name: String,
 }
 
-fn create_name_pipe(name: &String, wait: u64) {
-    let full_malware_pipe: String = format!("\\\\.\\pipe\\{}\0", name);
-    let pipe_name: PCSTR = PCSTR::from_raw(full_malware_pipe.as_ptr());
-    let server_pipe: WindowsResult<HANDLE> = unsafe {
-        CreateNamedPipeA(
-            pipe_name,
-            PIPE_ACCESS_DUPLEX,
-            PIPE_TYPE_MESSAGE,
-            1,
-            2048,
-            2048,
-            0,
-            None,
-        )
-    };
+fn create_mutex(name: &String, wait: u64) {
+    let full_malware_mutex: String = format!("{}\0", name);
+    let mutex_name: PCSTR = PCSTR::from_raw(full_malware_mutex.as_ptr());
+    let mutex_handle: WindowsResult<HANDLE> = unsafe { CreateMutexA(None, true, mutex_name) };
     let sleep_duration: time::Duration = time::Duration::from_millis(wait);
     thread::sleep(sleep_duration);
-    let _res_server_pipe: WindowsResult<()> = unsafe { CloseHandle(server_pipe.unwrap()) };
+    let _res_server_pipe: WindowsResult<()> = unsafe { CloseHandle(mutex_handle.unwrap()) };
 }
 
-impl NamePipe {
+impl Create {
     pub fn run(&self) -> i32 {
-        println!("Create NamePipe");
+        println!("Create Mutex");
 
         let mut generator: Generator<rand::rngs::ThreadRng> =
             match Generator::new(&self.name, rand::thread_rng(), DEFAULT_MAX_REPEAT) {
@@ -74,9 +61,9 @@ impl NamePipe {
             }
         };
 
-        println!("Create the namepipe : {}", payload);
+        println!("Create the Mutex : {}", payload);
 
-        create_name_pipe(&payload, 2000);
+        create_mutex(&payload, 2000);
 
         return 0;
     }

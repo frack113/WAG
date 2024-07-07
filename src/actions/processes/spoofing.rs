@@ -32,7 +32,7 @@ use windows::{
 use std::{thread, time::Duration};
 
 #[derive(Parser)]
-pub struct PPID {
+pub struct Spoofing {
     #[clap(
         short = 'e',
         long,
@@ -129,7 +129,7 @@ fn create_ppid(name: &String) -> bool {
     }
 }
 
-impl PPID {
+impl Spoofing {
     /* Version 20240209 */
     pub fn run(&self) -> i32 {
         println!("PPID spoofing");

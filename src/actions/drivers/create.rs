@@ -19,7 +19,7 @@ use windows::{
 };
 
 #[derive(Parser)]
-pub struct BYOVD {
+pub struct Create {
     #[clap(
         short = 'n',
         long,
@@ -112,7 +112,7 @@ fn create_driver_service(name: &String, details: &String, path: &String) -> bool
     }
 }
 
-impl BYOVD {
+impl Create {
     /* Version 20230908 */
     pub fn run(&self) -> i32 {
         println!("Bring Your Own Vulnerable Driver");
