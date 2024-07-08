@@ -2,12 +2,13 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+mod actions;
 mod cli;
-mod malware;
 mod windows;
 
+use actions::Runnable;
 use clap::Parser;
-use cli::Arguments;
+use cli::{Arguments, Commands};
 
 fn banner() {
     let banner: &str = "
@@ -25,10 +26,7 @@ fn banner() {
 fn main() -> () {
     banner();
 
-    match Arguments::try_parse() {
-        Ok(arguments) => std::process::exit(arguments.run()),
-        Err(error) => {
-            error.exit();
-        }
-    }
+    match Arguments::parse().command {
+        Commands::Actions(actions) => std::process::exit(actions.run()),
+    };
 }

@@ -6,6 +6,7 @@
 //
 // Last update 20240224
 
+use crate::actions::Runnable;
 use clap::Parser;
 use regex_generate::{Generator, DEFAULT_MAX_REPEAT};
 use std::{thread, time};
@@ -17,8 +18,8 @@ use windows::{
     },
 };
 
-#[derive(Parser)]
-pub struct Mutex {
+#[derive(Debug, Parser)]
+pub struct Create {
     #[clap(
         short = 'n',
         long,
@@ -37,8 +38,8 @@ fn create_mutex(name: &String, wait: u64) {
     let _res_server_pipe: WindowsResult<()> = unsafe { CloseHandle(mutex_handle.unwrap()) };
 }
 
-impl Mutex {
-    pub fn run(&self) -> i32 {
+impl Runnable for Create {
+    fn run(&self) -> i32 {
         println!("Create Mutex");
 
         let mut generator: Generator<rand::rngs::ThreadRng> =

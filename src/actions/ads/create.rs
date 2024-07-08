@@ -6,13 +6,14 @@
 //
 // Last update 20240224
 
+use crate::actions::Runnable;
 use base64::engine::{general_purpose, Engine};
 use clap::Parser;
 use regex_generate::{Generator, DEFAULT_MAX_REPEAT};
 use std::path::Path;
 
-#[derive(Parser)]
-pub struct ADS {
+#[derive(Debug, Parser)]
+pub struct Create {
     #[clap(
         short = 'f',
         long,
@@ -35,8 +36,25 @@ pub struct ADS {
 fn create_ads(fullpath: String, adsname: String, hex_data: Vec<u8>) -> bool {
     let file_base: &Path = Path::new(&fullpath);
     if !file_base.exists() {
-        println!("Missing base file for ADS !");
-        return false;
+        println!("Missing base file for ADS, try to create it");
+        let folder: &Path = file_base.parent().unwrap();
+
+        let ret_folder: Result<(), std::io::Error> = std::fs::create_dir_all(folder);
+        match ret_folder {
+            Ok(_) => println!("The folder is valid"),
+            Err(_) => return false,
+        }
+        let ret_file: Result<(), std::io::Error> = std::fs::write(
+            file_base,
+            vec![
+                87, 105, 110, 100, 111, 119, 115, 32, 65, 114, 116, 101, 102, 97, 99, 116, 32, 71,
+                101, 110, 101, 114, 97, 116, 111, 114,
+            ],
+        );
+        match ret_file {
+            Ok(_) => println!("The base file is created"),
+            Err(_) => return false,
+        }
     }
     let full_ads_name: String = format!("{}:{}", fullpath, adsname);
     let file_ads: &Path = Path::new(&full_ads_name);
@@ -47,9 +65,9 @@ fn create_ads(fullpath: String, adsname: String, hex_data: Vec<u8>) -> bool {
     }
 }
 
-impl ADS {
+impl Runnable for Create {
     /* Version 20230908 */
-    pub fn run(&self) -> i32 {
+    fn run(&self) -> i32 {
         println!("Alternate Data Stream");
 
         if self.filename.len() > 0 {
