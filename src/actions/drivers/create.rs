@@ -6,7 +6,7 @@
 //
 // Last update 20240224
 
-use crate::windows::users::is_administrator;
+use crate::{actions::Runnable, windows::users::is_administrator};
 use clap::Parser;
 use std::{thread, time};
 use windows::{
@@ -18,7 +18,7 @@ use windows::{
     },
 };
 
-#[derive(Parser)]
+#[derive(Debug, Parser)]
 pub struct Create {
     #[clap(
         short = 'n',
@@ -112,9 +112,9 @@ fn create_driver_service(name: &String, details: &String, path: &String) -> bool
     }
 }
 
-impl Create {
+impl Runnable for Create {
     /* Version 20230908 */
-    pub fn run(&self) -> i32 {
+    fn run(&self) -> i32 {
         println!("Bring Your Own Vulnerable Driver");
 
         if !match is_administrator() {

@@ -6,12 +6,13 @@
 //
 // Last update 20240224
 
+use crate::actions::Runnable;
 use base64::engine::{general_purpose, Engine};
 use clap::Parser;
 use regex_generate::{Generator, DEFAULT_MAX_REPEAT};
 use std::path::Path;
 
-#[derive(Parser)]
+#[derive(Debug, Parser)]
 pub struct Create {
     #[clap(
         short = 'f',
@@ -64,9 +65,9 @@ fn create_ads(fullpath: String, adsname: String, hex_data: Vec<u8>) -> bool {
     }
 }
 
-impl Create {
+impl Runnable for Create {
     /* Version 20230908 */
-    pub fn run(&self) -> i32 {
+    fn run(&self) -> i32 {
         println!("Alternate Data Stream");
 
         if self.filename.len() > 0 {

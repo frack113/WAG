@@ -6,13 +6,12 @@
 //
 // Last update 20240224
 
+use crate::actions::Runnable;
 use clap::Parser;
-
-use rand::prelude::SliceRandom;
-use sysinfo::System;
-
 use core::ffi::c_void;
-use std::mem::size_of;
+use rand::prelude::SliceRandom;
+use std::{mem::size_of, thread, time::Duration};
+use sysinfo::System;
 use windows::{
     core::PSTR,
     Win32::{
@@ -29,9 +28,7 @@ use windows::{
     },
 };
 
-use std::{thread, time::Duration};
-
-#[derive(Parser)]
+#[derive(Debug, Parser)]
 pub struct Spoofing {
     #[clap(
         short = 'e',
@@ -129,9 +126,9 @@ fn create_ppid(name: &String) -> bool {
     }
 }
 
-impl Spoofing {
+impl Runnable for Spoofing {
     /* Version 20240209 */
-    pub fn run(&self) -> i32 {
+    fn run(&self) -> i32 {
         println!("PPID spoofing");
         let result: bool = create_ppid(&self.executable);
         if result {

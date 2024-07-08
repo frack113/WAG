@@ -6,7 +6,10 @@
 //
 // Last update 20240224
 
+use crate::actions::Runnable;
+use clap::Parser;
 use regex_generate::{Generator, DEFAULT_MAX_REPEAT};
+use std::{thread, time};
 use windows::{
     core::{Result as WindowsResult, PCSTR},
     Win32::{
@@ -16,10 +19,7 @@ use windows::{
     },
 };
 
-use clap::Parser;
-use std::{thread, time};
-
-#[derive(Parser)]
+#[derive(Debug, Parser)]
 pub struct Create {
     #[clap(
         short = 'n',
@@ -50,8 +50,8 @@ fn create_name_pipe(name: &String, wait: u64) {
     let _res_server_pipe: WindowsResult<()> = unsafe { CloseHandle(server_pipe.unwrap()) };
 }
 
-impl Create {
-    pub fn run(&self) -> i32 {
+impl Runnable for Create {
+    fn run(&self) -> i32 {
         println!("Create NamePipe");
 
         let mut generator: Generator<rand::rngs::ThreadRng> =

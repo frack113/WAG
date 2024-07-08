@@ -2,4 +2,27 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+use crate::actions::{ads::create::Create, Runnable};
+use clap::{Args, Subcommand};
+
 pub mod create;
+
+#[derive(Debug, Args)]
+pub struct ADS {
+    #[clap(subcommand)]
+    pub command: Commands,
+}
+
+#[derive(Debug, Subcommand)]
+pub enum Commands {
+    Create(Create),
+}
+
+impl Runnable for ADS {
+    fn run(&self) -> i32 {
+        return match &self.command {
+            Commands::Create(create) => create as &dyn Runnable,
+        }
+        .run();
+    }
+}

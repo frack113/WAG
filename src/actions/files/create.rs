@@ -18,13 +18,13 @@ You can use `SET | more` or `Get-ChildItem Env:` to get the list
 
 */
 
-use crate::windows::users::is_administrator;
+use crate::{actions::Runnable, windows::users::is_administrator};
 use base64::engine::{general_purpose, Engine};
 use clap::Parser;
 use regex_generate::{Generator, DEFAULT_MAX_REPEAT};
 use std::{io::Result as IOResult, path::Path, thread, time, time::Duration};
 
-#[derive(Parser)]
+#[derive(Debug, Parser)]
 pub struct Create {
     #[clap(
         short = 'f',
@@ -83,8 +83,8 @@ fn create_file(fullpath: String, hex_data: Vec<u8>) -> bool {
     return false;
 }
 
-impl Create {
-    pub fn run(&self) -> i32 {
+impl Runnable for Create {
+    fn run(&self) -> i32 {
         if self.admin
             && !match is_administrator() {
                 Ok(is_admin) => is_admin,
