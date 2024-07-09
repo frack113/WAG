@@ -65,7 +65,7 @@ By avoiding full and complex simulations, Windows Artifacts Generator seek to be
 
 ## :rocket: Getting started
 
-This is an example of how you can build the project yourself.
+This is an example of how you can install or build the project yourself.
 
 ### :gear: Prerequisites
 
