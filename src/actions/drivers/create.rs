@@ -8,7 +8,7 @@
 
 use crate::{actions::Runnable, windows::users::is_administrator};
 use clap::Parser;
-use std::{thread, time};
+use std::{error::Error, thread, time};
 use windows::{
     core::{Result as WindowsResult, PCWSTR},
     Win32::System::Services::{
@@ -114,33 +114,18 @@ fn create_driver_service(name: &String, details: &String, path: &String) -> bool
 
 impl Runnable for Create {
     /* Version 20230908 */
-    fn run(&self) -> i32 {
+    fn run(&self) -> Result<i32, Box<dyn Error>> {
         println!("Bring Your Own Vulnerable Driver");
 
-        if !match is_administrator() {
-            Ok(is_admin) => is_admin,
-            Err(error) => {
-                println!(
-                    "Could not check if the user is an administrator or not.\nError: {}",
-                    error
-                );
-
-                return 1;
-            }
-        } {
+        if !is_administrator()? {
             println!("Need to have Administrator right to create the service");
-            return 1;
+            return Ok(1);
         }
 
         // Todo check path is valid or not :)
 
         let result: bool = create_driver_service(&self.internal, &self.display, &self.path);
-        if result {
-            println!("All good ");
-            return 0;
-        } else {
-            println!("Sorry get a error");
-            return 1;
-        }
+
+        return Ok(!result as i32);
     }
 }

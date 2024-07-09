@@ -27,6 +27,13 @@ fn main() -> () {
     banner();
 
     match Arguments::parse().command {
-        Commands::Actions(actions) => std::process::exit(actions.run()),
+        Commands::Actions(action) => match action.run() {
+            Ok(code) => std::process::exit(code),
+            Err(error) => {
+                println!("Error: {}", error.to_string());
+
+                std::process::exit(1);
+            }
+        },
     };
 }

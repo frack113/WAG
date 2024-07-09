@@ -10,7 +10,7 @@ use crate::actions::Runnable;
 use clap::Parser;
 use core::ffi::c_void;
 use rand::prelude::SliceRandom;
-use std::{mem::size_of, thread, time::Duration};
+use std::{error::Error, mem::size_of, thread, time::Duration};
 use sysinfo::System;
 use windows::{
     core::PSTR,
@@ -128,15 +128,10 @@ fn create_ppid(name: &String) -> bool {
 
 impl Runnable for Spoofing {
     /* Version 20240209 */
-    fn run(&self) -> i32 {
+    fn run(&self) -> Result<i32, Box<dyn Error>> {
         println!("PPID spoofing");
         let result: bool = create_ppid(&self.executable);
-        if result {
-            println!("All good ");
-            return 0;
-        } else {
-            println!("Sorry get a error");
-            return 1;
-        }
+
+        return Ok(!result as i32);
     }
 }

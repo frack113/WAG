@@ -22,7 +22,13 @@ use crate::{actions::Runnable, windows::users::is_administrator};
 use base64::engine::{general_purpose, Engine};
 use clap::Parser;
 use regex_generate::{Generator, DEFAULT_MAX_REPEAT};
-use std::{io::Result as IOResult, path::Path, thread, time, time::Duration};
+use std::{
+    error::Error,
+    io::Result as IOResult,
+    path::Path,
+    thread,
+    time::{self, Duration},
+};
 
 #[derive(Debug, Parser)]
 pub struct Create {
@@ -84,60 +90,23 @@ fn create_file(fullpath: String, hex_data: Vec<u8>) -> bool {
 }
 
 impl Runnable for Create {
-    fn run(&self) -> i32 {
-        if self.admin
-            && !match is_administrator() {
-                Ok(is_admin) => is_admin,
-                Err(error) => {
-                    println!(
-                        "Could not check if the user is an administrator or not.\nError: {}",
-                        error
-                    );
-
-                    return 1;
-                }
-            }
-        {
+    fn run(&self) -> Result<i32, Box<dyn Error>> {
+        if self.admin && !is_administrator()? {
             println!("Need to have Administrator right to create the file");
-            return 1;
+            return Ok(1);
         }
 
         let mut generator: Generator<rand::rngs::ThreadRng> =
-            match Generator::new(&self.filename, rand::thread_rng(), DEFAULT_MAX_REPEAT) {
-                Ok(generator) => generator,
-                Err(_) => {
-                    println!("Regex expressions are malformed.");
-
-                    return 1;
-                }
-            };
+            Generator::new(&self.filename, rand::thread_rng(), DEFAULT_MAX_REPEAT)?;
         let mut buffer: Vec<u8> = vec![];
         generator.generate(&mut buffer).unwrap();
-        let fullname: String = match String::from_utf8(buffer) {
-            Ok(string) => string,
-            Err(_) => {
-                println!("Filename contains non-utf8 characters.");
-
-                return 1;
-            }
-        };
+        let fullname: String = String::from_utf8(buffer)?;
 
         println!("Create a file on disk");
 
-        let payload: Vec<u8> = match general_purpose::STANDARD.decode(self.magicbyte.as_str()) {
-            Ok(decoded) => decoded,
-            Err(_) => {
-                println!("Could not decode the data.");
-
-                return 1;
-            }
-        };
+        let payload: Vec<u8> = general_purpose::STANDARD.decode(self.magicbyte.as_str())?;
         let ret: bool = create_file(fullname, payload);
 
-        if ret == true {
-            return 0;
-        } else {
-            return 1;
-        }
+        return Ok(!ret as i32);
     }
 }

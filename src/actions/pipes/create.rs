@@ -9,7 +9,7 @@
 use crate::actions::Runnable;
 use clap::Parser;
 use regex_generate::{Generator, DEFAULT_MAX_REPEAT};
-use std::{thread, time};
+use std::{error::Error, thread, time};
 use windows::{
     core::{Result as WindowsResult, PCSTR},
     Win32::{
@@ -51,33 +51,19 @@ fn create_name_pipe(name: &String, wait: u64) {
 }
 
 impl Runnable for Create {
-    fn run(&self) -> i32 {
+    fn run(&self) -> Result<i32, Box<dyn Error>> {
         println!("Create NamePipe");
 
         let mut generator: Generator<rand::rngs::ThreadRng> =
-            match Generator::new(&self.name, rand::thread_rng(), DEFAULT_MAX_REPEAT) {
-                Ok(generator) => generator,
-                Err(_) => {
-                    println!("Regex expressions are malformed.");
-
-                    return 1;
-                }
-            };
+            Generator::new(&self.name, rand::thread_rng(), DEFAULT_MAX_REPEAT)?;
         let mut buffer: Vec<u8> = vec![];
         generator.generate(&mut buffer).unwrap();
-        let payload: String = match String::from_utf8(buffer) {
-            Ok(string) => string,
-            Err(_) => {
-                println!("Filename contains non-utf8 characters.");
-
-                return 1;
-            }
-        };
+        let payload: String = String::from_utf8(buffer)?;
 
         println!("Create the namepipe : {}", payload);
 
         create_name_pipe(&payload, 2000);
 
-        return 0;
+        return Ok(0);
     }
 }

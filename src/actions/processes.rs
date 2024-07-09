@@ -4,6 +4,7 @@
 
 use crate::actions::{processes::spoofing::Spoofing, Runnable};
 use clap::{Args, Subcommand};
+use std::error::Error;
 
 pub mod spoofing;
 
@@ -19,7 +20,7 @@ pub enum Commands {
 }
 
 impl Runnable for Processes {
-    fn run(&self) -> i32 {
+    fn run(&self) -> Result<i32, Box<dyn Error>> {
         return match &self.command {
             Commands::Spoofing(spoofing) => spoofing as &dyn Runnable,
         }
