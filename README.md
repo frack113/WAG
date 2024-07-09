@@ -69,6 +69,9 @@ This is an example of how you can install or build the project yourself.
 
 ### :gear: Prerequisites
 
+Depending on what you want to achieve, you might need different tools. \
+For now, you only need [Cargo][Cargo] to build or download the project.
+
 ### :hammer_and_wrench: Build
 
 1.  Clone the repository
@@ -109,6 +112,7 @@ Thanks to all people who made the logo possible:
 
 Distributed under the [GPL 3.0 or later][GPL 3.0 or later] license.
 
+[Cargo]: https://doc.rust-lang.org/stable/cargo/
 [Heroicons]: https://heroicons.com/
 [MIT]: ./LICENSES/MIT.txt
 [Agbama Ulimhuka]: https://github.com/ulims/
