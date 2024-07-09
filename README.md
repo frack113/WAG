@@ -70,7 +70,7 @@ This is an example of how you can install or build the project yourself.
 ### :gear: Prerequisites
 
 Depending on what you want to achieve, you might need different tools. \
-For now, you only need [Cargo][Cargo] to build or download the project.
+For now, you only need [Cargo][Cargo] to build or install the project.
 
 ### :hammer_and_wrench: Build
 
