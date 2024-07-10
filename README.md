@@ -135,5 +135,5 @@ Distributed under the [GPL 3.0 or later][GPL 3.0 or later] license.
 [Heroicons]: https://heroicons.com/
 [MIT]: ./LICENSES/MIT.txt
 [Agbama Ulimhuka]: https://github.com/ulims/
-[SIL OFL]: ./LICENSES/OFL-1.0.txt
+[SIL OFL]: ./LICENSES/OFL-1.1.txt
 [GPL 3.0 or later]: ./LICENSES/GPL-3.0-or-later.txt
