@@ -6,6 +6,7 @@ use crate::actions::{
     ads::ADS, drivers::Drivers, files::Files, mutexes::Mutexes, pipes::Pipes, processes::Processes,
 };
 use clap::{Args, Subcommand};
+use std::error::Error;
 
 pub mod ads;
 pub mod drivers;
@@ -31,11 +32,11 @@ pub enum Commands {
 }
 
 pub trait Runnable {
-    fn run(&self) -> i32;
+    fn run(&self) -> Result<i32, Box<dyn Error>>;
 }
 
 impl Runnable for Actions {
-    fn run(&self) -> i32 {
+    fn run(&self) -> Result<i32, Box<dyn Error>> {
         return match &self.command {
             Commands::ADS(ads) => ads as &dyn Runnable,
             Commands::Drivers(drivers) => drivers,

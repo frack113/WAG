@@ -4,6 +4,7 @@
 
 use crate::actions::{pipes::create::Create, Runnable};
 use clap::{Args, Subcommand};
+use std::error::Error;
 
 pub mod create;
 
@@ -19,7 +20,7 @@ pub enum Commands {
 }
 
 impl Runnable for Pipes {
-    fn run(&self) -> i32 {
+    fn run(&self) -> Result<i32, Box<dyn Error>> {
         return match &self.command {
             Commands::Create(create) => create as &dyn Runnable,
         }

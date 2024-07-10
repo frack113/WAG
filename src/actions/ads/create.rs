@@ -10,7 +10,7 @@ use crate::actions::Runnable;
 use base64::engine::{general_purpose, Engine};
 use clap::Parser;
 use regex_generate::{Generator, DEFAULT_MAX_REPEAT};
-use std::path::Path;
+use std::{error::Error, path::Path};
 
 #[derive(Debug, Parser)]
 pub struct Create {
@@ -67,46 +67,22 @@ fn create_ads(fullpath: String, adsname: String, hex_data: Vec<u8>) -> bool {
 
 impl Runnable for Create {
     /* Version 20230908 */
-    fn run(&self) -> i32 {
+    fn run(&self) -> Result<i32, Box<dyn Error>> {
         println!("Alternate Data Stream");
 
         if self.filename.len() > 0 {
             let mut generator: Generator<rand::rngs::ThreadRng> =
-                match Generator::new(&self.filename, rand::thread_rng(), DEFAULT_MAX_REPEAT) {
-                    Ok(generator) => generator,
-                    Err(_) => {
-                        println!("Regex expressions are malformed.");
-
-                        return 1;
-                    }
-                };
+                Generator::new(&self.filename, rand::thread_rng(), DEFAULT_MAX_REPEAT)?;
             let mut buffer: Vec<u8> = vec![];
             generator.generate(&mut buffer).unwrap();
-            let fullname: String = match String::from_utf8(buffer) {
-                Ok(string) => string,
-                Err(_) => {
-                    println!("Filename contains non-utf8 characters.");
-
-                    return 1;
-                }
-            };
+            let fullname: String = String::from_utf8(buffer)?;
             let barrow_ads: String = self.ads.to_string();
-            let payload: Vec<u8> = match general_purpose::STANDARD.decode(self.data.as_str()) {
-                Ok(decoded) => decoded,
-                Err(_) => {
-                    println!("Could not decode the data.");
-
-                    return 1;
-                }
-            };
+            let payload: Vec<u8> = general_purpose::STANDARD.decode(self.data.as_str())?;
             let ret_ads: bool = create_ads(fullname, barrow_ads, payload);
-            if ret_ads == true {
-                return 0;
-            } else {
-                return 1;
-            }
+
+            return Ok(!ret_ads as i32);
         }
 
-        return 1;
+        return Ok(1);
     }
 }
