@@ -88,6 +88,23 @@ For now, you only need [Cargo][Cargo] to build or install the project.
 
 After these steps, the application will be in the target directory.
 
+### :ninja: Quick examples
+
+Now that [WAG][WAG] is installed, you can start generating some artifacts! \
+For example you can create a file like this:
+
+```sh
+wag actions files create --name "example.txt"
+```
+
+Or you can generate artifacts from a configuration file:
+
+```sh
+wag generate --file "$YOUR_CONFIGURATIONS_FILE_PATH"
+```
+
+To see more information about what you can do, see the [documentations][Documentations].
+
 ## :construction_worker: Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. \
@@ -114,6 +131,7 @@ Distributed under the [GPL 3.0 or later][GPL 3.0 or later] license.
 
 [WAG]: https://github.com/frack113/WAG/
 [Cargo]: https://doc.rust-lang.org/stable/cargo/
+[Documentations]: https://frack113.github.io/WAG/
 [Heroicons]: https://heroicons.com/
 [MIT]: ./LICENSES/MIT.txt
 [Agbama Ulimhuka]: https://github.com/ulims/
