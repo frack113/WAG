@@ -26,7 +26,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <a href="https://github.com/">
       <img src="https://img.shields.io/badge/GitHub-181717?logo=github&logoColor=fff&style=for-the-badge" alt="Github badge" />
     </a>
-    <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html">
+    <a href="./LICENSES/GPL-3.0-or-later.txt">
       <img src="https://img.shields.io/badge/License-GPL%203.0%20or%20later-green.svg?style=for-the-badge" alt="GPL 3.0 or later badge" />
     </a>
     <a href="https://www.microsoft.com/en-us/windows/">
