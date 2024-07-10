@@ -55,13 +55,13 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 ## :eyes: About the project
 
-Windows Artifacts Generator is a tool for creating malware's artifacts for detection testing.
+[Windows Artifacts Generator][WAG] is a tool for creating malware's artifacts for detection testing.
 
 ### :question: Why
 
 It's useful for testing configurations, rules or your Endpoint Detection and Response. \
 It's not intended to fully simulate the comportment of malware but reproduce steps that led to artifacts creation. \
-By avoiding full and complex simulations, Windows Artifacts Generator seek to be simple but nonetheless powerful.
+By avoiding full and complex simulations, [Windows Artifacts Generator][WAG] seek to be simple but nonetheless powerful.
 
 ## :rocket: Getting started
 
@@ -112,6 +112,7 @@ Thanks to all people who made the logo possible:
 
 Distributed under the [GPL 3.0 or later][GPL 3.0 or later] license.
 
+[WAG]: https://github.com/frack113/WAG/
 [Cargo]: https://doc.rust-lang.org/stable/cargo/
 [Heroicons]: https://heroicons.com/
 [MIT]: ./LICENSES/MIT.txt
