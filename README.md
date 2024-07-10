@@ -80,10 +80,10 @@ For now, you only need [Cargo][Cargo] to build or install the project.
     git clone https://github.com/frack113/WAG/
     ```
 
-2.  Build the project!
+2.  Build and run the project!
 
     ```sh
-    cargo build
+    cargo run --release
     ```
 
 After these steps, the application will be in the target directory.
