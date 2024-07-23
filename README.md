@@ -59,9 +59,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 ### :question: Why
 
-It's useful for testing configurations, rules or your Endpoint Detection and Response. \
-It's not intended to fully simulate the comportment of malware but reproduce steps that led to artifacts creation. \
-By avoiding full and complex simulations, [Windows Artifacts Generator][WAG] seek to be simple but nonetheless powerful.
+It's useful for testing configurations, rules, or your Endpoint Detection and Response. \
+It's not intended to fully simulate the behavior of malware but to reproduce the steps that led to artifact creation. \
+By avoiding full and complex simulations, [Windows Artifacts Generator][WAG] seeks to be simple but nonetheless powerful.
 
 ## :rocket: Getting started
 
@@ -91,7 +91,7 @@ After these steps, the application will be in the target directory.
 ### :ninja: Quick examples
 
 Now that [WAG][WAG] is installed, you can start generating some artifacts! \
-For example you can create a file like this:
+For example, you can create a file like this:
 
 ```sh
 wag actions files create --name "example.txt"
@@ -103,7 +103,7 @@ Or you can generate artifacts from a configuration file:
 wag generate --file "$YOUR_CONFIGURATIONS_FILE_PATH"
 ```
 
-To see more information about what you can do, see the [documentations][Documentations].
+To see more information about what you can do, see the [documentation][Documentation].
 
 ## :construction_worker: Contributing
 
@@ -119,7 +119,7 @@ If you want, you can help me with any kind of work, for example:
 
 ## :raised_hands: Acknowledgments
 
-Thanks to all people who made the logo possible:
+Thanks to all the people who made the logo possible:
 
 - "bug-ant" icon from [Heroicons][Heroicons] [MIT][MIT]
 - "finger-print" icon from [Heroicons][Heroicons] [MIT][MIT]
@@ -131,7 +131,7 @@ Distributed under the [GPL 3.0 or later][GPL 3.0 or later] license.
 
 [WAG]: https://github.com/frack113/WAG/
 [Cargo]: https://doc.rust-lang.org/stable/cargo/
-[Documentations]: https://frack113.github.io/WAG/
+[Documentation]: https://frack113.github.io/WAG/
 [Heroicons]: https://heroicons.com/
 [MIT]: ./LICENSES/MIT.txt
 [Agbama Ulimhuka]: https://github.com/ulims/
