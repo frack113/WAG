@@ -18,5 +18,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Install git-cliff
+        uses: taiki-e/install-action@git-cliff
+      - name: Generate changelog
+        run: git-cliff -o
       - name: Release project
         uses: softprops/action-gh-release@v2
+        with:
+          body_path: CHANGELOG.md
