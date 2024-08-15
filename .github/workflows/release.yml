@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Install typos
+        uses: taiki-e/install-action@typos
       - name: Install git-cliff
         uses: taiki-e/install-action@git-cliff
       - name: Generate changelog
