@@ -72,6 +72,16 @@ This is an example of how you can install or build the project yourself.
 Depending on what you want to achieve, you might need different tools. \
 For now, you only need [Cargo][Cargo] to build or install the project.
 
+### :package: Installation
+
+Currently, this project is only available on [crates.io][crates.io]. \
+In order to install it, just enter this command in your favorite terminal:
+
+```sh
+cargo install windows-artifacts-generator
+
+```
+
 ### :hammer_and_wrench: Build
 
 1.  Clone the repository
@@ -131,6 +141,7 @@ Distributed under the [GPL 3.0 or later][GPL 3.0 or later] license.
 
 [WAG]: https://github.com/frack113/WAG/
 [Cargo]: https://doc.rust-lang.org/stable/cargo/
+[crates.io]: https://crates.io/
 [Documentation]: https://frack113.github.io/WAG/
 [Heroicons]: https://heroicons.com/
 [MIT]: ./LICENSES/MIT.txt
