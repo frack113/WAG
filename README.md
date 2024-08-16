@@ -12,7 +12,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
   <h3 align="center">Windows Artifacts Generator</h3>
 
   <p align="center">
-    Generate malware's artifacts for detection testing
+    Generate malware artifacts for detection tests
     <br />
     <a href="https://github.com/frack113/WAG/issues/">
       Report Bug
@@ -57,7 +57,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 ## :eyes: About the project
 
-[Windows Artifacts Generator][WAG] is a tool for creating malware's artifacts for detection testing.
+[Windows Artifacts Generator][WAG] is a tool for creating malware artifacts for detection tests.
 
 ### :question: Why
 
