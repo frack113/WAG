@@ -3,10 +3,14 @@
 # SPDX-License-Identifier: CC0-1.0
 
 [package]
-name = "wag"
+name = "windows-artifacts-generator"
 version = "1.0.0"
 edition = "2021"
-description = "Windows Artefact Generator"
+description = "Generate malware artifacts for detection tests"
+
+[[bin]]
+name = "wag"
+path = "./src/main.rs"
 
 [profile.release]
 opt-level = 3
