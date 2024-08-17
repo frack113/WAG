@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-name: Rust
+name: Build and test the project
 
 on:
   push:
@@ -14,12 +14,17 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  rust:
+    name: Build Rust code
     runs-on: windows-latest
-
     steps:
-      - uses: actions/checkout@v4
-      - name: Build
-        run: cargo build --verbose
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Add caching
+        uses: Swatinem/rust-cache@v2
+      - name: Build code
+        run: cargo build -v
       - name: Run tests
-        run: cargo test --verbose
+        run: cargo test -v
