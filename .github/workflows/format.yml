@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Install Rust toolchain and rustfmt
+      - name: Install rustfmt
         uses: dtolnay/rust-toolchain@nightly
         with:
           components: rustfmt
