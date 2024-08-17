@@ -14,6 +14,8 @@ jobs:
   rust:
     name: Build Rust code
     runs-on: windows-latest
+    env:
+      CARGO_TERM_COLOR: always
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
