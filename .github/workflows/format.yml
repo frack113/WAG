@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: 2023 The WAG development team
+#
+# SPDX-License-Identifier: CC0-1.0
+
+name: Check formatting of the project
+
+on: [push, pull_request]
+
+jobs:
+  rustfmt:
+    name: Check Rust formatting
+    runs-on: ubuntu-latest
+    env:
+      CARGO_TERM_COLOR: always
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Rust toolchain and rustfmt
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rustfmt
+      - name: Check formatting
+        run: cargo fmt -v --all -- --check
