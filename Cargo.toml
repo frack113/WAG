@@ -7,6 +7,7 @@ name = "windows-artifacts-generator"
 version = "1.0.0"
 edition = "2021"
 description = "Generate malware artifacts for detection tests"
+license = "GPL-3.0-or-later"
 
 [[bin]]
 name = "wag"
