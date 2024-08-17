@@ -6,8 +6,8 @@ name: Create new release
 
 on:
   push:
-    tag:
-      - "v**"
+    tags:
+      - "**"
 
 jobs:
   github:
