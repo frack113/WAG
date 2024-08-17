@@ -6,12 +6,9 @@ name: Build and test the project
 
 on:
   push:
-    branches: ["main"]
+    branches: [main]
   pull_request:
-    branches: ["main"]
-
-env:
-  CARGO_TERM_COLOR: always
+    branches: [main]
 
 jobs:
   rust:
