@@ -7,7 +7,17 @@ name = "windows-artifacts-generator"
 version = "1.0.0"
 edition = "2021"
 description = "Generate malware artifacts for detection tests"
+documentation = "https://frack113.github.io/WAG/"
+repository = "https://github.com/frack113/WAG/"
 license = "GPL-3.0-or-later"
+keywords = [
+  "malware-detection",
+  "blueteam",
+  "windows",
+  "artifacts-generation",
+  "rust",
+]
+categories = ["command-line-utilities"]
 
 [[bin]]
 name = "wag"
