@@ -21,3 +21,13 @@ jobs:
           components: rustfmt
       - name: Check Rust formatting
         run: cargo fmt -v --all -- --check
+  taplo:
+    name: Check TOML formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install taplo
+        uses: uncenter/setup-taplo@v1
+      - name: Check TOML formatting
+        run: taplo format --check --verbose
