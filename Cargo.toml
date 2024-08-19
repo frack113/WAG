@@ -42,6 +42,7 @@ clap = { version = "4", features = ["derive"] }
 rand = "0"
 regex_generate = "0"
 sysinfo = "0.30"
+
 [build-dependencies]
 winres = "0"
 
