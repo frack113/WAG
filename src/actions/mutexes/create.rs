@@ -52,6 +52,6 @@ impl Runnable for Create {
 
         create_mutex(&payload, 2000);
 
-        return Ok(0);
+        Ok(0)
     }
 }

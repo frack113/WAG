@@ -64,6 +64,6 @@ impl Runnable for Create {
 
         create_name_pipe(&payload, 2000);
 
-        return Ok(0);
+        Ok(0)
     }
 }

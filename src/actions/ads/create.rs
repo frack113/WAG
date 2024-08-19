@@ -59,10 +59,7 @@ fn create_ads(fullpath: String, adsname: String, hex_data: Vec<u8>) -> bool {
     let full_ads_name: String = format!("{}:{}", fullpath, adsname);
     let file_ads: &Path = Path::new(&full_ads_name);
     let ret_file: Result<(), std::io::Error> = std::fs::write(file_ads, hex_data);
-    match ret_file {
-        Ok(_) => return true,
-        Err(_) => return false,
-    }
+    ret_file.is_ok()
 }
 
 impl Runnable for Create {
@@ -70,7 +67,7 @@ impl Runnable for Create {
     fn run(&self) -> Result<i32, Box<dyn Error>> {
         println!("Alternate Data Stream");
 
-        if self.filename.len() > 0 {
+        if !self.filename.is_empty() {
             let mut generator: Generator<rand::rngs::ThreadRng> =
                 Generator::new(&self.filename, rand::thread_rng(), DEFAULT_MAX_REPEAT)?;
             let mut buffer: Vec<u8> = vec![];
@@ -83,6 +80,6 @@ impl Runnable for Create {
             return Ok(!ret_ads as i32);
         }
 
-        return Ok(1);
+        Ok(1)
     }
 }

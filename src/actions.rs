@@ -37,7 +37,7 @@ pub trait Runnable {
 
 impl Runnable for Actions {
     fn run(&self) -> Result<i32, Box<dyn Error>> {
-        return match &self.command {
+        match &self.command {
             Commands::ADS(ads) => ads as &dyn Runnable,
             Commands::Drivers(drivers) => drivers,
             Commands::Files(files) => files,
@@ -45,6 +45,6 @@ impl Runnable for Actions {
             Commands::Pipes(pipes) => pipes,
             Commands::Processes(processes) => processes,
         }
-        .run();
+        .run()
     }
 }
