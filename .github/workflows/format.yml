@@ -34,7 +34,7 @@ jobs:
       - name: Install remark
         run: pnpm install remark-cli
       - name: Check Markdown formatting
-        run: remark . -o
+        run: $PNPM_HOME/remark . -o
   taplo:
     name: Check TOML formatting
     runs-on: ubuntu-latest
