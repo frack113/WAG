@@ -107,7 +107,7 @@ fn create_ppid(name: &String) -> bool {
             PROCESS_CREATION_FLAGS(0x00080000),
             None,
             None,
-            &mut sinfo.StartupInfo,
+            &sinfo.StartupInfo,
             &mut pi,
         )
     };
