@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::actions::{
-    ads::ADS, drivers::Drivers, files::Files, mutexes::Mutexes, pipes::Pipes, processes::Processes,
+    ads::AlternateDataStreams, drivers::Drivers, files::Files, mutexes::Mutexes, pipes::Pipes,
+    processes::Processes,
 };
 use clap::{Args, Subcommand};
 use std::error::Error;
@@ -23,7 +24,7 @@ pub struct Actions {
 
 #[derive(Debug, Subcommand)]
 pub enum Commands {
-    ADS(ADS),
+    AlternateDataStreams(AlternateDataStreams),
     Drivers(Drivers),
     Files(Files),
     Mutexes(Mutexes),
@@ -37,14 +38,16 @@ pub trait Runnable {
 
 impl Runnable for Actions {
     fn run(&self) -> Result<i32, Box<dyn Error>> {
-        return match &self.command {
-            Commands::ADS(ads) => ads as &dyn Runnable,
+        match &self.command {
+            Commands::AlternateDataStreams(alternate_data_streams) => {
+                alternate_data_streams as &dyn Runnable
+            }
             Commands::Drivers(drivers) => drivers,
             Commands::Files(files) => files,
             Commands::Mutexes(mutexes) => mutexes,
             Commands::Pipes(pipes) => pipes,
             Commands::Processes(processes) => processes,
         }
-        .run();
+        .run()
     }
 }

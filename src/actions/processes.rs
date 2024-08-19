@@ -21,9 +21,9 @@ pub enum Commands {
 
 impl Runnable for Processes {
     fn run(&self) -> Result<i32, Box<dyn Error>> {
-        return match &self.command {
+        match &self.command {
             Commands::Spoofing(spoofing) => spoofing as &dyn Runnable,
         }
-        .run();
+        .run()
     }
 }

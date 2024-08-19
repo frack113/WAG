@@ -23,14 +23,14 @@ fn banner() {
     println!("{}", banner);
 }
 
-fn main() -> () {
+fn main() {
     banner();
 
     match Arguments::parse().command {
         Commands::Actions(action) => match action.run() {
             Ok(code) => std::process::exit(code),
             Err(error) => {
-                println!("Error: {}", error.to_string());
+                println!("Error: {}", error);
 
                 std::process::exit(1);
             }

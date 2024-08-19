@@ -43,7 +43,7 @@ pub struct Create {
     path: String,
 }
 
-fn create_driver_service(name: &String, details: &String, path: &String) -> bool {
+fn create_driver_service(name: &str, details: &str, path: &str) -> bool {
     println!("Open the service manager");
     let scmanager: SC_HANDLE =
         unsafe { OpenSCManagerW(PCWSTR::null(), PCWSTR::null(), SC_MANAGER_ALL_ACCESS) }
@@ -103,11 +103,11 @@ fn create_driver_service(name: &String, details: &String, path: &String) -> bool
     match unsafe { DeleteService(service_handle) } {
         Ok(_) => {
             println!("Service remove succeed");
-            return true;
+            true
         }
         Err(value) => {
             println!("Service remove failure with code : {:#06x}", value.code().0);
-            return false;
+            false
         }
     }
 }
@@ -126,6 +126,6 @@ impl Runnable for Create {
 
         let result: bool = create_driver_service(&self.internal, &self.display, &self.path);
 
-        return Ok(!result as i32);
+        Ok(!result as i32)
     }
 }

@@ -40,5 +40,5 @@ pub fn is_administrator() -> Result<bool, WindowsError> {
         result?;
     }
 
-    return Ok(unsafe { (*is_admin).into() });
+    Ok(unsafe { (*is_admin).into() })
 }

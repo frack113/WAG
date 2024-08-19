@@ -86,7 +86,7 @@ fn create_file(fullpath: String, hex_data: Vec<u8>) -> bool {
 
         return true;
     }
-    return false;
+    false
 }
 
 impl Runnable for Create {
@@ -107,6 +107,6 @@ impl Runnable for Create {
         let payload: Vec<u8> = general_purpose::STANDARD.decode(self.magicbyte.as_str())?;
         let ret: bool = create_file(fullname, payload);
 
-        return Ok(!ret as i32);
+        Ok(!ret as i32)
     }
 }

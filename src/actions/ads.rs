@@ -9,7 +9,7 @@ use std::error::Error;
 pub mod create;
 
 #[derive(Debug, Args)]
-pub struct ADS {
+pub struct AlternateDataStreams {
     #[clap(subcommand)]
     pub command: Commands,
 }
@@ -19,11 +19,11 @@ pub enum Commands {
     Create(Create),
 }
 
-impl Runnable for ADS {
+impl Runnable for AlternateDataStreams {
     fn run(&self) -> Result<i32, Box<dyn Error>> {
-        return match &self.command {
+        match &self.command {
             Commands::Create(create) => create as &dyn Runnable,
         }
-        .run();
+        .run()
     }
 }

@@ -51,7 +51,7 @@ fn get_user_pid() -> u32 {
         .choose(&mut rand::thread_rng())
         .unwrap()
         .to_owned();
-    return new_ppid;
+    new_ppid
 }
 
 fn create_ppid(name: &String) -> bool {
@@ -107,7 +107,7 @@ fn create_ppid(name: &String) -> bool {
             PROCESS_CREATION_FLAGS(0x00080000),
             None,
             None,
-            &mut sinfo.StartupInfo,
+            &sinfo.StartupInfo,
             &mut pi,
         )
     };
@@ -120,9 +120,9 @@ fn create_ppid(name: &String) -> bool {
             let _ = unsafe { WaitForSingleObject(pi.hProcess, 5000) };
             let _ = unsafe { CloseHandle(pi.hProcess) };
             let _ = unsafe { CloseHandle(pi.hThread) };
-            return true;
+            true
         }
-        Err(_) => return false,
+        Err(_) => false,
     }
 }
 
@@ -132,6 +132,6 @@ impl Runnable for Spoofing {
         println!("PPID spoofing");
         let result: bool = create_ppid(&self.executable);
 
-        return Ok(!result as i32);
+        Ok(!result as i32)
     }
 }
