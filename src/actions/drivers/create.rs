@@ -43,7 +43,7 @@ pub struct Create {
     path: String,
 }
 
-fn create_driver_service(name: &String, details: &String, path: &String) -> bool {
+fn create_driver_service(name: &str, details: &str, path: &str) -> bool {
     println!("Open the service manager");
     let scmanager: SC_HANDLE =
         unsafe { OpenSCManagerW(PCWSTR::null(), PCWSTR::null(), SC_MANAGER_ALL_ACCESS) }
