@@ -43,17 +43,17 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 ## 📋 Table of content
 
-- [📋 Table of content](#📋-table-of-content)
-- [👀 About the project](#👀-about-the-project)
-  - [❓ Why](#❓-why)
-- [🚀 Getting started](#🚀-getting-started)
-  - [⚙️ Prerequisites](#️-prerequisites)
-  - [📦 Installation](#📦-installation)
-  - [🛠️ Build](#🛠️-build)
-  - [🥷 Quick examples](#🥷-quick-examples)
-- [👷 Contributing](#👷-contributing)
-- [🙌 Acknowledgments](#🙌-acknowledgments)
-- [📚 Licenses](#📚-licenses)
+- [📋 Table of content](#-table-of-content)
+- [👀 About the project](#-about-the-project)
+  - [❓ Why](#-why)
+- [🚀 Getting started](#-getting-started)
+  - [⚙️ Prerequisites](#%EF%B8%8F-prerequisites)
+  - [📦 Installation](#-installation)
+  - [🛠️ Build](#%EF%B8%8F-build)
+  - [🥷 Quick examples](#-quick-examples)
+- [👷 Contributing](#-contributing)
+- [🙌 Acknowledgments](#-acknowledgments)
+- [📚 Licenses](#-licenses)
 
 ## 👀 About the project
 
