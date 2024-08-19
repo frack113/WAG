@@ -6,6 +6,7 @@
 name = "windows-artifacts-generator"
 version = "1.0.0"
 edition = "2021"
+rust-version = "1.74.1"
 description = "Generate malware artifacts for detection tests"
 documentation = "https://frack113.github.io/WAG/"
 repository = "https://github.com/frack113/WAG/"
