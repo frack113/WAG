@@ -26,5 +26,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
+      - name: Add caching
+        uses: Swatinem/rust-cache@v2
       - name: Lint Rust code
         run: cargo clippy --all-targets --all-features -- -D warnings
