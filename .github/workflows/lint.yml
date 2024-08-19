@@ -18,7 +18,7 @@ jobs:
         uses: fsfe/reuse-action@v3
   clippy:
     name: Lint with Clippy
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
