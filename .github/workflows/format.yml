@@ -7,6 +7,20 @@ name: Check formatting of the project
 on: [push, pull_request]
 
 jobs:
+  prettier:
+    name: Check Markdown formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - name: Install Prettier
+        run: pnpm install prettier
+      - name: Check Markdown formatting
+        run: pnpm exec prettier -c "**.md"
   rustfmt:
     name: Check Rust formatting
     runs-on: ubuntu-latest
@@ -21,20 +35,6 @@ jobs:
           components: rustfmt
       - name: Check Rust formatting
         run: cargo fmt -v --all -- --check
-  remark:
-    name: Check Markdown formatting
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-      - name: Install remark
-        run: pnpm install remark-cli
-      - name: Check Markdown formatting
-        run: $PNPM_HOME/remark . -o
   taplo:
     name: Check TOML formatting
     runs-on: ubuntu-latest
