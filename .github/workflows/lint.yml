@@ -39,4 +39,4 @@ jobs:
       - name: Install taplo
         uses: uncenter/setup-taplo@v1
       - name: Lint TOML code
-        run: taplo lint --verbose "**.toml"
+        run: taplo lint --verbose **.toml
