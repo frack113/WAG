@@ -8,11 +8,11 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 `wag ads -f fullpath -a ads -d data`
 
-* fullpath: regex of the full path
-* ads: name of the stream
-* data: base64 of the data to write
+- fullpath: regex of the full path
+- ads: name of the stream
+- data: base64 of the data to write
 
-| Type           | ads             |  data                                                                                        |
+| Type           | ads             | data                                                                                         |
 | -------------- | --------------- | -------------------------------------------------------------------------------------------- |
 | ZoneTransfer 0 | Zone.Identifier | W1pvbmVUcmFuc2Zlcl0NClpvbmVJZD0wDQpSZWZlcnJlclVybD1jOlx3aW5kb3dzXHdhZy56aXANCg==             |
 | ZoneTransfer 1 | Zone.Identifier | W1pvbmVUcmFuc2Zlcl0NClpvbmVJZD0xDQpSZWZlcnJlclVybD0vL3N2cl9BRC93YWcuemlwDQo=                 |
@@ -28,7 +28,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 | Type | Hex                                  |
 | ---- | ------------------------------------ |
 | Exe  | TVo=                                 |
-| Zip  | UEsDBA==                             | 
+| Zip  | UEsDBA==                             |
 | Vmdk | S0RN                                 |
 | Iso  | Q0QwMDE=                             |
 | Txt  | QSBzaW1wbGUgdGV4dCBmaWxl             |
@@ -38,22 +38,22 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 `wag file-create -f fullpath -m Magicbyte_Hex `
 
-* fullpath: regex of the full path
-* Magicbyte_Hex: base64 of the magicbytes to write
-* admin: can use `--admin` to check if run as administrator
+- fullpath: regex of the full path
+- Magicbyte_Hex: base64 of the magicbytes to write
+- admin: can use `--admin` to check if run as administrator
 
-| Type           | Admin | Magicbyte | fullpath                                                 | 
-| -------------- | ----- | --------- | -------------------------------------------------------- |
-| NPPSpy         | true  | Exe       | `C:/Windows/System32/NPPSpy\.dll`                        | 
-| SafetyKatz     | false | Zip       |  *SystemRoot* + `Temp\\debug\.bin`                       |
-| SmallSieve_txt | false | Txt       |  *LocalAppData* + `MicrosoftWindowsOutlookDataPlus\.txt` |
-| SmallSieve_exe | false | Exe       |  *AppData* + `OutlookMicrosift\\index\.exe`              |
-| SNAKE_jpsetup  | false | Exe       |  *TEMP* + `jpsetup\.exe`                                 |
-| SNAKE_jpinst   | false | Exe       |  *TEMP* + `jpinst\\.exe`                                 |
-| SNAKE_Comadmin | true  | Exe       | `C:\\Windows\\System32\\Com\\Comadmin\.dat`              |
-| COLDSTEEL_exe  | false | Exe       | `C:\\users\\public\\Documents\\dllhost\.exe`             |
-| COLDSTEEL_dll  | false | Exe       |  *APPDATA* + `newdev\.dll`                               |
-| temp_ps1_12    | false | Ps1       |  *SystemRoot* + `temp\[0-9a-f]{12}\.ps1`                 |
+| Type           | Admin | Magicbyte | fullpath                                                |
+| -------------- | ----- | --------- | ------------------------------------------------------- |
+| NPPSpy         | true  | Exe       | `C:/Windows/System32/NPPSpy\.dll`                       |
+| SafetyKatz     | false | Zip       | _SystemRoot_ + `Temp\\debug\.bin`                       |
+| SmallSieve_txt | false | Txt       | _LocalAppData_ + `MicrosoftWindowsOutlookDataPlus\.txt` |
+| SmallSieve_exe | false | Exe       | _AppData_ + `OutlookMicrosift\\index\.exe`              |
+| SNAKE_jpsetup  | false | Exe       | _TEMP_ + `jpsetup\.exe`                                 |
+| SNAKE_jpinst   | false | Exe       | _TEMP_ + `jpinst\\.exe`                                 |
+| SNAKE_Comadmin | true  | Exe       | `C:\\Windows\\System32\\Com\\Comadmin\.dat`             |
+| COLDSTEEL_exe  | false | Exe       | `C:\\users\\public\\Documents\\dllhost\.exe`            |
+| COLDSTEEL_dll  | false | Exe       | _APPDATA_ + `newdev\.dll`                               |
+| temp_ps1_12    | false | Ps1       | _SystemRoot_ + `temp\[0-9a-f]{12}\.ps1`                 |
 
 Remark: You need to convert the environment variable into a correct regular expression.
 
@@ -61,21 +61,21 @@ Remark: You need to convert the environment variable into a correct regular expr
 
 `wag name-pipe -n name`
 
-* name: named pipe name as a regex
+- name: named pipe name as a regex
 
 | Type               | name                                               |
-| ------------------ | -------------------------------------------------- | 
+| ------------------ | -------------------------------------------------- |
 | CSExec             | `\\csexecsvc`                                      |
 | psexec             | `\\psexec`                                         |
 | psexec             | `\\PAExec`                                         |
 | psexec             | `\\remcom`                                         |
 | psexec             | `\\csexec`                                         |
-| psexec             | `\\PSEXESVC`                                       | 
-| Cobal_strike       | `\\wkssvc_?[0-9a-f]{2}`                            | 
+| psexec             | `\\PSEXESVC`                                       |
+| Cobal_strike       | `\\wkssvc_?[0-9a-f]{2}`                            |
 | Cobal_strike       | `\\ntsvcs[0-9a-f]{2}`                              |
 | Cobal_strike       | `\\DserNamePipe[0-9a-f]{2}`                        |
 | Cobal_strike       | `\\SearchTextHarvester[0-9a-f]{2}`                 |
-| Cobal_strike       | `\\windows\\.update\\.manager[0-9a-f]{2,3}`        | 
+| Cobal_strike       | `\\windows\\.update\\.manager[0-9a-f]{2,3}`        |
 | Cobal_strike       | `\\ntsvcs_[0-9a-f]{2}`                             |
 | Cobal_strike       | `\\scerpc_?[0-9a-f]{2}`                            |
 | Cobal_strike       | `\\PGMessagePipe[0-9a-f]{2}`                       |
@@ -94,15 +94,15 @@ Remark: You need to convert the environment variable into a correct regular expr
 | Credential_Dumping | `\\lsadump`                                        |
 | Credential_Dumping | `\\wceservicepipe`                                 |
 | Koh                | `\\imposecost`                                     |
-| Koh                | `\\imposingcost`                                   | 
-| PowerShell         | `\\PSHost`                                         | 
-| ADFS               | `\\MICROSOFT##WID\\tsql\\query`                    | 
+| Koh                | `\\imposingcost`                                   |
+| PowerShell         | `\\PSHost`                                         |
+| ADFS               | `\\MICROSOFT##WID\\tsql\\query`                    |
 
 # Mutex
 
 `wag mutex -n name`
 
-* name: mutex name as a regex
+- name: mutex name as a regex
 
 | Type       | name               |
 | ---------- | ------------------ |
