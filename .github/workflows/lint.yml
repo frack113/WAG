@@ -30,3 +30,13 @@ jobs:
         uses: Swatinem/rust-cache@v2
       - name: Lint Rust code
         run: cargo clippy --all-targets --all-features -- -D warnings
+  taplo:
+    name: Lint with taplo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install taplo
+        uses: uncenter/setup-taplo@v1
+      - name: Lint TOML code
+        run: taplo lint --verbose "**.toml"
