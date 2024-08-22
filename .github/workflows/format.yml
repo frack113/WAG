@@ -5,6 +5,20 @@
 name: Check formatting of the project
 on: [push, pull_request]
 jobs:
+  yamlfix:
+    name: Check YAML formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          cache: pip
+      - name: Install yamlfix
+        run: pip install yamlfix
+      - name: Check YAML formatting
+        run: yamlfix -v --check .
   prettier:
     name: Check Markdown formatting
     runs-on: ubuntu-latest
