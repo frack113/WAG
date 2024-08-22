@@ -23,7 +23,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
       - name: Add caching
         uses: Swatinem/rust-cache@v2
-      - name: Build code
-        run: cargo build -v --all-features
-      - name: Run tests
-        run: cargo test -v --all-features
+      - name: Build Rust code
+        run: cargo build -v --all-targets --all-features
+      - name: Run Rust tests
+        run: cargo test -v --all-targets --all-features
