@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: REUSE Compliance Check
+      - name: Lint licenses
         uses: fsfe/reuse-action@v3
   clippy:
     name: Lint with Clippy
