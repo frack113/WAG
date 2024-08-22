@@ -1,15 +1,13 @@
+---
 # SPDX-FileCopyrightText: 2023 The WAG development team
 #
 # SPDX-License-Identifier: CC0-1.0
-
 name: Build and test the project
-
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
-
 jobs:
   rust:
     name: Build Rust code

@@ -1,11 +1,9 @@
+---
 # SPDX-FileCopyrightText: 2023 The WAG development team
 #
 # SPDX-License-Identifier: CC0-1.0
-
 name: Check formatting of the project
-
 on: [push, pull_request]
-
 jobs:
   prettier:
     name: Check Markdown formatting
