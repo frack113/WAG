@@ -30,6 +30,16 @@ jobs:
         uses: Swatinem/rust-cache@v2
       - name: Lint Rust code
         run: cargo clippy --all-targets --all-features -- -D warnings
+  cargo-deny:
+    name: Lint with cargo-deny
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Lint Rust code
+        uses: EmbarkStudios/cargo-deny-action@v1
+        with:
+          command: check bans licenses sources
   cargo-outdated:
     name: Lint with cargo-outdated
     runs-on: ubuntu-latest
