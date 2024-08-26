@@ -1,0 +1,17 @@
+---
+# SPDX-FileCopyrightText: 2023 The WAG development team
+#
+# SPDX-License-Identifier: CC0-1.0
+name: Audit the project
+on: [push, pull_request]
+jobs:
+  cargo-deny:
+    name: Audit with cargo-deny
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Audit Rust code
+        uses: EmbarkStudios/cargo-deny-action@v1
+        with:
+          command: check advisories
