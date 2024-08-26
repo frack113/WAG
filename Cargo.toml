@@ -25,10 +25,10 @@ name = "wag"
 path = "./src/main.rs"
 
 [dependencies]
-base64 = { version = "0.22.1" }
 windows = { version = "0.58.0", features = [
   "Win32_System_Pipes",
   "Win32_Foundation",
+  "Win32_System_Diagnostics_ToolHelp",
   "Win32_Security",
   "Win32_Storage_FileSystem",
   "Win32_UI_Shell",
@@ -38,10 +38,10 @@ windows = { version = "0.58.0", features = [
   "Win32_System_Threading",
   "Win32_System_Memory",
 ] }
+base64 = { version = "0.22.1" }
 clap = { version = "4.5.16", features = ["derive"] }
 rand = "0.8.5"
 regex_generate = "0.2.3"
-sysinfo = "0.31.3"
 
 [build-dependencies]
 winres = "0.1.12"
