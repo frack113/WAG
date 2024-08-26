@@ -19,20 +19,20 @@ jobs:
         run: pip install yamlfix
       - name: Check YAML formatting
         run: yamlfix -v --check .
-  prettier:
+  mdformat:
     name: Check Markdown formatting
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
         with:
-          version: 9
-      - name: Install Prettier
-        run: pnpm install prettier
+          cache: pip
+      - name: Install Mdformat
+        run: pip install mdformat
       - name: Check Markdown formatting
-        run: pnpm exec prettier -c "**.md"
+        run: mdformat --check .
   rustfmt:
     name: Check Rust formatting
     runs-on: ubuntu-latest
