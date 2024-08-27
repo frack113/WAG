@@ -25,3 +25,19 @@ jobs:
         run: cargo build -v --all-targets --all-features
       - name: Run Rust tests
         run: cargo test -v --all-targets --all-features
+  msrv:
+    name: Check MSRV
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install cargo-hack
+        uses: taiki-e/install-action@cargo-hack
+      - name: Check MSRV
+        run: |-
+          cargo hack check \
+            -v \
+            --rust-version \
+            --workspace \
+            --all-targets \
+            --all-features
