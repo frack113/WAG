@@ -1,0 +1,35 @@
+#define RT_MANIFEST 24
+1 RT_MANIFEST "wag.exe.manifest"
+
+IDI_ICON1 ICON "media/wag.ico"
+
+1       VERSIONINFO
+FILEVERSION     1,0,0
+PRODUCTVERSION  1,0,0
+FILEFLAGSMASK   0X3FL
+FILEFLAGS       0L
+FILEOS          0X40004L
+FILETYPE        0X2
+FILESUBTYPE     0
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "FileVersion", "1.0.0 (2024-08-27)"
+            VALUE "ProductVersion", "1.0.0"
+            VALUE "OriginalFilename", "wag.exe"
+            VALUE "InternalName", "🔓 your detection"
+            VALUE "FileDescription", "Generate Some Windows Artefact to 👊 your EDR"
+            VALUE "CompanyName", "Frack113"
+            VALUE "LegalCopyright", "(c) Frack113"
+            VALUE "ProductName", "WindowsArtefactGenerator"
+            VALUE "PrivateBuild", "Built by Frack113"
+            VALUE "Comments", "Catch me if you can😁"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+            VALUE "Translation", 0x0409, 0x04B0
+    END
+END
