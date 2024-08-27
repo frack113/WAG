@@ -35,9 +35,9 @@ jobs:
         uses: taiki-e/install-action@cargo-hack
       - name: Check MSRV
         run: |-
-          cargo hack check \
-            -v \
-            --rust-version \
-            --workspace \
-            --all-targets \
+          cargo hack check `
+            -v `
+            --rust-version `
+            --workspace `
+            --all-targets `
             --all-features
