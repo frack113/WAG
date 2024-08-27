@@ -22,9 +22,9 @@ jobs:
       - name: Add caching
         uses: Swatinem/rust-cache@v2
       - name: Build Rust code
-        run: cargo build -v --all-targets --all-features
+        run: cargo build -v --workspace --all-targets --all-features
       - name: Run Rust tests
-        run: cargo test -v --all-targets --all-features
+        run: cargo test -v --workspace --all-targets --all-features
   msrv:
     name: Check MSRV
     runs-on: windows-latest

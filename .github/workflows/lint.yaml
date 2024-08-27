@@ -50,7 +50,12 @@ jobs:
       - name: Add caching
         uses: Swatinem/rust-cache@v2
       - name: Lint Rust code
-        run: cargo clippy --all-targets --all-features -- -D warnings
+        run: |-
+          cargo clippy \
+            --workspace \
+            --all-targets \
+            --all-features \
+            -- -D warnings
   cargo-deny:
     name: Lint with cargo-deny
     runs-on: ubuntu-latest
