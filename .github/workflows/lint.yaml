@@ -74,7 +74,7 @@ jobs:
       - name: Install cargo-outdated
         run: cargo install --locked cargo-outdated
       - name: Lint Rust code
-        run: cargo outdated -v
+        run: cargo outdated -v --exit-code 1 -R -w
   taplo:
     name: Lint with taplo
     runs-on: ubuntu-latest
