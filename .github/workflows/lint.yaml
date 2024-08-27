@@ -50,7 +50,7 @@ jobs:
       - name: Add caching
         uses: Swatinem/rust-cache@v2
       - name: Lint Rust code
-        run: |-
+        run: |
           cargo clippy \
             --workspace \
             --all-targets \
