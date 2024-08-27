@@ -1,0 +1,9 @@
+---
+# SPDX-FileCopyrightText: 2023 The WAG development team
+#
+# SPDX-License-Identifier: CC0-1.0
+config:
+  first-line-h1: false
+  no-inline-html: false
+gitignore: true
+globs: ['**.md']
