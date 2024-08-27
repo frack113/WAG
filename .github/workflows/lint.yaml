@@ -7,6 +7,20 @@ on: [push, pull_request]
 env:
   CARGO_TERM_COLOR: always
 jobs:
+  yamllint:
+    name: Lint with yamllint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          cache: pip
+      - name: Install yamllint
+        run: pip install yamllint
+      - name: Check YAML formatting
+        run: yamllint -s .
   reuse:
     name: Lint with REUSE
     runs-on: ubuntu-latest
