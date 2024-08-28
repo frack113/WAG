@@ -9,9 +9,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <img src="https://raw.githubusercontent.com/frack113/WAG/main/media/logo.svg" alt="Logo" />
   </a>
 
-  <h3 align="center">Windows Artifacts Generator</h3>
+<h3 align="center">Windows Artifacts Generator</h3>
 
-  <p align="center">
+<p align="center">
     Generate malware artifacts for detection tests
     <br />
     <a href="https://github.com/frack113/WAG/issues/">
@@ -57,13 +57,13 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 ## 👀 About the project
 
-[Windows Artifacts Generator][WAG] is a tool for creating malware artifacts for detection tests.
+[Windows Artifacts Generator][wag] is a tool for creating malware artifacts for detection tests.
 
 ### ❓ Why
 
 It's useful for testing configurations, rules, or your Endpoint Detection and Response. \
 It's not intended to fully simulate the behavior of malware but to reproduce the steps that led to artifact creation. \
-By avoiding full and complex simulations, [Windows Artifacts Generator][WAG] seeks to be simple but nonetheless powerful.
+By avoiding full and complex simulations, [Windows Artifacts Generator][wag] seeks to be simple but nonetheless powerful.
 
 ## 🚀 Getting started
 
@@ -72,11 +72,11 @@ This is an example of how you can install or build the project yourself.
 ### ⚙️ Prerequisites
 
 Depending on what you want to achieve, you might need different tools. \
-For now, you only need [Cargo][Cargo] to build or install the project.
+For now, you only need [Cargo] to build or install the project.
 
 ### 📦 Installation
 
-Currently, this project is only available on [crates.io][crates.io]. \
+Currently, this project is only available on [crates.io]. \
 In order to install it, just enter this command in your favorite terminal:
 
 ```sh
@@ -86,23 +86,23 @@ cargo install windows-artifacts-generator
 
 ### 🛠️ Build
 
-1.  Clone the repository
+1. Clone the repository
 
-    ```sh
-    git clone https://github.com/frack113/WAG/
-    ```
+   ```sh
+   git clone https://github.com/frack113/WAG/
+   ```
 
-2.  Build and run the project!
+1. Build and run the project!
 
-    ```sh
-    cargo run --release
-    ```
+   ```sh
+   cargo run --release
+   ```
 
 After these steps, the application will be in the target directory.
 
 ### 🥷 Quick examples
 
-Now that [WAG][WAG] is installed, you can start generating some artifacts! \
+Now that [WAG] is installed, you can start generating some artifacts! \
 For example, you can create a file like this:
 
 ```sh
@@ -115,7 +115,7 @@ Or you can generate artifacts from a configuration file:
 wag generate --file "$YOUR_CONFIGURATIONS_FILE_PATH"
 ```
 
-To see more information about what you can do, see the [documentation][Documentation].
+To see more information about what you can do, see the [documentation].
 
 ## 👷 Contributing
 
@@ -133,20 +133,20 @@ If you want, you can help me with any kind of work, for example:
 
 Thanks to all the people who made the logo possible:
 
-- "bug-ant" icon from [Heroicons][Heroicons] [MIT][MIT]
-- "finger-print" icon from [Heroicons][Heroicons] [MIT][MIT]
-- "Beep Sans" font by [Agbama Ulimhuka][Agbama Ulimhuka] [SIL OFL][SIL OFL]
+- "bug-ant" icon from [Heroicons] [MIT]
+- "finger-print" icon from [Heroicons] [MIT]
+- "Beep Sans" font by [Agbama Ulimhuka] [SIL OFL]
 
 ## 📚 Licenses
 
-Distributed under the [GPL 3.0 or later][GPL 3.0 or later] license.
+Distributed under the [GPL 3.0 or later] license.
 
-[WAG]: https://github.com/frack113/WAG/
-[Cargo]: https://doc.rust-lang.org/stable/cargo/
+[agbama ulimhuka]: https://github.com/ulims/
+[cargo]: https://doc.rust-lang.org/stable/cargo/
 [crates.io]: https://crates.io/
-[Documentation]: https://frack113.github.io/WAG/
-[Heroicons]: https://heroicons.com/
-[MIT]: ./LICENSES/MIT.txt
-[Agbama Ulimhuka]: https://github.com/ulims/
-[SIL OFL]: ./LICENSES/OFL-1.1.txt
-[GPL 3.0 or later]: ./LICENSES/GPL-3.0-or-later.txt
+[documentation]: https://frack113.github.io/WAG/
+[gpl 3.0 or later]: ./LICENSES/GPL-3.0-or-later.txt
+[heroicons]: https://heroicons.com/
+[mit]: ./LICENSES/MIT.txt
+[sil ofl]: ./LICENSES/OFL-1.1.txt
+[wag]: https://github.com/frack113/WAG/
