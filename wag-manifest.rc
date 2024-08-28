@@ -10,14 +10,14 @@ PRODUCTVERSION  1,0,0
 FILEFLAGSMASK   0X3FL
 FILEFLAGS       0L
 FILEOS          0X40004L
-FILETYPE        0X2
+FILETYPE        0X1
 FILESUBTYPE     0
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "FileVersion", "1.0.0 (2024-08-27)"
+            VALUE "FileVersion", "1.0.0"
             VALUE "ProductVersion", "1.0.0"
             VALUE "OriginalFilename", "wag.exe"
             VALUE "InternalName", "🔓 your detection"

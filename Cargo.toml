@@ -43,7 +43,6 @@ clap = { version = "4.5.16", features = ["derive"] }
 rand = "0.8.5"
 regex_generate = "0.2.3"
 
-
 [build-dependencies]
 embed-resource = "2.4.3"
 
