@@ -1,0 +1,59 @@
+---
+# SPDX-FileCopyrightText: 2023 The WAG development team
+#
+# SPDX-License-Identifier: CC0-1.0
+name: Check formatting of the project
+on: [push, pull_request]
+jobs:
+  yamlfix:
+    name: Check YAML formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          cache: pip
+      - name: Install yamlfix
+        run: pip install yamlfix
+      - name: Check YAML formatting
+        run: yamlfix -v --check .
+  mdformat:
+    name: Check Markdown formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          cache: pip
+      - name: Install Mdformat
+        run: pip install mdformat
+      - name: Check Markdown formatting
+        run: mdformat --check .
+  rustfmt:
+    name: Check Rust formatting
+    runs-on: ubuntu-latest
+    env:
+      CARGO_TERM_COLOR: always
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install rustfmt
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rustfmt
+      - name: Check Rust formatting
+        run: cargo fmt -v --all -- --check
+  taplo:
+    name: Check TOML formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install taplo
+        uses: uncenter/setup-taplo@v1
+      - name: Check TOML formatting
+        run: taplo format --check --verbose

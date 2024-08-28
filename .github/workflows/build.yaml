@@ -1,0 +1,43 @@
+---
+# SPDX-FileCopyrightText: 2023 The WAG development team
+#
+# SPDX-License-Identifier: CC0-1.0
+name: Build and test the project
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  rust:
+    name: Build Rust code
+    runs-on: windows-latest
+    env:
+      CARGO_TERM_COLOR: always
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Add caching
+        uses: Swatinem/rust-cache@v2
+      - name: Build Rust code
+        run: cargo build -v --workspace --all-targets --all-features
+      - name: Run Rust tests
+        run: cargo test -v --workspace --all-targets --all-features
+  msrv:
+    name: Check MSRV
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install cargo-hack
+        uses: taiki-e/install-action@cargo-hack
+      - name: Check MSRV
+        run: |-
+          cargo hack check `
+            -v `
+            --rust-version `
+            --workspace `
+            --all-targets `
+            --all-features

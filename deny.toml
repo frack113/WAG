@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: 2023 The WAG development team
+#
+# SPDX-License-Identifier: CC0-1.0
+
+[graph]
+targets = ["x86_64-pc-windows-msvc"]
+all-features = true
+
+[licenses]
+confidence-threshold = 1.0
+allow = ["Apache-2.0", "MIT", "Unicode-DFS-2016"]
+
+[bans]
+multiple-versions = "deny"
+multiple-versions-include-dev = true
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"

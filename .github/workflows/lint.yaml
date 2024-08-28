@@ -1,0 +1,92 @@
+---
+# SPDX-FileCopyrightText: 2023 The WAG development team
+#
+# SPDX-License-Identifier: CC0-1.0
+name: Lint the project
+on: [push, pull_request]
+env:
+  CARGO_TERM_COLOR: always
+jobs:
+  yamllint:
+    name: Lint with yamllint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          cache: pip
+      - name: Install yamllint
+        run: pip install yamllint
+      - name: Check YAML formatting
+        run: yamllint -s .
+  reuse:
+    name: Lint with REUSE
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Lint licenses
+        uses: fsfe/reuse-action@v3
+  markdownlint-cli2:
+    name: Lint with markdownlint-cli2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Lint Markdown code
+        uses: DavidAnson/markdownlint-cli2-action@v16
+  clippy:
+    name: Lint with Clippy
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Clippy
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - name: Add caching
+        uses: Swatinem/rust-cache@v2
+      - name: Lint Rust code
+        run: |-
+          cargo clippy `
+            --workspace `
+            --all-targets `
+            --all-features `
+            -- -D warnings
+  cargo-deny:
+    name: Lint with cargo-deny
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Lint Rust code
+        uses: EmbarkStudios/cargo-deny-action@v1
+        with:
+          command: check bans licenses sources
+  cargo-outdated:
+    name: Lint with cargo-outdated
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Add caching
+        uses: Swatinem/rust-cache@v2
+      - name: Install cargo-outdated
+        run: cargo install --locked cargo-outdated
+      - name: Lint Rust code
+        run: cargo outdated -v --exit-code 1 -R -w
+  taplo:
+    name: Lint with taplo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install taplo
+        uses: uncenter/setup-taplo@v1
+      - name: Lint TOML code
+        run: taplo lint --verbose **.toml
