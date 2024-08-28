@@ -44,7 +44,7 @@ rand = "0.8.5"
 regex_generate = "0.2.3"
 
 [build-dependencies]
-winres = "0.1.12"
+embed-resource = "2.4.3"
 
 [profile.release]
 opt-level = 3
