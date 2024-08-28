@@ -70,8 +70,10 @@ impl Display for ProcessNotFound {
 fn get_pid_from_name(name: &str) -> Result<u32, Box<dyn Error>> {
     let snapshot: Owned<HANDLE> =
         unsafe { Owned::new(CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)?) };
-    let mut process_entry: PROCESSENTRY32W = PROCESSENTRY32W::default();
-    process_entry.dwSize = size_of::<PROCESSENTRY32W>() as u32;
+    let mut process_entry: PROCESSENTRY32W = PROCESSENTRY32W {
+        dwSize: size_of::<PROCESSENTRY32W>() as u32,
+        ..Default::default()
+    };
 
     unsafe {
         Process32FirstW(*snapshot, &mut process_entry)?;
