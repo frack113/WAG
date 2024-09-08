@@ -6,27 +6,15 @@
 //
 // Last update 20240224
 
-use crate::actions::Runnable;
+use crate::{actions::Runnable, windows::processes::get_pid};
 use clap::Parser;
 use core::ffi::c_void;
-use std::{
-    error::Error,
-    ffi::OsString,
-    fmt::{Display, Formatter, Result as FormatterResult},
-    mem::size_of,
-    os::windows::ffi::OsStringExt,
-    thread,
-    time::Duration,
-};
+use std::{error::Error, mem::size_of, thread, time::Duration};
 use windows::{
-    core::{Owned, PSTR},
+    core::PSTR,
     Win32::{
         Foundation::{CloseHandle, HANDLE},
         System::{
-            Diagnostics::ToolHelp::{
-                CreateToolhelp32Snapshot, Process32FirstW, Process32NextW, PROCESSENTRY32W,
-                TH32CS_SNAPPROCESS,
-            },
             Memory::{GetProcessHeap, HeapAlloc, HEAP_FLAGS},
             Threading::{
                 CreateProcessA, InitializeProcThreadAttributeList, OpenProcess, TerminateProcess,
@@ -49,50 +37,6 @@ pub struct Spoofing {
         help = "Name of the parent executable"
     )]
     parent_executable: String,
-}
-
-#[derive(Debug)]
-struct ProcessNotFound;
-
-impl Error for ProcessNotFound {}
-
-impl Display for ProcessNotFound {
-    fn fmt(&self, formatter: &mut Formatter) -> FormatterResult {
-        write!(formatter, "Process not found")
-    }
-}
-
-fn get_pid_from_name(name: &str) -> Result<u32, Box<dyn Error>> {
-    let snapshot: Owned<HANDLE> =
-        unsafe { Owned::new(CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)?) };
-    let mut process_entry: PROCESSENTRY32W = PROCESSENTRY32W {
-        dwSize: size_of::<PROCESSENTRY32W>() as u32,
-        ..Default::default()
-    };
-
-    unsafe {
-        Process32FirstW(*snapshot, &mut process_entry)?;
-    }
-
-    loop {
-        if OsString::from_wide(
-            process_entry
-                .szExeFile
-                .into_iter()
-                .take_while(|&byte| byte != 0)
-                .collect::<Vec<_>>()
-                .as_slice(),
-        ) == name
-        {
-            return Ok(process_entry.th32ProcessID);
-        }
-
-        if unsafe { Process32NextW(*snapshot, &mut process_entry) }.is_err() {
-            break;
-        }
-    }
-
-    Err(Box::new(ProcessNotFound))
 }
 
 fn create_ppid(name: &String, new_ppid: u32) -> bool {
@@ -170,10 +114,7 @@ impl Runnable for Spoofing {
     /* Version 20240209 */
     fn run(&self) -> Result<i32, Box<dyn Error>> {
         println!("PPID spoofing");
-        let result: bool = create_ppid(
-            &self.executable,
-            get_pid_from_name(&self.parent_executable)?,
-        );
+        let result: bool = create_ppid(&self.executable, get_pid(&self.parent_executable)?);
 
         Ok(!result as i32)
     }
