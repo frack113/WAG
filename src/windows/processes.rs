@@ -26,7 +26,7 @@ impl Error for ProcessNotFound {}
 
 impl Display for ProcessNotFound {
     fn fmt(&self, formatter: &mut Formatter) -> FormatterResult {
-        write!(formatter, "ProcessNotFound")
+        write!(formatter, "Process not found")
     }
 }
 
