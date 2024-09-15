@@ -4,12 +4,10 @@
 
 use std::{
     error::Error,
-    ffi::OsString,
     fmt::{Display, Formatter, Result as FormatterResult},
-    os::windows::ffi::OsStringExt,
 };
 use windows::{
-    core::Owned,
+    core::{Owned, HSTRING},
     Win32::{
         Foundation::HANDLE,
         System::Diagnostics::ToolHelp::{
@@ -43,14 +41,14 @@ pub fn get_pid(name: &str) -> Result<u32, Box<dyn Error>> {
     }
 
     loop {
-        if OsString::from_wide(
+        if HSTRING::from_wide(
             process_entry
                 .szExeFile
                 .into_iter()
                 .take_while(|&byte| byte != 0)
                 .collect::<Vec<_>>()
                 .as_slice(),
-        ) == name
+        )? == name
         {
             return Ok(process_entry.th32ProcessID);
         }
