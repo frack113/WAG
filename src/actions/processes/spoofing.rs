@@ -6,7 +6,7 @@ use crate::{actions::Runnable, windows::processes::get_pid};
 use clap::Parser;
 use std::{error::Error, ffi::OsString, iter::once, mem::size_of, os::windows::ffi::OsStrExt};
 use windows::{
-    core::{Owned, PCWSTR, PWSTR},
+    core::{Owned, PWSTR},
     Win32::{
         Foundation::HANDLE,
         System::Threading::{
@@ -74,7 +74,7 @@ fn spoof(executable: &str, parent_pid: u32) -> Result<(), Box<dyn Error>> {
         )?;
 
         CreateProcessW(
-            PCWSTR::null(),
+            None,
             PWSTR(
                 OsString::from(executable)
                     .encode_wide()
@@ -87,7 +87,7 @@ fn spoof(executable: &str, parent_pid: u32) -> Result<(), Box<dyn Error>> {
             false,
             EXTENDED_STARTUPINFO_PRESENT,
             None,
-            PCWSTR::null(),
+            None,
             &startup_informations.StartupInfo,
             &mut PROCESS_INFORMATION::default(),
         )?
