@@ -9,6 +9,7 @@ mod windows;
 use actions::Runnable;
 use clap::Parser;
 use cli::{Arguments, Commands};
+use std::error::Error;
 
 fn banner() {
     let banner: &str = "
@@ -23,17 +24,10 @@ fn banner() {
     println!("{}", banner);
 }
 
-fn main() {
+fn main() -> Result<(), Box<dyn Error>> {
     banner();
 
-    match Arguments::parse().command {
-        Commands::Actions(action) => match action.run() {
-            Ok(code) => std::process::exit(code),
-            Err(error) => {
-                println!("Error: {}", error);
-
-                std::process::exit(1);
-            }
-        },
-    };
+    Ok(match Arguments::parse().command {
+        Commands::Actions(action) => action.run()?,
+    })
 }

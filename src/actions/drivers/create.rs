@@ -114,18 +114,18 @@ fn create_driver_service(name: &str, details: &str, path: &str) -> bool {
 
 impl Runnable for Create {
     /* Version 20230908 */
-    fn run(&self) -> Result<i32, Box<dyn Error>> {
+    fn run(&self) -> Result<(), Box<dyn Error>> {
         println!("Bring Your Own Vulnerable Driver");
 
         if !is_administrator()? {
             println!("Need to have Administrator right to create the service");
-            return Ok(1);
+            return Ok(());
         }
 
         // Todo check path is valid or not :)
 
         let result: bool = create_driver_service(&self.internal, &self.display, &self.path);
 
-        Ok(!result as i32)
+        Ok(())
     }
 }

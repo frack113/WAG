@@ -20,7 +20,7 @@ pub enum Commands {
 }
 
 impl Runnable for Mutexes {
-    fn run(&self) -> Result<i32, Box<dyn Error>> {
+    fn run(&self) -> Result<(), Box<dyn Error>> {
         match &self.command {
             Commands::Create(create) => create as &dyn Runnable,
         }

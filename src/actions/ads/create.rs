@@ -64,7 +64,7 @@ fn create_ads(fullpath: String, adsname: String, hex_data: Vec<u8>) -> bool {
 
 impl Runnable for Create {
     /* Version 20230908 */
-    fn run(&self) -> Result<i32, Box<dyn Error>> {
+    fn run(&self) -> Result<(), Box<dyn Error>> {
         println!("Alternate Data Stream");
 
         if !self.filename.is_empty() {
@@ -77,9 +77,9 @@ impl Runnable for Create {
             let payload: Vec<u8> = general_purpose::STANDARD.decode(self.data.as_str())?;
             let ret_ads: bool = create_ads(fullname, barrow_ads, payload);
 
-            return Ok(!ret_ads as i32);
+            return Ok(());
         }
 
-        Ok(1)
+        Ok(())
     }
 }

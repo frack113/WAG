@@ -51,7 +51,7 @@ fn create_name_pipe(name: &String, wait: u64) {
 }
 
 impl Runnable for Create {
-    fn run(&self) -> Result<i32, Box<dyn Error>> {
+    fn run(&self) -> Result<(), Box<dyn Error>> {
         println!("Create NamePipe");
 
         let mut generator: Generator<rand::rngs::ThreadRng> =
@@ -64,6 +64,6 @@ impl Runnable for Create {
 
         create_name_pipe(&payload, 2000);
 
-        Ok(0)
+        Ok(())
     }
 }

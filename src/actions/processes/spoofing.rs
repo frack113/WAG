@@ -97,9 +97,7 @@ fn spoof(executable: &str, parent_pid: u32) -> Result<(), Box<dyn Error>> {
 }
 
 impl Runnable for Spoofing {
-    fn run(&self) -> Result<i32, Box<dyn Error>> {
-        spoof(&self.executable, get_pid(&self.parent_executable)?)?;
-
-        Ok(0)
+    fn run(&self) -> Result<(), Box<dyn Error>> {
+        Ok(spoof(&self.executable, get_pid(&self.parent_executable)?)?)
     }
 }

@@ -39,7 +39,7 @@ fn create_mutex(name: &String, wait: u64) {
 }
 
 impl Runnable for Create {
-    fn run(&self) -> Result<i32, Box<dyn Error>> {
+    fn run(&self) -> Result<(), Box<dyn Error>> {
         println!("Create Mutex");
 
         let mut generator: Generator<rand::rngs::ThreadRng> =
@@ -52,6 +52,6 @@ impl Runnable for Create {
 
         create_mutex(&payload, 2000);
 
-        Ok(0)
+        Ok(())
     }
 }

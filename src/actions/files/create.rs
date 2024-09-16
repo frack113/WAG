@@ -90,10 +90,10 @@ fn create_file(fullpath: String, hex_data: Vec<u8>) -> bool {
 }
 
 impl Runnable for Create {
-    fn run(&self) -> Result<i32, Box<dyn Error>> {
+    fn run(&self) -> Result<(), Box<dyn Error>> {
         if self.admin && !is_administrator()? {
             println!("Need to have Administrator right to create the file");
-            return Ok(1);
+            return Ok(());
         }
 
         let mut generator: Generator<rand::rngs::ThreadRng> =
@@ -107,6 +107,6 @@ impl Runnable for Create {
         let payload: Vec<u8> = general_purpose::STANDARD.decode(self.magicbyte.as_str())?;
         let ret: bool = create_file(fullname, payload);
 
-        Ok(!ret as i32)
+        Ok(())
     }
 }

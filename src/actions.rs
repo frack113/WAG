@@ -33,11 +33,11 @@ pub enum Commands {
 }
 
 pub trait Runnable {
-    fn run(&self) -> Result<i32, Box<dyn Error>>;
+    fn run(&self) -> Result<(), Box<dyn Error>>;
 }
 
 impl Runnable for Actions {
-    fn run(&self) -> Result<i32, Box<dyn Error>> {
+    fn run(&self) -> Result<(), Box<dyn Error>> {
         match &self.command {
             Commands::AlternateDataStreams(alternate_data_streams) => {
                 alternate_data_streams as &dyn Runnable
