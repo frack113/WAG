@@ -26,6 +26,8 @@ pub struct Traces {
 #[derive(Subcommand, Deserialize)]
 #[serde(rename_all = "snake_case", untagged)]
 pub enum Commands {
+    #[serde(skip_deserializing)]
+    List(List),
     Drivers(Drivers),
     Memory(Memory),
     Processes(Processes),
@@ -55,6 +57,7 @@ pub const TRACE_METADATA: &[&TraceMetadata] = &[
 impl Traces {
     pub fn run(&self) -> ExitCode {
         match &self.command {
+            Commands::List(list) => list.run(),
             Commands::Drivers(drivers) => drivers.run(),
             Commands::Memory(memory) => memory.run(),
             Commands::Processes(processes) => processes.run(),
