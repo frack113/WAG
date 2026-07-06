@@ -2,11 +2,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-use crate::commands::traces::{Trace, Traversable, drivers::byovd::Byovd};
+pub mod byovd;
+
+use crate::commands::traces::{Trace, drivers::byovd::Byovd};
 use clap::{Args, Subcommand};
 use serde::Deserialize;
-
-mod byovd;
+use std::process::ExitCode;
 
 #[derive(Args, Deserialize)]
 pub struct Drivers {
@@ -21,10 +22,10 @@ pub enum Commands {
     Byovd(Byovd),
 }
 
-impl Traversable for Drivers {
-    fn traverse(&self) -> &dyn Trace {
+impl Drivers {
+    pub fn run(&self) -> ExitCode {
         match &self.command {
-            Commands::Byovd(byovd) => byovd,
+            Commands::Byovd(byovd) => Trace::run(byovd),
         }
     }
 }

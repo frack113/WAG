@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::{
-    commands::{Runnable, traces::Trace},
+    commands::traces::{Trace, TraceMetadata},
     displayer::Displayer,
 };
 use clap::{Parser, ValueEnum};
@@ -64,7 +64,16 @@ pub struct Browser {
     profile: PathBuf,
 }
 
-impl Runnable for Browser {
+pub const METADATA: TraceMetadata = TraceMetadata {
+    identifier: "file.browser.steal",
+    name: "Browser Stealer",
+    requirements_summary: "browser profile directory",
+    attack_techniques: &["T1560"],
+    sigma_targets: &["browser"],
+    use_cases: &["browser credential access"],
+};
+
+impl Trace for Browser {
     fn run(&self) -> ExitCode {
         let mut displayer = Displayer::new();
         displayer.loading("Verifying the browser profile path");
@@ -112,15 +121,5 @@ impl Runnable for Browser {
         displayer.success("The browser files are accessed");
 
         ExitCode::SUCCESS
-    }
-}
-
-impl Trace for Browser {
-    fn name(&self) -> &str {
-        "Browser Stealer"
-    }
-
-    fn as_runnable(&self) -> &dyn Runnable {
-        self
     }
 }

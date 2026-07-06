@@ -2,11 +2,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-use crate::commands::traces::{Trace, Traversable, processes::spoofing::Spoofing};
+pub mod spoofing;
+
+use crate::commands::traces::{Trace, processes::spoofing::Spoofing};
 use clap::{Args, Subcommand};
 use serde::Deserialize;
-
-mod spoofing;
+use std::process::ExitCode;
 
 #[derive(Args, Deserialize)]
 pub struct Processes {
@@ -21,10 +22,10 @@ pub enum Commands {
     Spoofing(Spoofing),
 }
 
-impl Traversable for Processes {
-    fn traverse(&self) -> &dyn Trace {
+impl Processes {
+    pub fn run(&self) -> ExitCode {
         match &self.command {
-            Commands::Spoofing(spoofing) => spoofing,
+            Commands::Spoofing(spoofing) => Trace::run(spoofing),
         }
     }
 }

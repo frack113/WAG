@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::{
-    commands::{Runnable, traces::Trace},
+    commands::traces::{Trace, TraceMetadata},
     displayer::Displayer,
 };
 use clap::Parser;
@@ -27,7 +27,16 @@ pub struct Byovd {
     description: String,
 }
 
-impl Runnable for Byovd {
+pub const METADATA: TraceMetadata = TraceMetadata {
+    identifier: "driver.byovd.load",
+    name: "Bring Your Own Vulnerable Driver",
+    requirements_summary: "administrator, kernel driver loading",
+    attack_techniques: &["T1068"],
+    sigma_targets: &["loldrivers"],
+    use_cases: &["driver loading"],
+};
+
+impl Trace for Byovd {
     fn run(&self) -> ExitCode {
         let mut displayer: Displayer = Displayer::new();
         displayer.loading("Creating the service manager");
@@ -89,15 +98,5 @@ impl Runnable for Byovd {
         displayer.success("The driver service is started");
 
         ExitCode::SUCCESS
-    }
-}
-
-impl Trace for Byovd {
-    fn name(&self) -> &str {
-        "Bring Your Own Vulnerable Driver"
-    }
-
-    fn as_runnable(&self) -> &dyn Runnable {
-        self
     }
 }

@@ -2,11 +2,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-use crate::commands::traces::{Trace, Traversable, memory::dll::DllLoader};
+pub mod dll;
+
+use crate::commands::traces::{Trace, memory::dll::DllLoader};
 use clap::{Args, Subcommand};
 use serde::Deserialize;
-
-mod dll;
+use std::process::ExitCode;
 
 #[derive(Args, Deserialize)]
 pub struct Memory {
@@ -21,10 +22,10 @@ pub enum Commands {
     DllLoader(DllLoader),
 }
 
-impl Traversable for Memory {
-    fn traverse(&self) -> &dyn Trace {
+impl Memory {
+    pub fn run(&self) -> ExitCode {
         match &self.command {
-            Commands::DllLoader(dll_loader) => dll_loader,
+            Commands::DllLoader(dll_loader) => Trace::run(dll_loader),
         }
     }
 }

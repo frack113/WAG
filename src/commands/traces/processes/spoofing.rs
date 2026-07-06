@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::{
-    commands::{Runnable, traces::Trace},
+    commands::traces::{Trace, TraceMetadata},
     displayer::Displayer,
     windows::processes::get_process_identifier,
 };
@@ -34,7 +34,16 @@ pub struct Spoofing {
     parent_executable: String,
 }
 
-impl Runnable for Spoofing {
+pub const METADATA: TraceMetadata = TraceMetadata {
+    identifier: "process.spoofing.create",
+    name: "Spoofing",
+    requirements_summary: "parent process access, process creation",
+    attack_techniques: &["T1134.004"],
+    sigma_targets: &["ppid_spoofing"],
+    use_cases: &["process spoofing"],
+};
+
+impl Trace for Spoofing {
     fn run(&self) -> ExitCode {
         let mut displayer = Displayer::new();
         displayer.loading("Initializing the startup information");
@@ -173,15 +182,5 @@ impl Runnable for Spoofing {
         displayer.success("The spoofed process is created");
 
         ExitCode::SUCCESS
-    }
-}
-
-impl Trace for Spoofing {
-    fn name(&self) -> &str {
-        "Spoofing"
-    }
-
-    fn as_runnable(&self) -> &dyn Runnable {
-        self
     }
 }
