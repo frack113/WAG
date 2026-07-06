@@ -39,13 +39,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
       - name: Lint Markdown code
-        uses: DavidAnson/markdownlint-cli2-action@v23
+        uses: DavidAnson/markdownlint-cli2-action@v24
   svglint:
     name: Lint with svglint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
