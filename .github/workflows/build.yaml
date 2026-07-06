@@ -20,7 +20,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
       - name: Install Rust toolchain
+        # yamllint disable rule:line-length
         uses: dtolnay/rust-toolchain@4be9e76fd7c4901c61fb841f559994984270fce7  # stable
+        # yamllint enable rule:line-length
       - name: Add caching
         uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5  # v2
       - name: Build Rust code
@@ -34,7 +36,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
       - name: Install cargo-hack
+        # yamllint disable rule:line-length
         uses: taiki-e/install-action@d07a59dee61edfde33db2141efcd440175f2238b  # cargo-hack
+        # yamllint enable rule:line-length
       - name: Check MSRV
         run: |-
           cargo hack check `

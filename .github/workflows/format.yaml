@@ -45,8 +45,10 @@ jobs:
           version: '10'
           standalone: true
       - name: Check SVG formatting
+        # yamllint disable rule:line-length
         run: git ls-files -z -- '*.svg' | xargs -0 -r pnpx svgo --pretty && git diff
           --exit-code
+        # yamllint enable rule:line-length
   rustfmt:
     name: Check formatting with rustfmt
     runs-on: ubuntu-latest
