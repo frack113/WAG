@@ -4,5 +4,8 @@
 # SPDX-License-Identifier: CC0-1.0
 extends: default
 rules:
+  line-length:
+    allow-non-breakable-words: true
+    allow-non-breakable-inline-mappings: true
   truthy:
     check-keys: false

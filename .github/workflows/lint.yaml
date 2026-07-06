@@ -1,7 +1,7 @@
 ---
 # SPDX-FileCopyrightText: 2023 The MalwareTracesGenerator development team
-# yamllint disable-line
-# SPDX-FileCopyrightText: 2022 Free Software Foundation Europe e.V. <https://fsfe.org>
+# SPDX-FileCopyrightText: 2022 Free Software Foundation Europe e.V.
+# <https://fsfe.org>
 #
 # SPDX-License-Identifier: CC0-1.0
 name: Lint the project
@@ -39,7 +39,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
       - name: Lint Markdown code
-        uses: DavidAnson/markdownlint-cli2-action@v23
+        uses: DavidAnson/markdownlint-cli2-action@v23.2.0
   svglint:
     name: Lint with svglint
     runs-on: ubuntu-latest
@@ -64,7 +64,7 @@ jobs:
         with:
           components: clippy
       - name: Add caching
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@v2.9.1
       - name: Lint Rust code
         run: |-
           cargo clippy `
@@ -79,7 +79,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
       - name: Lint Rust code
-        uses: EmbarkStudios/cargo-deny-action@v2
+        uses: EmbarkStudios/cargo-deny-action@v2.0.20
         with:
           command: check bans licenses sources
   cargo-outdated:
@@ -91,7 +91,7 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
       - name: Add caching
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@v2.9.1
       - name: Install cargo-outdated
         run: cargo install --locked cargo-outdated
       - name: Lint Rust code

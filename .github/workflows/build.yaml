@@ -20,9 +20,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@4be9e76fd7c4901c61fb841f559994984270fce7  # stable
+        uses: dtolnay/rust-toolchain@4be9e76fd7c4901c61fb841f559994984270fce7
       - name: Add caching
-        uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5  # v2
+        uses: Swatinem/rust-cache@v2.9.1
       - name: Build Rust code
         run: cargo build -v --workspace --all-targets --all-features
       - name: Run Rust tests
@@ -34,7 +34,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
       - name: Install cargo-hack
-        uses: taiki-e/install-action@d07a59dee61edfde33db2141efcd440175f2238b  # cargo-hack
+        uses: taiki-e/install-action@v2.82.1
+        with:
+          tool: cargo-hack
       - name: Check MSRV
         run: |-
           cargo hack check `

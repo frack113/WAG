@@ -20,10 +20,12 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - name: Install typos
-        uses: taiki-e/install-action@typos
-      - name: Install git-cliff
-        uses: taiki-e/install-action@git-cliff
+      - name: Install tools
+        uses: taiki-e/install-action@v2.82.1
+        with:
+          tool: |
+            typos
+            git-cliff
       - name: Generate changelog
         run: git-cliff --latest -o
       - name: Release project
@@ -41,7 +43,7 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
       - name: Add caching
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@v2.9.1
       - name: Publish the crate
         run: |-
           cargo publish `

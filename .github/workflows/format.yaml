@@ -45,8 +45,9 @@ jobs:
           version: '10'
           standalone: true
       - name: Check SVG formatting
-        run: git ls-files -z -- '*.svg' | xargs -0 -r pnpx svgo --pretty && git diff
-          --exit-code
+        run: >-
+          git ls-files -z -- '*.svg' | xargs -0 -r pnpx svgo --pretty
+          && git diff --exit-code
   rustfmt:
     name: Check formatting with rustfmt
     runs-on: ubuntu-latest
