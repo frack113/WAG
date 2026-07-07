@@ -2,11 +2,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-use crate::commands::traces::{Trace, Traversable, files::browser::Browser};
+pub mod browser;
+
+use crate::commands::traces::{Trace, files::browser::Browser};
 use clap::{Args, Subcommand};
 use serde::Deserialize;
-
-mod browser;
+use std::process::ExitCode;
 
 #[derive(Args, Deserialize)]
 pub struct Files {
@@ -21,10 +22,10 @@ pub enum Commands {
     Browser(Browser),
 }
 
-impl Traversable for Files {
-    fn traverse(&self) -> &dyn Trace {
+impl Files {
+    pub fn run(&self) -> ExitCode {
         match &self.command {
-            Commands::Browser(browser) => browser,
+            Commands::Browser(browser) => Trace::run(browser),
         }
     }
 }

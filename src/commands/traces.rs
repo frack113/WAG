@@ -2,17 +2,19 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-use crate::commands::{
-    Runnable,
-    traces::{drivers::Drivers, files::Files, memory::Memory, processes::Processes},
-};
-use clap::{Args, Subcommand};
-use serde::Deserialize;
+pub mod list;
 
 mod drivers;
 mod files;
 mod memory;
 mod processes;
+
+use crate::commands::traces::{
+    drivers::Drivers, files::Files, list::List, memory::Memory, processes::Processes,
+};
+use clap::{Args, Subcommand};
+use serde::Deserialize;
+use std::process::ExitCode;
 
 #[derive(Args, Deserialize)]
 pub struct Traces {
@@ -24,29 +26,42 @@ pub struct Traces {
 #[derive(Subcommand, Deserialize)]
 #[serde(rename_all = "snake_case", untagged)]
 pub enum Commands {
+    #[serde(skip_deserializing)]
+    List(List),
     Drivers(Drivers),
     Memory(Memory),
     Processes(Processes),
     Files(Files),
 }
 
-pub trait Trace: Runnable {
-    fn name(&self) -> &str;
-    fn as_runnable(&self) -> &dyn Runnable;
+pub trait Trace {
+    fn run(&self) -> ExitCode;
 }
 
-pub trait Traversable {
-    fn traverse(&self) -> &dyn Trace;
+pub struct TraceMetadata {
+    pub identifier: &'static str,
+    pub name: &'static str,
+    pub requirements_summary: &'static str,
+    pub attack_techniques: &'static [&'static str],
+    pub sigma_targets: &'static [&'static str],
+    pub use_cases: &'static [&'static str],
 }
 
-impl Traversable for Traces {
-    fn traverse(&self) -> &dyn Trace {
+pub const TRACE_METADATA: &[&TraceMetadata] = &[
+    &drivers::byovd::METADATA,
+    &memory::dll::METADATA,
+    &processes::spoofing::METADATA,
+    &files::browser::METADATA,
+];
+
+impl Traces {
+    pub fn run(&self) -> ExitCode {
         match &self.command {
-            Commands::Drivers(drivers) => drivers as &dyn Traversable,
-            Commands::Memory(memory) => memory,
-            Commands::Processes(processes) => processes,
-            Commands::Files(files) => files,
+            Commands::List(list) => list.run(),
+            Commands::Drivers(drivers) => drivers.run(),
+            Commands::Memory(memory) => memory.run(),
+            Commands::Processes(processes) => processes.run(),
+            Commands::Files(files) => files.run(),
         }
-        .traverse()
     }
 }

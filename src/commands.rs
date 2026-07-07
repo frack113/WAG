@@ -2,15 +2,11 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-use crate::commands::{
-    generate::Generate,
-    traces::{Traces, Traversable as TracesTraversable},
-};
+mod traces;
+
+use crate::commands::traces::Traces;
 use clap::{Parser, Subcommand};
 use std::process::ExitCode;
-
-mod generate;
-mod traces;
 
 #[derive(Parser)]
 #[clap(author, version)]
@@ -23,22 +19,18 @@ pub struct Arguments {
 #[derive(Subcommand)]
 pub enum Commands {
     Traces(Traces),
-    Generate(Generate),
 }
 
-pub trait Traversable {
-    fn traverse(&self) -> &dyn Runnable;
+impl Arguments {
+    pub fn run(&self) -> ExitCode {
+        self.command.run()
+    }
 }
 
-pub trait Runnable {
-    fn run(&self) -> ExitCode;
-}
-
-impl Traversable for Arguments {
-    fn traverse(&self) -> &dyn Runnable {
-        match &self.command {
-            Commands::Traces(traces) => traces.traverse().as_runnable(),
-            Commands::Generate(generate) => generate,
+impl Commands {
+    fn run(&self) -> ExitCode {
+        match self {
+            Commands::Traces(traces) => traces.run(),
         }
     }
 }

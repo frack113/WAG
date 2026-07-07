@@ -2,14 +2,14 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-use clap::Parser;
-use commands::{Arguments, Traversable};
-use std::process::ExitCode;
-
 mod commands;
 mod displayer;
 mod windows;
 
+use clap::Parser;
+use commands::Arguments;
+use std::process::ExitCode;
+
 fn main() -> ExitCode {
-    Arguments::parse().traverse().run()
+    Arguments::parse().run()
 }

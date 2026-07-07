@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::{
-    commands::{Runnable, traces::Trace},
+    commands::traces::{Trace, TraceMetadata},
     displayer::Displayer,
 };
 use clap::Parser;
@@ -20,7 +20,16 @@ pub struct DllLoader {
     path: PathBuf,
 }
 
-impl Runnable for DllLoader {
+pub const METADATA: TraceMetadata = TraceMetadata {
+    identifier: "memory.dll.load",
+    name: "DLL Loader",
+    requirements_summary: "local DLL file",
+    attack_techniques: &["T1574.001"],
+    sigma_targets: &["dll_sideloading"],
+    use_cases: &["dll sideloading"],
+};
+
+impl Trace for DllLoader {
     fn run(&self) -> ExitCode {
         let mut displayer = Displayer::new();
         displayer.loading("Verifying the DLL path");
@@ -60,15 +69,5 @@ impl Runnable for DllLoader {
         displayer.success("DLL loaded successfully in memory");
 
         ExitCode::SUCCESS
-    }
-}
-
-impl Trace for DllLoader {
-    fn name(&self) -> &str {
-        "DLL Loader"
-    }
-
-    fn as_runnable(&self) -> &dyn Runnable {
-        self
     }
 }
