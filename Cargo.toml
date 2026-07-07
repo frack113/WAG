@@ -25,7 +25,7 @@ name = "mtg"
 path = "./src/main.rs"
 
 [dependencies]
-windows = { version = "0.62.2", features = [
+windows = { version = "=0.62.2", features = [
   "Win32_Security",
   "Win32_System_Services",
   "Win32_System_Diagnostics_ToolHelp",
@@ -33,14 +33,16 @@ windows = { version = "0.62.2", features = [
   "Win32_System_LibraryLoader",
 ] }
 
-clap = { version = "4.6.1", features = ["derive"] }
-toml = { version = "1.1.2" }
+clap = { version = "=4.6.1", features = ["derive"] }
+toml = { version = "=1.1.2" }
 serde = { version = "1.0.219", features = ["derive"] }
-indicatif = { version = "0.18.4" }
-console = { version = "0.16.3" }
+indicatif = { version = "=0.18.4" }
+console = { version = "=0.16.3" }
+toml-span = { version = "=0.7.1" }
+thiserror = { version = "=2.0.18" }
 
 [build-dependencies]
-embed-resource = { version = "3.0.9" }
+embed-resource = { version = "=3.0.9" }
 
 [profile.release]
 opt-level = 3
