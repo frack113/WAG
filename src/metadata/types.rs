@@ -53,7 +53,7 @@ impl Display for TraceIdentifier {
 }
 
 impl FromStr for TraceIdentifier {
-    type Error = TraceIdentifierError;
+    type Err = TraceIdentifierError;
 
     fn from_str(input: &str) -> Result<Self, Self::Error> {
         let segments: Vec<&str> = input.split('.').collect();
