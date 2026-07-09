@@ -4,6 +4,7 @@
 
 mod commands;
 mod displayer;
+mod metadata;
 mod windows;
 
 use clap::Parser;
