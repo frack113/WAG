@@ -2,9 +2,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-use crate::traces::{TRACE_METADATA, TraceMetadata};
+use crate::{
+    metadata::{AttackTechnique, SigmaIdentifier},
+    registry::{REGISTRY, TraceFilters},
+    traces::TraceMetadata,
+};
 use clap::Args;
-use serde::Deserialize;
 use std::{fmt::Write, process::ExitCode};
 
 const NO_MATCH_MESSAGE: &str = "No traces match the selected filters.\n";
@@ -13,41 +16,32 @@ const IDENTIFIER_HEADER: &str = "Identifier";
 const NAME_HEADER: &str = "Name";
 const REQUIREMENTS_SUMMARY_HEADER: &str = "Requirements summary";
 
-#[derive(Args, Deserialize)]
+#[derive(Args)]
+#[command(after_help = r#"Filter behavior:
+  Repeat one option to match any value in that category (OR).
+  Combine different options to require every category (AND).
+  Omit all filters to list every trace."#)]
 pub struct List {
-    #[clap(long = "attack")]
-    attack_techniques: Vec<String>,
+    #[clap(long = "attack", help = "Match an ATT&CK technique (repeatable)")]
+    attack_techniques: Vec<AttackTechnique>,
 
-    #[clap(long = "sigma")]
-    sigma_identifiers: Vec<String>,
+    #[clap(long = "sigma", help = "Match a Sigma UUID (repeatable)")]
+    sigma_identifiers: Vec<SigmaIdentifier>,
 
-    #[clap(long = "use-case")]
+    #[clap(long = "use-case", help = "Match a use case (repeatable)")]
     use_cases: Vec<String>,
-}
-
-pub struct TraceListFilters<'a> {
-    pub attack_techniques: &'a [&'a str],
-    pub sigma_identifiers: &'a [&'a str],
-    pub use_cases: &'a [&'a str],
 }
 
 impl List {
     pub fn run(&self) -> ExitCode {
         let width = console::Term::stdout().size().1 as usize;
-
-        let attack_techniques: Vec<&str> =
-            self.attack_techniques.iter().map(String::as_str).collect();
-        let sigma_identifiers: Vec<&str> =
-            self.sigma_identifiers.iter().map(String::as_str).collect();
-        let use_cases: Vec<&str> = self.use_cases.iter().map(String::as_str).collect();
-
-        let filters = TraceListFilters {
-            attack_techniques: &attack_techniques,
-            sigma_identifiers: &sigma_identifiers,
-            use_cases: &use_cases,
+        let filters = TraceFilters {
+            attack_techniques: &self.attack_techniques,
+            sigma_identifiers: &self.sigma_identifiers,
+            use_cases: &self.use_cases,
         };
-
-        let output = Self::render_filtered(width.max(1), &TRACE_METADATA, &filters);
+        let traces = REGISTRY.query(&filters);
+        let output = Self::render_filtered(width.max(1), &traces, &filters);
 
         print!("{output}");
 
@@ -57,9 +51,9 @@ impl List {
     pub fn render_filtered(
         width: usize,
         traces: &[&TraceMetadata],
-        filters: &TraceListFilters,
+        filters: &TraceFilters,
     ) -> String {
-        if traces.is_empty() {
+        if traces.is_empty() && !Self::has_active_filters(filters) {
             return "No traces are available.\n".to_string();
         }
 
@@ -67,28 +61,16 @@ impl List {
             return Self::render(width, traces);
         }
 
-        let filtered = Self::filter(traces, filters);
         let context_line = Self::render_filter_context(filters);
-        if filtered.is_empty() {
+        if traces.is_empty() {
             return format!("{context_line}\n{NO_MATCH_MESSAGE}");
         }
 
-        let table = Self::render(width, &filtered);
+        let table = Self::render(width, traces);
 
         let mut output = String::new();
         let _ = write!(output, "{context_line}\n{table}");
         output
-    }
-
-    pub fn filter<'a>(
-        traces: &'a [&'a TraceMetadata],
-        filters: &TraceListFilters,
-    ) -> Vec<&'a TraceMetadata> {
-        traces
-            .iter()
-            .copied()
-            .filter(|entry| Self::matches_all_filters(entry, filters))
-            .collect()
     }
 
     pub fn render(width: usize, traces: &[&TraceMetadata]) -> String {
@@ -257,59 +239,32 @@ impl List {
         lines
     }
 
-    fn matches_all_filters(entry: &TraceMetadata, filters: &TraceListFilters) -> bool {
-        if !filters.attack_techniques.is_empty()
-            && !filters.attack_techniques.iter().any(|filter| {
-                entry
-                    .attack_techniques
-                    .iter()
-                    .any(|target| target.as_str() == *filter)
-            })
-        {
-            return false;
-        }
-
-        if !filters.sigma_identifiers.is_empty()
-            && !filters.sigma_identifiers.iter().any(|filter| {
-                entry
-                    .sigma_identifiers
-                    .iter()
-                    .any(|target| target.as_str() == *filter)
-            })
-        {
-            return false;
-        }
-
-        if !filters.use_cases.is_empty()
-            && !filters.use_cases.iter().any(|filter| {
-                entry
-                    .use_cases
-                    .iter()
-                    .any(|target| target.as_str() == *filter)
-            })
-        {
-            return false;
-        }
-
-        true
-    }
-
-    fn has_active_filters(filters: &TraceListFilters) -> bool {
+    fn has_active_filters(filters: &TraceFilters) -> bool {
         !filters.attack_techniques.is_empty()
             || !filters.sigma_identifiers.is_empty()
             || !filters.use_cases.is_empty()
     }
 
-    fn render_filter_context(filters: &TraceListFilters) -> String {
+    fn render_filter_context(filters: &TraceFilters) -> String {
         let mut parts: Vec<String> = Vec::new();
 
         if !filters.attack_techniques.is_empty() {
-            let joined = filters.attack_techniques.join(", ");
+            let joined = filters
+                .attack_techniques
+                .iter()
+                .map(ToString::to_string)
+                .collect::<Vec<_>>()
+                .join(", ");
             parts.push(format!("attack={joined}"));
         }
 
         if !filters.sigma_identifiers.is_empty() {
-            let joined = filters.sigma_identifiers.join(", ");
+            let joined = filters
+                .sigma_identifiers
+                .iter()
+                .map(ToString::to_string)
+                .collect::<Vec<_>>()
+                .join(", ");
             parts.push(format!("sigma={joined}"));
         }
 

@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 mod commands;
-mod displayer;
 mod metadata;
+mod registry;
 mod traces;
 mod windows;
 
