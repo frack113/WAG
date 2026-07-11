@@ -55,30 +55,33 @@ impl Display for TraceIdentifier {
 impl FromStr for TraceIdentifier {
     type Err = TraceIdentifierError;
 
-    fn from_str(input: &str) -> Result<Self, Self::Error> {
+    fn from_str(input: &str) -> Result<Self, Self::Err> {
         let segments: Vec<&str> = input.split('.').collect();
 
-        if segments.len() != 3 {
+        let [domain, family, behavior] = segments.as_slice() else {
             return Err(TraceIdentifierError::MalformedIdentifier {
                 input: input.to_string(),
             });
-        }
+        };
 
-        for segment in &segments {
+        for segment in [domain, family, behavior] {
             if segment.is_empty()
-                || segment
-                    .starts_with(|character: char| character.is_ascii_digit() || character == '_')
+                || segment.starts_with(|character: char| {
+                    character.is_ascii_digit() || character == '_'
+                })
                 || !segment.chars().all(|character| {
-                    character.is_ascii_lowercase() || character.is_ascii_digit() || character == '_'
+                    character.is_ascii_lowercase()
+                        || character.is_ascii_digit()
+                        || character == '_'
                 })
             {
-                return Err(TraceIdentifierError::InvalidSegment {
-                    segment: (*segment).to_string(),
+                return Err(TraceIdentifierError::MalformedIdentifier {
+                    input: input.to_string(),
                 });
             }
         }
 
-        Ok(Self::new(segments[0], segments[1], segments[2]))
+        Ok(Self::new(*domain, *family, *behavior))
     }
 }
 

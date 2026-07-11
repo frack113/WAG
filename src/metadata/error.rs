@@ -6,11 +6,8 @@ use thiserror::Error;
 
 #[derive(Debug, Clone, PartialEq, Error)]
 pub enum TraceIdentifierError {
-    #[error("trace identifier must have the shape `<domain>.<family>.<behavior>`, got `{input}`")]
+    #[error("trace identifier must be `<domain>.<family>.<behavior>` where each segment starts with a lowercase letter and contains only lowercase ASCII, digits, or underscore, got `{input}`")]
     MalformedIdentifier { input: String },
+}
 
-    #[error(
-        "trace identifier segment `{segment}` must start with a lowercase letter and contain only lowercase ASCII, digits, or underscore"
-    )]
-    InvalidSegment { segment: String },
 }
