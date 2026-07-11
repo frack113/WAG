@@ -19,3 +19,9 @@ pub enum AttackTechniqueError {
     )]
     MalformedTechnique { input: String },
 }
+
+#[derive(Debug, Clone, PartialEq, Error)]
+pub enum SigmaIdentifierError {
+    #[error("Sigma identifier must be a valid UUID, got `{input}`")]
+    MalformedIdentifier { input: String },
+}

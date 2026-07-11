@@ -2,12 +2,13 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-use crate::metadata::error::{AttackTechniqueError, TraceIdentifierError};
+use crate::metadata::error::{AttackTechniqueError, SigmaIdentifierError, TraceIdentifierError};
 use std::{
     fmt::{self, Display, Formatter},
     str::FromStr,
 };
 use toml_span::{DeserError, Deserialize, Error, ErrorKind, span::Spanned, value::Value};
+use uuid::Uuid;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct TraceIdentifier {
@@ -172,6 +173,52 @@ impl FromStr for AttackTechnique {
 }
 
 impl<'de> Deserialize<'de> for AttackTechnique {
+    fn deserialize(value: &mut Value<'de>) -> Result<Self, DeserError> {
+        let raw = <Spanned<String> as Deserialize<'de>>::deserialize(value)?;
+
+        raw.value.parse().map_err(|error| {
+            Error {
+                kind: ErrorKind::Custom(error.to_string().into()),
+                span: raw.span,
+                line_info: None,
+            }
+            .into()
+        })
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SigmaIdentifier(Uuid);
+
+impl SigmaIdentifier {
+    pub fn new(value: Uuid) -> Self {
+        Self(value)
+    }
+
+    pub fn as_uuid(&self) -> &Uuid {
+        &self.0
+    }
+}
+
+impl Display for SigmaIdentifier {
+    fn fmt(&self, format: &mut Formatter<'_>) -> fmt::Result {
+        format.write_str(&self.0.to_string())
+    }
+}
+
+impl FromStr for SigmaIdentifier {
+    type Err = SigmaIdentifierError;
+
+    fn from_str(input: &str) -> Result<Self, Self::Err> {
+        Uuid::parse_str(input)
+            .map(Self)
+            .map_err(|_| SigmaIdentifierError::MalformedIdentifier {
+                input: input.to_string(),
+            })
+    }
+}
+
+impl<'de> Deserialize<'de> for SigmaIdentifier {
     fn deserialize(value: &mut Value<'de>) -> Result<Self, DeserError> {
         let raw = <Spanned<String> as Deserialize<'de>>::deserialize(value)?;
 

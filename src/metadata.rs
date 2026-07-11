@@ -6,6 +6,6 @@ pub mod error;
 pub mod types;
 
 pub use crate::metadata::{
-    error::{AttackTechniqueError, TraceIdentifierError},
-    types::{AttackTechnique, TraceIdentifier},
+    error::{AttackTechniqueError, SigmaIdentifierError, TraceIdentifierError},
+    types::{AttackTechnique, SigmaIdentifier, TraceIdentifier},
 };
