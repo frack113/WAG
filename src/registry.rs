@@ -45,7 +45,7 @@ impl Registry {
 pub struct TraceFilters<'a> {
     pub attack_techniques: &'a [AttackTechnique],
     pub sigma_identifiers: &'a [SigmaIdentifier],
-    pub use_cases: &'a [&'a str],
+    pub use_cases: &'a [String],
 }
 
 impl TraceFilters<'_> {
@@ -66,7 +66,7 @@ impl TraceFilters<'_> {
             || self
                 .use_cases
                 .iter()
-                .any(|filter| metadata.use_cases.iter().any(|use_case| use_case == filter));
+                .any(|filter| metadata.use_cases.contains(filter));
 
         attack_matches && sigma_matches && use_case_matches
     }
