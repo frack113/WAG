@@ -40,6 +40,9 @@ indicatif = { version = "=0.18.4" }
 console = { version = "=0.16.3" }
 toml-span = { version = "=0.7.1" }
 thiserror = { version = "=2.0.18" }
+miette = { version = "=7.6.0", features = ["derive", "fancy"] }
+url = { version = "=2.5.8" }
+uuid = { version = "=1.23.4", features = ["v4"] }
 
 [build-dependencies]
 embed-resource = { version = "=3.0.9" }
