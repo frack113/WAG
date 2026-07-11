@@ -5,6 +5,7 @@
 mod commands;
 mod displayer;
 mod metadata;
+mod traces;
 mod windows;
 
 use clap::Parser;

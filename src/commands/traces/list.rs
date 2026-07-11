@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-use crate::commands::traces::{TRACE_METADATA, TraceMetadata};
+use crate::traces::{TRACE_METADATA, TraceMetadata};
 use clap::Args;
 use serde::Deserialize;
 use std::{fmt::Write, process::ExitCode};
@@ -19,7 +19,7 @@ pub struct List {
     attack_techniques: Vec<String>,
 
     #[clap(long = "sigma")]
-    sigma_targets: Vec<String>,
+    sigma_identifiers: Vec<String>,
 
     #[clap(long = "use-case")]
     use_cases: Vec<String>,
@@ -27,7 +27,7 @@ pub struct List {
 
 pub struct TraceListFilters<'a> {
     pub attack_techniques: &'a [&'a str],
-    pub sigma_targets: &'a [&'a str],
+    pub sigma_identifiers: &'a [&'a str],
     pub use_cases: &'a [&'a str],
 }
 
@@ -37,16 +37,17 @@ impl List {
 
         let attack_techniques: Vec<&str> =
             self.attack_techniques.iter().map(String::as_str).collect();
-        let sigma_targets: Vec<&str> = self.sigma_targets.iter().map(String::as_str).collect();
+        let sigma_identifiers: Vec<&str> =
+            self.sigma_identifiers.iter().map(String::as_str).collect();
         let use_cases: Vec<&str> = self.use_cases.iter().map(String::as_str).collect();
 
         let filters = TraceListFilters {
             attack_techniques: &attack_techniques,
-            sigma_targets: &sigma_targets,
+            sigma_identifiers: &sigma_identifiers,
             use_cases: &use_cases,
         };
 
-        let output = Self::render_filtered(width.max(1), TRACE_METADATA, &filters);
+        let output = Self::render_filtered(width.max(1), &TRACE_METADATA, &filters);
 
         print!("{output}");
 
@@ -98,7 +99,7 @@ impl List {
         let width = width.max(1);
         let identifier_width = traces
             .iter()
-            .map(|entry| entry.identifier.len())
+            .map(|entry| entry.identifier.as_str().len())
             .chain([IDENTIFIER_HEADER.len()])
             .max()
             .unwrap_or(1);
@@ -154,9 +155,10 @@ impl List {
         );
 
         for entry in traces {
+            let identifier = entry.identifier.as_str();
             Self::render_row(
                 &mut output,
-                [entry.identifier, entry.name, entry.requirements_summary],
+                [identifier.as_str(), entry.name, entry.requirements_summary],
                 [identifier_width, name_width, requirements_width],
             );
         }
@@ -177,9 +179,10 @@ impl List {
         );
 
         for entry in traces {
+            let identifier = entry.identifier.as_str();
             Self::render_row(
                 &mut output,
-                [entry.identifier, entry.name],
+                [identifier.as_str(), entry.name],
                 [identifier_width, name_width],
             );
         }
@@ -193,7 +196,8 @@ impl List {
         Self::render_row(&mut output, [IDENTIFIER_HEADER], [identifier_width]);
 
         for entry in traces {
-            Self::render_row(&mut output, [entry.identifier], [identifier_width]);
+            let identifier = entry.identifier.as_str();
+            Self::render_row(&mut output, [identifier.as_str()], [identifier_width]);
         }
 
         output
@@ -259,26 +263,30 @@ impl List {
                 entry
                     .attack_techniques
                     .iter()
-                    .any(|target| target == filter)
+                    .any(|target| target.as_str() == *filter)
             })
         {
             return false;
         }
 
-        if !filters.sigma_targets.is_empty()
-            && !filters
-                .sigma_targets
-                .iter()
-                .any(|filter| entry.sigma_targets.iter().any(|target| target == filter))
+        if !filters.sigma_identifiers.is_empty()
+            && !filters.sigma_identifiers.iter().any(|filter| {
+                entry
+                    .sigma_identifiers
+                    .iter()
+                    .any(|target| target.as_str() == *filter)
+            })
         {
             return false;
         }
 
         if !filters.use_cases.is_empty()
-            && !filters
-                .use_cases
-                .iter()
-                .any(|filter| entry.use_cases.iter().any(|target| target == filter))
+            && !filters.use_cases.iter().any(|filter| {
+                entry
+                    .use_cases
+                    .iter()
+                    .any(|target| target.as_str() == *filter)
+            })
         {
             return false;
         }
@@ -288,7 +296,7 @@ impl List {
 
     fn has_active_filters(filters: &TraceListFilters) -> bool {
         !filters.attack_techniques.is_empty()
-            || !filters.sigma_targets.is_empty()
+            || !filters.sigma_identifiers.is_empty()
             || !filters.use_cases.is_empty()
     }
 
@@ -300,8 +308,8 @@ impl List {
             parts.push(format!("attack={joined}"));
         }
 
-        if !filters.sigma_targets.is_empty() {
-            let joined = filters.sigma_targets.join(", ");
+        if !filters.sigma_identifiers.is_empty() {
+            let joined = filters.sigma_identifiers.join(", ");
             parts.push(format!("sigma={joined}"));
         }
 

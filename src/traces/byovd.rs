@@ -3,12 +3,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::{
-    commands::traces::{Trace, TraceMetadata},
     displayer::Displayer,
+    metadata::{AttackTechnique, SigmaIdentifier, TraceIdentifier},
+    traces::{Trace, TraceMetadata, TraceParameter, TraceParameterKind},
 };
 use clap::Parser;
 use serde::Deserialize;
-use std::{path::PathBuf, process::ExitCode};
+use std::{path::PathBuf, process::ExitCode, sync::LazyLock};
+use uuid::Uuid;
 use windows::{
     Win32::System::Services::{
         CreateServiceW, OpenSCManagerW, SC_MANAGER_ALL_ACCESS, SC_MANAGER_CREATE_SERVICE,
@@ -27,14 +29,36 @@ pub struct Byovd {
     description: String,
 }
 
-pub const METADATA: TraceMetadata = TraceMetadata {
-    identifier: "driver.byovd.load",
+pub static METADATA: LazyLock<TraceMetadata> = LazyLock::new(|| TraceMetadata {
+    identifier: TraceIdentifier::new("driver", "byovd", "load"),
     name: "Bring Your Own Vulnerable Driver",
     requirements_summary: "administrator, kernel driver loading",
-    attack_techniques: &["T1068"],
-    sigma_targets: &["loldrivers"],
-    use_cases: &["driver loading"],
-};
+    attack_techniques: vec![AttackTechnique::new("1068", None::<&str>)],
+    sigma_identifiers: vec![SigmaIdentifier::new(
+        Uuid::parse_str("b5d44a2e-31c9-4e4f-8a4f-cc18633f2146").unwrap(),
+    )],
+    use_cases: vec!["driver loading".to_string()],
+    parameters: &[
+        TraceParameter {
+            name: "driver",
+            kind: TraceParameterKind::Path,
+            required: true,
+            allowed_values: &[],
+        },
+        TraceParameter {
+            name: "name",
+            kind: TraceParameterKind::String,
+            required: true,
+            allowed_values: &[],
+        },
+        TraceParameter {
+            name: "description",
+            kind: TraceParameterKind::String,
+            required: true,
+            allowed_values: &[],
+        },
+    ],
+});
 
 impl Trace for Byovd {
     fn run(&self) -> ExitCode {

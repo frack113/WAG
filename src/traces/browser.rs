@@ -3,12 +3,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::{
-    commands::traces::{Trace, TraceMetadata},
     displayer::Displayer,
+    metadata::{AttackTechnique, SigmaIdentifier, TraceIdentifier},
+    traces::{Trace, TraceMetadata, TraceParameter, TraceParameterKind},
 };
 use clap::{Parser, ValueEnum};
 use serde::Deserialize;
-use std::{fs, path::PathBuf, process::ExitCode};
+use std::{fs, path::PathBuf, process::ExitCode, sync::LazyLock};
+use uuid::Uuid;
 
 #[derive(Debug, Clone, Copy, ValueEnum, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -64,14 +66,30 @@ pub struct Browser {
     profile: PathBuf,
 }
 
-pub const METADATA: TraceMetadata = TraceMetadata {
-    identifier: "file.browser.steal",
+pub static METADATA: LazyLock<TraceMetadata> = LazyLock::new(|| TraceMetadata {
+    identifier: TraceIdentifier::new("file", "browser", "steal"),
     name: "Browser Stealer",
     requirements_summary: "browser profile directory",
-    attack_techniques: &["T1560"],
-    sigma_targets: &["browser"],
-    use_cases: &["browser credential access"],
-};
+    attack_techniques: vec![AttackTechnique::new("1560", None::<&str>)],
+    sigma_identifiers: vec![SigmaIdentifier::new(
+        Uuid::parse_str("9796aae8-9ee3-4a26-8b6f-66bf9a0ee864").unwrap(),
+    )],
+    use_cases: vec!["browser credential access".to_string()],
+    parameters: &[
+        TraceParameter {
+            name: "browser",
+            kind: TraceParameterKind::Enum,
+            required: true,
+            allowed_values: &["firefox", "chrome", "edge", "opera", "brave"],
+        },
+        TraceParameter {
+            name: "profile",
+            kind: TraceParameterKind::Path,
+            required: true,
+            allowed_values: &[],
+        },
+    ],
+});
 
 impl Trace for Browser {
     fn run(&self) -> ExitCode {

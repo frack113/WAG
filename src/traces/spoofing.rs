@@ -3,16 +3,18 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::{
-    commands::traces::{Trace, TraceMetadata},
     displayer::Displayer,
+    metadata::{AttackTechnique, SigmaIdentifier, TraceIdentifier},
+    traces::{Trace, TraceMetadata, TraceParameter, TraceParameterKind},
     windows::processes::get_process_identifier,
 };
 use clap::Parser;
 use serde::Deserialize;
 use std::{
     ffi::OsString, iter::once, mem::size_of, os::windows::ffi::OsStrExt, path::PathBuf,
-    process::ExitCode,
+    process::ExitCode, sync::LazyLock,
 };
+use uuid::Uuid;
 use windows::{
     Win32::{
         Foundation::HANDLE,
@@ -34,14 +36,30 @@ pub struct Spoofing {
     parent_executable: String,
 }
 
-pub const METADATA: TraceMetadata = TraceMetadata {
-    identifier: "process.spoofing.create",
+pub static METADATA: LazyLock<TraceMetadata> = LazyLock::new(|| TraceMetadata {
+    identifier: TraceIdentifier::new("process", "spoofing", "create"),
     name: "Spoofing",
     requirements_summary: "parent process access, process creation",
-    attack_techniques: &["T1134.004"],
-    sigma_targets: &["ppid_spoofing"],
-    use_cases: &["process spoofing"],
-};
+    attack_techniques: vec![AttackTechnique::new("1134", Some("004"))],
+    sigma_identifiers: vec![SigmaIdentifier::new(
+        Uuid::parse_str("a05efb77-9c1d-4384-806e-080ca13946fe").unwrap(),
+    )],
+    use_cases: vec!["process spoofing".to_string()],
+    parameters: &[
+        TraceParameter {
+            name: "executable",
+            kind: TraceParameterKind::Path,
+            required: true,
+            allowed_values: &[],
+        },
+        TraceParameter {
+            name: "parent_executable",
+            kind: TraceParameterKind::String,
+            required: true,
+            allowed_values: &[],
+        },
+    ],
+});
 
 impl Trace for Spoofing {
     fn run(&self) -> ExitCode {

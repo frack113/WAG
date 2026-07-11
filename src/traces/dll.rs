@@ -3,12 +3,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::{
-    commands::traces::{Trace, TraceMetadata},
     displayer::Displayer,
+    metadata::{AttackTechnique, SigmaIdentifier, TraceIdentifier},
+    traces::{Trace, TraceMetadata, TraceParameter, TraceParameterKind},
 };
 use clap::Parser;
 use serde::Deserialize;
-use std::{path::PathBuf, process::ExitCode};
+use std::{path::PathBuf, process::ExitCode, sync::LazyLock};
+use uuid::Uuid;
 use windows::{
     Win32::System::LibraryLoader,
     core::{HSTRING, Owned},
@@ -20,14 +22,22 @@ pub struct DllLoader {
     path: PathBuf,
 }
 
-pub const METADATA: TraceMetadata = TraceMetadata {
-    identifier: "memory.dll.load",
+pub static METADATA: LazyLock<TraceMetadata> = LazyLock::new(|| TraceMetadata {
+    identifier: TraceIdentifier::new("memory", "dll", "load"),
     name: "DLL Loader",
     requirements_summary: "local DLL file",
-    attack_techniques: &["T1574.001"],
-    sigma_targets: &["dll_sideloading"],
-    use_cases: &["dll sideloading"],
-};
+    attack_techniques: vec![AttackTechnique::new("1574", Some("001"))],
+    sigma_identifiers: vec![SigmaIdentifier::new(
+        Uuid::parse_str("2a4052f7-858e-412e-be8c-60138c8ce031").unwrap(),
+    )],
+    use_cases: vec!["dll sideloading".to_string()],
+    parameters: &[TraceParameter {
+        name: "path",
+        kind: TraceParameterKind::Path,
+        required: true,
+        allowed_values: &[],
+    }],
+});
 
 impl Trace for DllLoader {
     fn run(&self) -> ExitCode {
