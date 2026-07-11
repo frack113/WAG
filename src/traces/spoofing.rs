@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::{
-    displayer::Displayer,
     metadata::{AttackTechnique, SigmaIdentifier, TraceIdentifier},
     traces::{Trace, TraceMetadata, TraceParameter, TraceParameterKind},
     windows::processes::get_process_identifier,
@@ -63,11 +62,7 @@ pub static METADATA: LazyLock<TraceMetadata> = LazyLock::new(|| TraceMetadata {
 
 impl Trace for Spoofing {
     fn run(&self) -> ExitCode {
-        let mut displayer = Displayer::new();
-        displayer.loading("Initializing the startup information");
-
         let mut required_size = 0;
-
         let _ = unsafe { InitializeProcThreadAttributeList(None, 1, None, &mut required_size) };
 
         let mut attributes: Box<[u8]> = vec![0; required_size].into_boxed_slice();
@@ -84,68 +79,33 @@ impl Trace for Spoofing {
             lpAttributeList: *attributes_list,
         };
 
-        if let Err(error) = unsafe {
+        if unsafe {
             InitializeProcThreadAttributeList(
                 Some(startup_information.lpAttributeList),
                 1,
                 None,
                 &mut required_size,
             )
-        } {
-            displayer.failure(
-                format!(
-                    "Failed to initialize the startup information: {}",
-                    error.message()
-                )
-                .as_str(),
-            );
-
+        }
+        .is_err()
+        {
             return ExitCode::FAILURE;
         }
-
-        displayer.success("The startup information is initialized");
-        displayer.loading("Retrieving the parent process identifier");
 
         let parent_process_identifier =
             match get_process_identifier(self.parent_executable.as_str()) {
                 Ok(process_identifier) => process_identifier,
-                Err(error) => {
-                    displayer.failure(
-                        format!(
-                            "Failed to retrieve the parent process identifier: {}",
-                            error.message()
-                        )
-                        .as_str(),
-                    );
-
-                    return ExitCode::FAILURE;
-                }
+                Err(_) => return ExitCode::FAILURE,
             };
-
-        displayer.success("The parent process identifier is retrieved");
-        displayer.loading("Retrieving a handle to the parent process");
 
         let mut parent_process = match unsafe {
             OpenProcess(PROCESS_CREATE_PROCESS, false, parent_process_identifier)
         } {
             Ok(handle) => unsafe { Owned::new(handle) },
-            Err(error) => {
-                displayer.failure(
-                    format!(
-                        "Failed to retrieve a handle to the parent process: {}",
-                        error.message()
-                    )
-                    .as_str(),
-                );
-
-                return ExitCode::FAILURE;
-            }
+            Err(_) => return ExitCode::FAILURE,
         };
 
-        displayer.success("A handle to the parent process is retrieved");
-        displayer.loading("Setting the parent process in the startup information");
-
-        if let Err(error) = unsafe {
+        if unsafe {
             UpdateProcThreadAttribute(
                 startup_information.lpAttributeList,
                 0,
@@ -155,22 +115,13 @@ impl Trace for Spoofing {
                 None,
                 None,
             )
-        } {
-            displayer.failure(
-                format!(
-                    "Failed to set the parent process in the startup information: {}",
-                    error.message()
-                )
-                .as_str(),
-            );
-
+        }
+        .is_err()
+        {
             return ExitCode::FAILURE;
         }
 
-        displayer.success("The parent process in the startup information is set");
-        displayer.loading("Creating the spoofed process");
-
-        if let Err(error) = unsafe {
+        if unsafe {
             CreateProcessW(
                 None,
                 Some(PWSTR(
@@ -189,15 +140,11 @@ impl Trace for Spoofing {
                 &startup_information.StartupInfo,
                 &mut PROCESS_INFORMATION::default(),
             )
-        } {
-            displayer.failure(
-                format!("Failed to create the spoofed process: {}", error.message()).as_str(),
-            );
-
+        }
+        .is_err()
+        {
             return ExitCode::FAILURE;
         }
-
-        displayer.success("The spoofed process is created");
 
         ExitCode::SUCCESS
     }

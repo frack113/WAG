@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::{
-    displayer::Displayer,
     metadata::{AttackTechnique, SigmaIdentifier, TraceIdentifier},
     traces::{Trace, TraceMetadata, TraceParameter, TraceParameterKind},
 };
@@ -71,72 +70,28 @@ pub static METADATA: LazyLock<TraceMetadata> = LazyLock::new(|| TraceMetadata {
     name: "Browser Stealer",
     requirements_summary: "browser profile directory",
     attack_techniques: vec![AttackTechnique::new("1560", None::<&str>)],
-    sigma_identifiers: vec![SigmaIdentifier::new(
-        Uuid::parse_str("9796aae8-9ee3-4a26-8b6f-66bf9a0ee864").unwrap(),
-    )],
-    use_cases: vec!["browser credential access".to_string()],
-    parameters: &[
-        TraceParameter {
-            name: "browser",
-            kind: TraceParameterKind::Enum,
-            required: true,
-            allowed_values: &["firefox", "chrome", "edge", "opera", "brave"],
-        },
-        TraceParameter {
-            name: "profile",
-            kind: TraceParameterKind::Path,
-            required: true,
-            allowed_values: &[],
-        },
+    sigma_identifiers: vec![
+        "9796aae8-9ee3-4a26-8b6f-66bf9a0ee864"
+            .parse::<SigmaIdentifier>()
+            .unwrap(),
     ],
+    use_cases: vec!["browser credential access".to_string()],
+    decode_parameters: decode_parameters::<Browser>,
 });
 
 impl Trace for Browser {
     fn run(&self) -> ExitCode {
-        let mut displayer = Displayer::new();
-        displayer.loading("Verifying the browser profile path");
-
-        if !self.profile.exists() {
-            displayer.failure(&format!(
-                "Browser profile path does not exist: {}",
-                self.profile.display()
-            ));
-
+        if !self.profile.exists() || !self.profile.is_dir() {
             return ExitCode::FAILURE;
         }
 
-        if !self.profile.is_dir() {
-            displayer.failure(&format!(
-                "Browser profile path is not a directory: {}",
-                self.profile.display()
-            ));
-
-            return ExitCode::FAILURE;
-        }
-
-        displayer.success("The browser profile path is verified");
-        displayer.loading("Accessing browser files");
-
-        let files = self.browser.files();
-
-        for file in files {
+        for file in self.browser.files() {
             let path = self.profile.join(file);
 
-            if !path.exists() {
-                continue;
-            }
-
-            match fs::read(&path) {
-                Ok(_) => {
-                    displayer.success(&format!("The file {} is accessed", file));
-                }
-                Err(error) => {
-                    displayer.failure(&format!("Failed to access the file {}: {}", file, error));
-                }
+            if path.exists() {
+                let _ = fs::read(path);
             }
         }
-
-        displayer.success("The browser files are accessed");
 
         ExitCode::SUCCESS
     }

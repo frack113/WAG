@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 use crate::{
-    displayer::Displayer,
     metadata::{AttackTechnique, SigmaIdentifier, TraceIdentifier},
     traces::{Trace, TraceMetadata, TraceParameter, TraceParameterKind},
 };
@@ -34,52 +33,23 @@ pub static METADATA: LazyLock<TraceMetadata> = LazyLock::new(|| TraceMetadata {
     name: "Bring Your Own Vulnerable Driver",
     requirements_summary: "administrator, kernel driver loading",
     attack_techniques: vec![AttackTechnique::new("1068", None::<&str>)],
-    sigma_identifiers: vec![SigmaIdentifier::new(
-        Uuid::parse_str("b5d44a2e-31c9-4e4f-8a4f-cc18633f2146").unwrap(),
-    )],
-    use_cases: vec!["driver loading".to_string()],
-    parameters: &[
-        TraceParameter {
-            name: "driver",
-            kind: TraceParameterKind::Path,
-            required: true,
-            allowed_values: &[],
-        },
-        TraceParameter {
-            name: "name",
-            kind: TraceParameterKind::String,
-            required: true,
-            allowed_values: &[],
-        },
-        TraceParameter {
-            name: "description",
-            kind: TraceParameterKind::String,
-            required: true,
-            allowed_values: &[],
-        },
+    sigma_identifiers: vec![
+        "b5d44a2e-31c9-4e4f-8a4f-cc18633f2146"
+            .parse::<SigmaIdentifier>()
+            .unwrap(),
     ],
+    use_cases: vec!["driver loading".to_string()],
+    decode_parameters: decode_parameters::<Byovd>,
 });
 
 impl Trace for Byovd {
     fn run(&self) -> ExitCode {
-        let mut displayer: Displayer = Displayer::new();
-        displayer.loading("Creating the service manager");
-
         let service_manager = match unsafe {
             OpenSCManagerW(PCWSTR::null(), PCWSTR::null(), SC_MANAGER_CREATE_SERVICE)
         } {
             Ok(handle) => unsafe { Owned::new(handle) },
-            Err(error) => {
-                displayer.failure(
-                    format!("Failed to create the service manager: {}", error.message()).as_str(),
-                );
-
-                return ExitCode::FAILURE;
-            }
+            Err(_) => return ExitCode::FAILURE,
         };
-
-        displayer.success("The service manager is created");
-        displayer.loading("Creating the driver service");
 
         let service = match unsafe {
             CreateServiceW(
@@ -99,27 +69,12 @@ impl Trace for Byovd {
             )
         } {
             Ok(handle) => unsafe { Owned::new(handle) },
-            Err(error) => {
-                displayer.failure(
-                    format!("Failed to create the driver service: {}", error.message()).as_str(),
-                );
-
-                return ExitCode::FAILURE;
-            }
+            Err(_) => return ExitCode::FAILURE,
         };
 
-        displayer.success("The driver service is created");
-        displayer.loading("Starting the driver service");
-
-        if let Err(error) = unsafe { StartServiceW(*service, None) } {
-            displayer.failure(
-                format!("Failed to start the driver service: {}", error.message()).as_str(),
-            );
-
+        if unsafe { StartServiceW(*service, None) }.is_err() {
             return ExitCode::FAILURE;
         }
-
-        displayer.success("The driver service is started");
 
         ExitCode::SUCCESS
     }
