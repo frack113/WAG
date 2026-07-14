@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-use crate::metadata::error::{AttackTechniqueError, SigmaIdentifierError, TraceIdentifierError};
+use crate::metadata::{AttackTechniqueError, SigmaIdentifierError, TraceIdentifierError};
 use std::{
     fmt::{self, Display, Formatter},
     str::FromStr,
@@ -10,7 +10,7 @@ use std::{
 use toml_span::{DeserError, Deserialize, Error, ErrorKind, span::Spanned, value::Value};
 use uuid::Uuid;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TraceIdentifier {
     domain: String,
     family: String,
@@ -18,7 +18,7 @@ pub struct TraceIdentifier {
 }
 
 impl TraceIdentifier {
-    pub fn new(
+    fn new(
         domain: impl Into<String>,
         family: impl Into<String>,
         behavior: impl Into<String>,
@@ -28,18 +28,6 @@ impl TraceIdentifier {
             family: family.into(),
             behavior: behavior.into(),
         }
-    }
-
-    pub fn domain(&self) -> &str {
-        &self.domain
-    }
-
-    pub fn family(&self) -> &str {
-        &self.family
-    }
-
-    pub fn behavior(&self) -> &str {
-        &self.behavior
     }
 
     pub fn as_str(&self) -> String {
@@ -85,9 +73,9 @@ impl FromStr for TraceIdentifier {
 
 impl<'de> Deserialize<'de> for TraceIdentifier {
     fn deserialize(value: &mut Value<'de>) -> Result<Self, DeserError> {
-        let raw = <Spanned<String> as Deserialize<'de>>::deserialize(value)?;
+        let raw = Spanned::<String>::deserialize(value)?;
 
-        raw.value.parse().map_err(|error| {
+        raw.value.parse::<Self>().map_err(|error| {
             Error {
                 kind: ErrorKind::Custom(error.to_string().into()),
                 span: raw.span,
@@ -105,19 +93,11 @@ pub struct AttackTechnique {
 }
 
 impl AttackTechnique {
-    pub fn new(main: impl Into<String>, sub: Option<impl Into<String>>) -> Self {
+    fn new(main: impl Into<String>, sub: Option<impl Into<String>>) -> Self {
         Self {
             main: main.into(),
             sub: sub.map(Into::into),
         }
-    }
-
-    pub fn main(&self) -> &str {
-        &self.main
-    }
-
-    pub fn sub(&self) -> Option<&str> {
-        self.sub.as_deref()
     }
 
     pub fn as_str(&self) -> String {
@@ -174,9 +154,9 @@ impl FromStr for AttackTechnique {
 
 impl<'de> Deserialize<'de> for AttackTechnique {
     fn deserialize(value: &mut Value<'de>) -> Result<Self, DeserError> {
-        let raw = <Spanned<String> as Deserialize<'de>>::deserialize(value)?;
+        let raw = Spanned::<String>::deserialize(value)?;
 
-        raw.value.parse().map_err(|error| {
+        raw.value.parse::<Self>().map_err(|error| {
             Error {
                 kind: ErrorKind::Custom(error.to_string().into()),
                 span: raw.span,
@@ -190,16 +170,6 @@ impl<'de> Deserialize<'de> for AttackTechnique {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SigmaIdentifier(Uuid);
 
-impl SigmaIdentifier {
-    pub fn new(value: Uuid) -> Self {
-        Self(value)
-    }
-
-    pub fn as_uuid(&self) -> &Uuid {
-        &self.0
-    }
-}
-
 impl Display for SigmaIdentifier {
     fn fmt(&self, format: &mut Formatter<'_>) -> fmt::Result {
         format.write_str(&self.0.to_string())
@@ -211,8 +181,10 @@ impl FromStr for SigmaIdentifier {
 
     fn from_str(input: &str) -> Result<Self, Self::Err> {
         Uuid::parse_str(input)
+            .ok()
+            .filter(|identifier| identifier.get_version_num() == 4)
             .map(Self)
-            .map_err(|_| SigmaIdentifierError::MalformedIdentifier {
+            .ok_or_else(|| SigmaIdentifierError::MalformedIdentifier {
                 input: input.to_string(),
             })
     }
@@ -220,9 +192,9 @@ impl FromStr for SigmaIdentifier {
 
 impl<'de> Deserialize<'de> for SigmaIdentifier {
     fn deserialize(value: &mut Value<'de>) -> Result<Self, DeserError> {
-        let raw = <Spanned<String> as Deserialize<'de>>::deserialize(value)?;
+        let raw = Spanned::<String>::deserialize(value)?;
 
-        raw.value.parse().map_err(|error| {
+        raw.value.parse::<Self>().map_err(|error| {
             Error {
                 kind: ErrorKind::Custom(error.to_string().into()),
                 span: raw.span,
