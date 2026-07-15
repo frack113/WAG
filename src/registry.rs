@@ -4,40 +4,40 @@
 
 use crate::{
     metadata::{AttackTechnique, SigmaIdentifier, TraceIdentifier},
-    traces::{TraceMetadata, browser, byovd, dll, spoofing},
+    traces::{TraceDefinition, browser, byovd, dll, spoofing},
 };
 use std::sync::LazyLock;
 
 pub static REGISTRY: Registry = Registry;
 
-static REGISTERED_TRACES: LazyLock<Vec<&'static TraceMetadata>> = LazyLock::new(|| {
-    vec![
-        &byovd::METADATA,
-        &dll::METADATA,
-        &spoofing::METADATA,
-        &browser::METADATA,
+static TRACE_DEFINITIONS: LazyLock<[&'static TraceDefinition; 4]> = LazyLock::new(|| {
+    [
+        LazyLock::force(&byovd::DEFINITION),
+        LazyLock::force(&dll::DEFINITION),
+        LazyLock::force(&spoofing::DEFINITION),
+        LazyLock::force(&browser::DEFINITION),
     ]
 });
 
 pub struct Registry;
 
 impl Registry {
-    pub fn all(&self) -> &'static [&'static TraceMetadata] {
-        REGISTERED_TRACES.as_slice()
+    pub fn all(&self) -> &'static [&'static TraceDefinition] {
+        &*TRACE_DEFINITIONS
     }
 
-    pub fn get(&self, identifier: &TraceIdentifier) -> Option<&'static TraceMetadata> {
+    pub fn get(&self, identifier: &TraceIdentifier) -> Option<&'static TraceDefinition> {
         self.all()
             .iter()
-            .find(|metadata| &metadata.identifier == identifier)
+            .find(|definition| &definition.metadata.identifier == identifier)
             .copied()
     }
 
-    pub fn query(&self, filters: &TraceFilters) -> Vec<&'static TraceMetadata> {
+    pub fn query(&self, filters: &TraceFilters) -> Vec<&'static TraceDefinition> {
         self.all()
             .iter()
             .copied()
-            .filter(|metadata| filters.matches(metadata))
+            .filter(|definition| filters.matches(definition))
             .collect()
     }
 }
@@ -45,29 +45,22 @@ impl Registry {
 pub struct TraceFilters<'a> {
     pub attack_techniques: &'a [AttackTechnique],
     pub sigma_identifiers: &'a [SigmaIdentifier],
-    pub use_cases: &'a [String],
 }
 
 impl TraceFilters<'_> {
-    fn matches(&self, metadata: &TraceMetadata) -> bool {
+    fn matches(&self, definition: &TraceDefinition) -> bool {
         let attack_matches = self.attack_techniques.is_empty()
             || self
                 .attack_techniques
                 .iter()
-                .any(|filter| metadata.attack_techniques.contains(filter));
+                .any(|filter| definition.metadata.attack_techniques.contains(filter));
 
         let sigma_matches = self.sigma_identifiers.is_empty()
             || self
                 .sigma_identifiers
                 .iter()
-                .any(|filter| metadata.sigma_identifiers.contains(filter));
+                .any(|filter| definition.metadata.sigma_identifiers.contains(filter));
 
-        let use_case_matches = self.use_cases.is_empty()
-            || self
-                .use_cases
-                .iter()
-                .any(|filter| metadata.use_cases.contains(filter));
-
-        attack_matches && sigma_matches && use_case_matches
+        attack_matches && sigma_matches
     }
 }

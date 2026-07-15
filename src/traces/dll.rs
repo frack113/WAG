@@ -2,56 +2,37 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+mod execution;
+mod parameters;
+
 use crate::{
     metadata::{AttackTechnique, SigmaIdentifier, TraceIdentifier},
-    traces::{Trace, TraceMetadata, TraceParameter, TraceParameterKind},
+    traces::{TraceDefinition, TraceMetadata},
 };
-use clap::Parser;
-use serde::Deserialize;
-use std::{path::PathBuf, process::ExitCode, sync::LazyLock};
-use uuid::Uuid;
-use windows::{
-    Win32::System::LibraryLoader,
-    core::{HSTRING, Owned},
-};
+use parameters::DllParameters;
+use std::sync::LazyLock;
 
-#[derive(Parser, Deserialize)]
-pub struct DllLoader {
-    #[clap(help = "Path to the DLL file")]
-    path: PathBuf,
-}
+pub(crate) const IDENTIFIER: &str = "memory.dll.load";
 
-pub static METADATA: LazyLock<TraceMetadata> = LazyLock::new(|| TraceMetadata {
-    identifier: TraceIdentifier::new("memory", "dll", "load"),
-    name: "DLL Loader",
-    requirements_summary: "local DLL file",
-    attack_techniques: vec![AttackTechnique::new("1574", Some("001"))],
-    sigma_identifiers: vec![
-        "2a4052f7-858e-412e-be8c-60138c8ce031"
-            .parse::<SigmaIdentifier>()
-            .unwrap(),
-    ],
-    use_cases: vec!["dll sideloading".to_string()],
-    decode_parameters: decode_parameters::<DllLoader>,
+pub static DEFINITION: LazyLock<TraceDefinition> = LazyLock::new(|| {
+    TraceDefinition::new::<DllParameters>(
+        TraceMetadata {
+            identifier: IDENTIFIER
+                .parse::<TraceIdentifier>()
+                .expect("trace identifier must be valid"),
+            name: "DLL Loader",
+            description: "Loads a DLL into the current process.",
+            attack_techniques: vec![
+                "T1129"
+                    .parse::<AttackTechnique>()
+                    .expect("ATT&CK technique must be valid"),
+            ],
+            sigma_identifiers: vec![
+                "2a4052f7-858e-412e-be8c-60138c8ce031"
+                    .parse::<SigmaIdentifier>()
+                    .expect("Sigma identifier must be valid"),
+            ],
+        },
+        execution::execute,
+    )
 });
-
-impl Trace for DllLoader {
-    fn run(&self) -> ExitCode {
-        if !self.path.exists() || !self.path.is_file() {
-            return ExitCode::FAILURE;
-        }
-
-        let dll_handle = match unsafe {
-            LibraryLoader::LoadLibraryW(&HSTRING::from(self.path.to_str().unwrap()))
-        } {
-            Ok(handle) => unsafe { Owned::new(handle) },
-            Err(_) => return ExitCode::FAILURE,
-        };
-
-        if dll_handle.0.is_null() {
-            return ExitCode::FAILURE;
-        }
-
-        ExitCode::SUCCESS
-    }
-}

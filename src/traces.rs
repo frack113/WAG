@@ -7,53 +7,50 @@ pub mod byovd;
 pub mod dll;
 pub mod spoofing;
 
-use crate::{
-    metadata::{AttackTechnique, SigmaIdentifier, TraceIdentifier},
-    traces::{browser, byovd, dll, spoofing},
-};
-use std::{process::ExitCode, sync::LazyLock};
+use crate::metadata::{AttackTechnique, SigmaIdentifier, TraceIdentifier};
+use clap::Parser;
+use std::{error::Error, ffi::OsString};
+use toml_span::{DeserError, DeserializeOwned, Value};
 
-pub trait Trace {
-    fn run(&self) -> ExitCode;
+pub struct TraceDefinition {
+    pub metadata: TraceMetadata,
+    pub(crate) from_toml: TomlTraceConstructor,
+    #[allow(dead_code)]
+    pub(crate) from_cli: CliTraceConstructor,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum TraceParameterKind {
-    Path,
-    String,
-    Enum,
-}
+impl TraceDefinition {
+    pub fn new<Input>(metadata: TraceMetadata, execute: fn(Input) -> Result<(), TraceError>) -> Self
+    where
+        Input: DeserializeOwned + Parser + 'static,
+    {
+        Self {
+            metadata,
+            from_toml: Box::new(move |value| {
+                let input = Input::deserialize(value)?;
 
-#[derive(Debug, Clone, Copy)]
-pub struct TraceParameter {
-    pub name: &'static str,
-    pub kind: TraceParameterKind,
-    pub required: bool,
-    pub allowed_values: &'static [&'static str],
+                Ok(Box::new(move || execute(input)))
+            }),
+            from_cli: Box::new(move |arguments| {
+                let input = Input::try_parse_from(arguments)?;
+
+                Ok(Box::new(move || execute(input)))
+            }),
+        }
+    }
 }
 
 pub struct TraceMetadata {
     pub identifier: TraceIdentifier,
     pub name: &'static str,
-    pub requirements_summary: &'static str,
+    pub description: &'static str,
     pub attack_techniques: Vec<AttackTechnique>,
     pub sigma_identifiers: Vec<SigmaIdentifier>,
-    pub use_cases: Vec<String>,
-    pub parameters: &'static [TraceParameter],
 }
 
-pub static TRACE_METADATA: LazyLock<Vec<&'static TraceMetadata>> = LazyLock::new(|| {
-    vec![
-        &byovd::METADATA,
-        &dll::METADATA,
-        &spoofing::METADATA,
-        &browser::METADATA,
-    ]
-});
-
-pub fn lookup(identifier: &str) -> Option<&'static TraceMetadata> {
-    TRACE_METADATA
-        .iter()
-        .find(|metadata| metadata.identifier.as_str() == identifier)
-        .copied()
-}
+pub type Trace = Box<dyn FnOnce() -> Result<(), TraceError>>;
+pub type TraceError = Box<dyn Error>;
+pub(crate) type TomlTraceConstructor =
+    Box<dyn Fn(&mut Value<'static>) -> Result<Trace, DeserError> + Send + Sync>;
+pub(crate) type CliTraceConstructor =
+    Box<dyn Fn(&[OsString]) -> Result<Trace, clap::Error> + Send + Sync>;

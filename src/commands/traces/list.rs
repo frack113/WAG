@@ -5,7 +5,7 @@
 use crate::{
     metadata::{AttackTechnique, SigmaIdentifier},
     registry::{REGISTRY, TraceFilters},
-    traces::TraceMetadata,
+    traces::TraceDefinition,
 };
 use clap::Args;
 use std::{fmt::Write, process::ExitCode};
@@ -14,12 +14,12 @@ const NO_MATCH_MESSAGE: &str = "No traces match the selected filters.\n";
 const SEPARATOR: &str = " | ";
 const IDENTIFIER_HEADER: &str = "Identifier";
 const NAME_HEADER: &str = "Name";
-const REQUIREMENTS_SUMMARY_HEADER: &str = "Requirements summary";
+const DESCRIPTION_HEADER: &str = "Description";
 
 #[derive(Args)]
 #[command(after_help = r#"Filter behavior:
   Repeat one option to match any value in that category (OR).
-  Combine different options to require every category (AND).
+  Combine ATT&CK and Sigma options to require both categories (AND).
   Omit all filters to list every trace."#)]
 pub struct List {
     #[clap(long = "attack", help = "Match an ATT&CK technique (repeatable)")]
@@ -27,9 +27,6 @@ pub struct List {
 
     #[clap(long = "sigma", help = "Match a Sigma UUID (repeatable)")]
     sigma_identifiers: Vec<SigmaIdentifier>,
-
-    #[clap(long = "use-case", help = "Match a use case (repeatable)")]
-    use_cases: Vec<String>,
 }
 
 impl List {
@@ -38,7 +35,6 @@ impl List {
         let filters = TraceFilters {
             attack_techniques: &self.attack_techniques,
             sigma_identifiers: &self.sigma_identifiers,
-            use_cases: &self.use_cases,
         };
         let traces = REGISTRY.query(&filters);
         let output = Self::render_filtered(width.max(1), &traces, &filters);
@@ -50,7 +46,7 @@ impl List {
 
     pub fn render_filtered(
         width: usize,
-        traces: &[&TraceMetadata],
+        traces: &[&TraceDefinition],
         filters: &TraceFilters,
     ) -> String {
         if traces.is_empty() && !Self::has_active_filters(filters) {
@@ -73,7 +69,7 @@ impl List {
         output
     }
 
-    pub fn render(width: usize, traces: &[&TraceMetadata]) -> String {
+    pub fn render(width: usize, traces: &[&TraceDefinition]) -> String {
         if traces.is_empty() {
             return "No traces are available.\n".to_string();
         }
@@ -81,31 +77,31 @@ impl List {
         let width = width.max(1);
         let identifier_width = traces
             .iter()
-            .map(|entry| entry.identifier.as_str().len())
+            .map(|definition| definition.metadata.identifier.as_str().len())
             .chain([IDENTIFIER_HEADER.len()])
             .max()
             .unwrap_or(1);
         let name_width = traces
             .iter()
-            .map(|entry| entry.name.len())
+            .map(|definition| definition.metadata.name.len())
             .chain([NAME_HEADER.len()])
             .max()
             .unwrap_or(1);
-        let requirements_width = traces
+        let description_width = traces
             .iter()
-            .map(|entry| entry.requirements_summary.len())
-            .chain([REQUIREMENTS_SUMMARY_HEADER.len()])
+            .map(|definition| definition.metadata.description.len())
+            .chain([DESCRIPTION_HEADER.len()])
             .max()
             .unwrap_or(1);
 
         let three_column_width =
-            identifier_width + SEPARATOR.len() + name_width + SEPARATOR.len() + requirements_width;
+            identifier_width + SEPARATOR.len() + name_width + SEPARATOR.len() + description_width;
         if three_column_width <= width {
             return Self::render_three_columns(
                 traces,
                 identifier_width,
                 name_width,
-                requirements_width,
+                description_width,
             );
         }
 
@@ -124,24 +120,28 @@ impl List {
     }
 
     fn render_three_columns(
-        traces: &[&TraceMetadata],
+        traces: &[&TraceDefinition],
         identifier_width: usize,
         name_width: usize,
-        requirements_width: usize,
+        description_width: usize,
     ) -> String {
         let mut output = String::new();
         Self::render_row(
             &mut output,
-            [IDENTIFIER_HEADER, NAME_HEADER, REQUIREMENTS_SUMMARY_HEADER],
-            [identifier_width, name_width, requirements_width],
+            [IDENTIFIER_HEADER, NAME_HEADER, DESCRIPTION_HEADER],
+            [identifier_width, name_width, description_width],
         );
 
-        for entry in traces {
-            let identifier = entry.identifier.as_str();
+        for definition in traces {
+            let identifier = definition.metadata.identifier.as_str();
             Self::render_row(
                 &mut output,
-                [identifier.as_str(), entry.name, entry.requirements_summary],
-                [identifier_width, name_width, requirements_width],
+                [
+                    identifier.as_str(),
+                    definition.metadata.name,
+                    definition.metadata.description,
+                ],
+                [identifier_width, name_width, description_width],
             );
         }
 
@@ -149,7 +149,7 @@ impl List {
     }
 
     fn render_two_columns(
-        traces: &[&TraceMetadata],
+        traces: &[&TraceDefinition],
         identifier_width: usize,
         name_width: usize,
     ) -> String {
@@ -160,11 +160,11 @@ impl List {
             [identifier_width, name_width],
         );
 
-        for entry in traces {
-            let identifier = entry.identifier.as_str();
+        for definition in traces {
+            let identifier = definition.metadata.identifier.as_str();
             Self::render_row(
                 &mut output,
-                [identifier.as_str(), entry.name],
+                [identifier.as_str(), definition.metadata.name],
                 [identifier_width, name_width],
             );
         }
@@ -172,13 +172,13 @@ impl List {
         output
     }
 
-    fn render_identifier_column(traces: &[&TraceMetadata], width: usize) -> String {
+    fn render_identifier_column(traces: &[&TraceDefinition], width: usize) -> String {
         let mut output = String::new();
         let identifier_width = width.max(1);
         Self::render_row(&mut output, [IDENTIFIER_HEADER], [identifier_width]);
 
-        for entry in traces {
-            let identifier = entry.identifier.as_str();
+        for definition in traces {
+            let identifier = definition.metadata.identifier.as_str();
             Self::render_row(&mut output, [identifier.as_str()], [identifier_width]);
         }
 
@@ -240,9 +240,7 @@ impl List {
     }
 
     fn has_active_filters(filters: &TraceFilters) -> bool {
-        !filters.attack_techniques.is_empty()
-            || !filters.sigma_identifiers.is_empty()
-            || !filters.use_cases.is_empty()
+        !filters.attack_techniques.is_empty() || !filters.sigma_identifiers.is_empty()
     }
 
     fn render_filter_context(filters: &TraceFilters) -> String {
@@ -266,11 +264,6 @@ impl List {
                 .collect::<Vec<_>>()
                 .join(", ");
             parts.push(format!("sigma={joined}"));
-        }
-
-        if !filters.use_cases.is_empty() {
-            let joined = filters.use_cases.join(", ");
-            parts.push(format!("use-case={joined}"));
         }
 
         format!("filters: {}", parts.join(" "))
