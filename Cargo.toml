@@ -32,10 +32,7 @@ windows = { version = "=0.62.2", features = [
   "Win32_System_Threading",
   "Win32_System_LibraryLoader",
 ] }
-
 clap = { version = "=4.6.1", features = ["derive"] }
-toml = { version = "=1.1.2" }
-serde = { version = "1.0.219", features = ["derive"] }
 console = { version = "=0.16.4" }
 toml-span = { version = "=0.7.1" }
 thiserror = { version = "=2.0.18" }
