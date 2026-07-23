@@ -5,6 +5,7 @@
 mod commands;
 mod metadata;
 mod registry;
+mod scenarios;
 mod traces;
 mod windows;
 
