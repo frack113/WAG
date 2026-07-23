@@ -51,6 +51,6 @@ pub struct TraceMetadata {
 pub type Trace = Box<dyn FnOnce() -> Result<(), TraceError>>;
 pub type TraceError = Box<dyn Error>;
 pub(crate) type TomlTraceConstructor =
-    Box<dyn Fn(&mut Value<'static>) -> Result<Trace, DeserError> + Send + Sync>;
+    Box<dyn for<'source> Fn(&mut Value<'source>) -> Result<Trace, DeserError> + Send + Sync>;
 pub(crate) type CliTraceConstructor =
     Box<dyn Fn(&[OsString]) -> Result<Trace, clap::Error> + Send + Sync>;
