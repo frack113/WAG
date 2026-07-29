@@ -18,18 +18,6 @@ pub struct TraceIdentifier {
 }
 
 impl TraceIdentifier {
-    fn new(
-        domain: impl Into<String>,
-        family: impl Into<String>,
-        behavior: impl Into<String>,
-    ) -> Self {
-        Self {
-            domain: domain.into(),
-            family: family.into(),
-            behavior: behavior.into(),
-        }
-    }
-
     pub fn as_str(&self) -> String {
         format!("{}.{}.{}", self.domain, self.family, self.behavior)
     }
@@ -75,7 +63,11 @@ impl FromStr for TraceIdentifier {
             }
         }
 
-        Ok(Self::new(*domain, *family, *behavior))
+        Ok(Self {
+            domain: (*domain).to_string(),
+            family: (*family).to_string(),
+            behavior: (*behavior).to_string(),
+        })
     }
 }
 
@@ -101,13 +93,6 @@ pub struct AttackTechnique {
 }
 
 impl AttackTechnique {
-    fn new(main: impl Into<String>, sub: Option<impl Into<String>>) -> Self {
-        Self {
-            main: main.into(),
-            sub: sub.map(Into::into),
-        }
-    }
-
     pub fn as_str(&self) -> String {
         match &self.sub {
             Some(sub) => format!("T{}.{}", self.main, sub),
@@ -151,7 +136,10 @@ impl FromStr for AttackTechnique {
                 });
             }
 
-            return Ok(Self::new(after_prefix, None::<&str>));
+            return Ok(Self {
+                main: after_prefix.to_string(),
+                sub: None,
+            });
         };
 
         let main_valid =
@@ -164,7 +152,10 @@ impl FromStr for AttackTechnique {
             });
         }
 
-        Ok(Self::new(main, Some(sub)))
+        Ok(Self {
+            main: main.to_string(),
+            sub: Some(sub.to_string()),
+        })
     }
 }
 
