@@ -1,9 +1,10 @@
 ---
+# yamllint disable rule:line-length
 # SPDX-FileCopyrightText: 2023 The MalwareTracesGenerator development team
-# yamllint disable-line
 # SPDX-FileCopyrightText: 2022 Free Software Foundation Europe e.V. <https://fsfe.org>
 #
 # SPDX-License-Identifier: CC0-1.0
+# yamllint enable rule:line-length
 name: Lint the project
 on: [push, pull_request]
 permissions:
